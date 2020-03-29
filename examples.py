@@ -1,33 +1,33 @@
 from ahpy import *
 
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005
-# crit = np.matrix([[1, .2, 3, .5, 5],
+# crit = np.array([[1, .2, 3, .5, 5],
 #                   [5, 1, 7, 1, 7],
 #                   [1/3., 1/7., 1, .25, 3],
 #                   [2, 1, 4, 1, 7],
 #                   [.2, 1/7., 1/3., 1/7., 1]])
 #
-# culture = np.matrix([[1, .5, 1, .5],
+# culture = np.array([[1, .5, 1, .5],
 #                      [2, 1, 2.5, 1],
 #                      [1, 1/2.5, 1, 1/2.5],
 #                      [2, 1, 2.5, 1]])
 #
-# family = np.matrix([[1, 2, 1/3., 4],
+# family = np.array([[1, 2, 1/3., 4],
 #                     [.5, 1, 1/8., 2],
 #                     [3, 8, 1, 9],
 #                     [.25, .5, 1/9., 1]])
 #
-# housing = np.matrix([[1, 5, .5, 2.5],
+# housing = np.array([[1, 5, .5, 2.5],
 #                      [.2, 1, 1/9., .25],
 #                      [2, 9, 1, 7],
 #                      [1/2.5, 4, 1/7., 1]])
 #
-# jobs = np.matrix([[1, .5, 3, 4],
+# jobs = np.array([[1, .5, 3, 4],
 #                   [2, 1, 6, 8],
 #                   [1/3., 1/6., 1, 1],
 #                   [.25, 1/8., 1, 1]])
 #
-# transportation = np.matrix([[1, 1.5, .5, 4],
+# transportation = np.array([[1, 1.5, .5, 4],
 #                             [1/1.5, 1, 1/3.5, 2.5],
 #                             [2, 3.5, 1, 9],
 #                             [.25, 1/2.5, 1/9., 1]])
@@ -35,7 +35,7 @@ from ahpy import *
 # cities = ['Bethesda', 'Boston', 'Pittsburgh', 'Santa Fe']
 # crits = ['Culture', 'Family', 'Housing', 'Jobs', 'Transportation']
 #
-# print 'Saaty'
+# print('Saaty')
 # cu = Compare('Culture', culture, cities, 3, random_index='Saaty')
 # f = Compare('Family', family, cities, 3, random_index='Saaty')
 # h = Compare('Housing', housing, cities, 3, random_index='Saaty')
@@ -43,13 +43,11 @@ from ahpy import *
 # t = Compare('Transportation', transportation, cities, 3, random_index='Saaty')
 #
 # comp_matrices = [cu, f, h, j, t]
-# cr = Compare('Criteria', crit, crits, 3, random_index='Saaty')
-# print
-# Compose('Goal', cr, comp_matrices)
+# cr = Compare('Goal', crit, crits, 3, random_index='Saaty')
+# Compose('Goal', cr, comp_matrices).report()
 #
-# print '================='
-# print
-# print 'Donegan and Dodd'
+# print('=================\n')
+# print('Donegan and Dodd')
 # cu = Compare('Culture', culture, cities, 3)
 # f = Compare('Family', family, cities, 3)
 # h = Compare('Housing', housing, cities, 3)
@@ -57,17 +55,17 @@ from ahpy import *
 # t = Compare('Transportation', transportation, cities, 3)
 #
 # comp_matrices = [cu, f, h, j, t]
-# cr = Compare('Criteria', crit, crits, 3)
-# print
-# Compose('Goal', cr, comp_matrices)
+# cr = Compare('Goal', crit, crits, 3)
+#
+# Compose('Goal', cr, comp_matrices).report()
 #
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
-# experience = np.matrix([[1, .25, 4], [4, 1, 9], [.25, 1/9., 1]])
-# education = np.matrix([[1, 3, .2], [1/3., 1, 1/7.], [5, 7, 1]])
-# charisma = np.matrix([[1, 5, 9], [.2, 1, 4], [1/9., .25, 1]])
-# age = np.matrix([[1, 1/3., 5], [3, 1, 9], [.2, 1/9., 1]])
-# criteria = np.matrix([[1, 4, 3, 7], [.25, 1, 1/3., 3], [1/3., 3, 1, 5], [1/7., 1/3., .2, 1]])
+# experience = np.array([[1, .25, 4], [4, 1, 9], [.25, 1/9., 1]])
+# education = np.array([[1, 3, .2], [1/3., 1, 1/7.], [5, 7, 1]])
+# charisma = np.array([[1, 5, 9], [.2, 1, 4], [1/9., .25, 1]])
+# age = np.array([[1, 1/3., 5], [3, 1, 9], [.2, 1/9., 1]])
+# criteria = np.array([[1, 4, 3, 7], [.25, 1, 1/3., 3], [1/3., 3, 1, 5], [1/7., 1/3., .2, 1]])
 #
 # alt1 = ['Tom', 'Dick', 'Harry']
 #
@@ -81,13 +79,12 @@ from ahpy import *
 # alt2 = ['exp', 'edu', 'cha', 'age']
 #
 # parent = Compare('goal', criteria, alt2, 3, random_index='saaty')
-#
-# Compose('goal', parent, children)
+# Compose('goal', parent, children).report()
 #
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
-# drinks_val = np.matrix([[1, 9, 5, 2, 1, 1, .5],
+# drinks_val = np.array([[1, 9, 5, 2, 1, 1, .5],
 #                     [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
 #                     [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
 #                     [.5, 9, 3, 1, .5, 1, 1/3.],
@@ -95,7 +92,7 @@ from ahpy import *
 #                     [1, 9, 3, 1, .5, 1, 1/3.],
 #                     [2, 9, 9, 3, 2, 3, 1]])
 # drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
-# Compare('Drinks', drinks_val, drinks_cri, precision=3, random_index='saaty')
+# Compare('Drinks', drinks_val, drinks_cri, precision=3, random_index='saaty').report()
 #
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
@@ -120,28 +117,28 @@ from ahpy import *
 # cri_m = '1 5 3 7; 1/5 1 1/3 5; 1/3 3 1 6; 1/7 1/5 1/6 1'
 # cri = Compare('goal', cri_m, cri_n, random_index='saaty')
 #
-# Compose('goal', cri, [maintain, user, finance, expand])
+# Compose('goal', cri, [maintain, user, finance, expand]).report()
 #
 # ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
 #
 # car_cri = ('civic', 'saturn', 'escort', 'clio')
 #
-# gas_m = np.matrix([[34], [27], [24], [28]])
+# gas_m = np.array([[34], [27], [24], [28]])
 # gas_m2 = '34;27;24;28'
 # gas = Compare('gas', gas_m2, car_cri, 3, comp_type='quant')
 #
-# rel_m = np.matrix([[1, 2, 5, 1], [.5, 1, 3, 2], [.2, 1/3., 1, .25], [1, .5, 4, 1]])
+# rel_m = np.array([[1, 2, 5, 1], [.5, 1, 3, 2], [.2, 1/3., 1, .25], [1, .5, 4, 1]])
 # rel = Compare('rel', rel_m, car_cri)
 #
-# style_m = np.matrix([[1, .25, 4, 1/6.], [4, 1, 4, .25], [.25, .25, 1, .2], [6, 4, 5, 1]])
+# style_m = np.array([[1, .25, 4, 1/6.], [4, 1, 4, .25], [.25, .25, 1, .2], [6, 4, 5, 1]])
 # style = Compare('style', style_m, car_cri, 3)
 #
-# cri_m = np.matrix([[1, .5, 3], [2, 1, 4], [1/3., .25, 1]])
+# cri_m = np.array([[1, .5, 3], [2, 1, 4], [1/3., .25, 1]])
 # cri_cri = ('style', 'rel', 'gas')
 # parent = Compare('goal', cri_m, cri_cri)
 #
-# Compose('goal', parent, (style, rel, gas))
+# Compose('goal', parent, (style, rel, gas)).report()
 #
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
@@ -188,11 +185,4 @@ cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint
 capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
 goal = Compose('goal', criteria, (cost, safety, style, capacity))
 
-m = '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1;' \
-    '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1;' \
-    '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1;' \
-    '1 1 1 1 1 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1 1 1 1 1;' \
-    '1 1 1 1 1 1 8 1 1 1 1 1; 1 1 1 1 1 1 1 2 1 1 1; 1 1 1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1 1 1;' \
-    '1 1 1 1 1 1 1 1; 1 1 1 1 1 1 1; 1 1 1 1 1 1; 1 1 1 1 1; 1 1 1 1; 1 1 1; 1 1; 1'
-t = Compare('test', m, ('abcdefghijklmnop'))
-t.report()
+goal.report()

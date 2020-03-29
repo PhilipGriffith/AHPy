@@ -1,4 +1,3 @@
-from __future__ import division
 import operator
 import numpy as np
 
@@ -69,7 +68,7 @@ class Compare(object):
                     matrix_2.itemset((x + y + 1, x), 1 / j)
         except IndexError:
             return matrix_1
-        except (NameError, SyntaxError, ZeroDivisionError, ValueError), error:
+        except (NameError, SyntaxError, ZeroDivisionError, ValueError) as error:
             if self.type == 'quant':
                 return matrix_1
             else:
@@ -90,8 +89,8 @@ class Compare(object):
         if len(input_matrix) == 1:
             raise AHPException('Input matrix is an empty string')
         try:
-            matrix = np.matrix(input_matrix)
-        except Exception, error:
+            matrix = np.array(input_matrix)
+        except Exception as error:
             raise AHPException('Input cannot be cast as a matrix: {}'.format(error))
         shape = matrix.shape[0]
         # Only check these properties for qualitative matrices
@@ -105,7 +104,7 @@ class Compare(object):
                 raise AHPException('Input too large: cannot compute consistency ratio')
             try:
                 np.linalg.matrix_power(matrix, 2)
-            except ValueError, error:
+            except ValueError as error:
                 raise AHPException('Input is not square: {}'.format(error))
             if not (np.multiply(matrix, matrix.T) == np.ones(shape)).all():
                 raise AHPException('Input is not reciprocal')
@@ -125,9 +124,9 @@ class Compare(object):
                 self.compute_priority_vector(self.matrix, self.iterations)
                 self.compute_consistency_ratio()
             # Create the weights dictionary
-            comp_dict = dict([(key, val[0]) for key, val in zip(self.criteria, self.priority_vector)])
+            comp_dict = dict(zip(self.criteria, self.priority_vector))
             self.weights = {self.name: comp_dict}
-        except Exception, error:
+        except Exception as error:
             raise AHPException(error)
         return
 
@@ -176,7 +175,6 @@ class Compare(object):
         Pittsburgh: RWS Publications, pg. 31.
         Sets the 'consistency_ratio' property of the Compare object.
         """
-
         # A valid, square, reciprocal matrix with only one or two rows must be consistent
         if self.shape < 3:
             self.consistency_ratio = 0.0
@@ -211,7 +209,7 @@ class Compare(object):
             # Compute the consistency ratio
             self.consistency_ratio = (np.real(consistency_index / random_index)).round(self.precision)
             return
-        except np.linalg.LinAlgError, error:
+        except np.linalg.LinAlgError as error:
             raise AHPException(error)
 
     def normalize(self):
@@ -219,23 +217,22 @@ class Compare(object):
         Computes the priority vector of a valid matrix by normalizing the input values, then
         sets the consistency ratio to 0.0.
         """
-
         total_sum = float(np.sum(self.matrix))
         try:
-            self.priority_vector = np.divide(self.matrix, total_sum).round(self.precision).reshape(len(self.matrix), 1)
-        except ValueError, error:
+            self.priority_vector = np.divide(self.matrix, total_sum).round(self.precision).reshape(1, len(self.matrix))[0]
+        except ValueError as error:
             raise AHPException('Error normalizing quantitative values: {}'.format(error))
         self.consistency_ratio = 0.0
         return
 
     def report(self):
-        print 'Name:', self.name
-        print 'CR:', self.consistency_ratio
-        print 'Weights:'
-        sorted_weights = sorted(self.weights[self.name].iteritems(), key=operator.itemgetter(1), reverse=True)
+        print('Name:', self.name)
+        print('CR:', self.consistency_ratio)
+        print('Weights:')
+        sorted_weights = sorted(self.weights[self.name].items(), key=operator.itemgetter(1), reverse=True)
         for k, v in sorted_weights:
-            print '\t{}: {}'.format(k, round(v, self.precision))
-        print
+            print('\t{}: {}'.format(k, round(v, self.precision)))
+        print()
         return
 
 
@@ -271,11 +268,11 @@ class Compose(object):
         given the priority vectors of its children.
         """
 
-        for pk, pv in self.parent.weights[self.parent.name].iteritems():
+        for pk, pv in self.parent.weights[self.parent.name].items():
             for child in self.children:
 
                 if pk in child.weights:
-                    for ck, cv in child.weights[pk].iteritems():
+                    for ck, cv in child.weights[pk].items():
                         try:
                             self.weights[ck] += np.multiply(pv, cv)
                         except KeyError:
@@ -289,23 +286,23 @@ class Compose(object):
         their normalized values.
         """
 
-        total_sum = sum(self.weights.itervalues())
-        comp_dict = {key: np.divide(value, total_sum) for key, value in self.weights.iteritems()}
+        total_sum = sum(self.weights.values())
+        comp_dict = {key: np.divide(value, total_sum) for key, value in self.weights.items()}
         self.weights = {self.name: comp_dict}
         return
 
     def report(self):
-        print 'Name:', self.name
-        sorted_weights = sorted(self.weights[self.parent.name].iteritems(), key=operator.itemgetter(1), reverse=True)
+        print('Name:', self.name)
+        sorted_weights = sorted(self.weights[self.parent.name].items(), key=operator.itemgetter(1), reverse=True)
         for k, v in sorted_weights:
-            print k, ':', round(v, self.precision)
-        print
+            print('\t{}: {}'.format(k, np.round(v, self.precision)))
+        print()
 
-        # print self.parent.weights
+        # print(self.parent.weights)
         # for child in self.children:
-        #     print child.weights
-        # print self.weights
-        # print
+        #     print(child.weights)
+        # print(self.weights)
+        # print()
         return
 
 
@@ -314,7 +311,7 @@ class AHPException(Exception):
     The custom Exception class of the AHP module
     """
     def __init__(self, msg):
-        print msg
+        print(msg)
         exit(1)
 
 
