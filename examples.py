@@ -143,46 +143,46 @@ from ahpy import *
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
 
-cri = ('cost', 'safety', 'style', 'capacity')
-cri_m = '3 7 3; 9 1; 1/7'
-criteria = Compare('goal', cri_m, cri)
-
-alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
-
-cost_sub_m = '2 5 3; 2 2; .5'
-cost_sub = Compare('cost', cost_sub_m, ('cost price', 'cost fuel', 'cost maintenance', 'cost resale'))
-cost_sub.report()
-
-cost_price_m = '9 9 1 .5 5; 1 1/9 1/9 1/7; 1/9 1/9 1/7; .5 5; 6'
-cost_price = Compare('cost price', cost_price_m, alt)
-
-cost_fuel_m = '1/1.13 1.41 1.15 1.24 1.19; 1.59 1.3 1.4 1.35; 1/1.23 1/1.14 1/1.18; 1.08 1.04; 1/1.04'
-cost_fuel = Compare('cost fuel', cost_fuel_m, alt)
-
-cost_resale_m = '3 4 .5 2 2; 2 .2 1 1; 1/6 .5 .5; 4 4; 1'
-cost_resale = Compare('cost resale', cost_resale_m, alt)
-
-cost_maint_m = '1.5 4 4 4 5; 4 4 4 5; 1 1.2 1; 1 3; 2'
-cost_maint = Compare('cost maintenance', cost_maint_m, alt)
-
-safety_m = '1 5 7 9 1/3; 5 7 9 1/3; 2 9 1/8; 2 1/8; 1/9'
-safety = Compare('safety', safety_m, alt)
-
-style_m = '1 7 5 9 6; 7 5 9 6; 1/6 3 1/3; 7 5; .2'
-style = Compare('style', style_m, alt)
-
-capacity_sub_m = '.2'
-capacity_sub = Compare('capacity', capacity_sub_m, ('capacity cargo', 'capacity passenger'))
-capacity_sub.report()
-
-capacity_pass_m = '1 .5 1 3 .5; .5 1 3 .5; 2 6 1; 3 .5; 1/6'
-capacity_pass = Compare('capacity passenger', capacity_pass_m, alt)
-
-capacity_cargo_m = '1 .5 .5 .5 1/3; .5 .5 .5 1/3; 1 1 .5; 1 .5; .5'
-capacity_cargo = Compare('capacity cargo', capacity_cargo_m, alt)
-
-cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
-capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
-goal = Compose('goal', criteria, (cost, safety, style, capacity))
-
-goal.report()
+# cri = ('cost', 'safety', 'style', 'capacity')
+# cri_m = '3 7 3; 9 1; 1/7'
+# criteria = Compare('goal', cri_m, cri)
+#
+# alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+#
+# cost_sub_m = '2 5 3; 2 2; .5'
+# cost_sub = Compare('cost', cost_sub_m, ('cost price', 'cost fuel', 'cost maintenance', 'cost resale'))
+# cost_sub.report()
+#
+# cost_price_m = '9 9 1 .5 5; 1 1/9 1/9 1/7; 1/9 1/9 1/7; .5 5; 6'
+# cost_price = Compare('cost price', cost_price_m, alt)
+#
+# cost_fuel_m = '1/1.13 1.41 1.15 1.24 1.19; 1.59 1.3 1.4 1.35; 1/1.23 1/1.14 1/1.18; 1.08 1.04; 1/1.04'
+# cost_fuel = Compare('cost fuel', cost_fuel_m, alt)
+#
+# cost_resale_m = '3 4 .5 2 2; 2 .2 1 1; 1/6 .5 .5; 4 4; 1'
+# cost_resale = Compare('cost resale', cost_resale_m, alt)
+#
+# cost_maint_m = '1.5 4 4 4 5; 4 4 4 5; 1 1.2 1; 1 3; 2'
+# cost_maint = Compare('cost maintenance', cost_maint_m, alt)
+#
+# safety_m = '1 5 7 9 1/3; 5 7 9 1/3; 2 9 1/8; 2 1/8; 1/9'
+# safety = Compare('safety', safety_m, alt)
+#
+# style_m = '1 7 5 9 6; 7 5 9 6; 1/6 3 1/3; 7 5; .2'
+# style = Compare('style', style_m, alt)
+#
+# capacity_sub_m = '.2'
+# capacity_sub = Compare('capacity', capacity_sub_m, ('capacity cargo', 'capacity passenger'))
+# capacity_sub.report()
+#
+# capacity_pass_m = '1 .5 1 3 .5; .5 1 3 .5; 2 6 1; 3 .5; 1/6'
+# capacity_pass = Compare('capacity passenger', capacity_pass_m, alt)
+#
+# capacity_cargo_m = '1 .5 .5 .5 1/3; .5 .5 .5 1/3; 1 1 .5; 1 .5; .5'
+# capacity_cargo = Compare('capacity cargo', capacity_cargo_m, alt)
+#
+# cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
+# capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
+# goal = Compose('goal', criteria, (cost, safety, style, capacity))
+#
+# goal.report()

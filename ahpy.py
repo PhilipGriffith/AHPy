@@ -55,7 +55,6 @@ class Compare(object):
         :param matrix_str: string, the string to be converted into a numpy matrix
         :returns numpy matrix
         """
-
         matrix_1 = []
         try:
             for x in matrix_str.replace(',', ' ').split(';'):
@@ -84,7 +83,6 @@ class Compare(object):
         the 'matrix' and 'shape' properties of the Compare object.
         :param input_matrix: the matrix of the Compare object
         """
-
         # Input length equals one if an empty string is passed to the Compare object
         if len(input_matrix) == 1:
             raise AHPException('Input matrix is an empty string')
@@ -111,7 +109,6 @@ class Compare(object):
 
         self.matrix = matrix
         self.shape = shape
-        return
 
     def compute(self):
         try:
@@ -128,7 +125,6 @@ class Compare(object):
             self.weights = {self.name: comp_dict}
         except Exception as error:
             raise AHPException(error)
-        return
 
     def compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
@@ -179,11 +175,11 @@ class Compare(object):
         if self.shape < 3:
             self.consistency_ratio = 0.0
             return
-        # Determine which random index to use
+
         if self.random_index == 'saaty':
             ri_dict = {3: 0.52, 4: 0.89, 5: 1.11, 6: 1.25, 7: 1.35, 8: 1.40, 9: 1.45,
                        10: 1.49, 11: 1.52, 12: 1.54, 13: 1.56, 14: 1.58, 15: 1.59}
-        else:
+        else:  # self.random_index == 'dd'
             ri_dict = {3: 0.4914, 4: 0.8286, 5: 1.0591, 6: 1.1797, 7: 1.2519,
                        8: 1.3171, 9: 1.3733, 10: 1.4055, 11: 1.4213, 12: 1.4497,
                        13: 1.4643, 14: 1.4822, 15: 1.4969, 16: 1.5078, 17: 1.5153,
@@ -207,8 +203,7 @@ class Compare(object):
             # Compute the consistency index
             consistency_index = (lambda_max - self.shape) / (self.shape - 1)
             # Compute the consistency ratio
-            self.consistency_ratio = (np.real(consistency_index / random_index)).round(self.precision)
-            return
+            self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
         except np.linalg.LinAlgError as error:
             raise AHPException(error)
 
@@ -223,7 +218,6 @@ class Compare(object):
         except ValueError as error:
             raise AHPException('Error normalizing quantitative values: {}'.format(error))
         self.consistency_ratio = 0.0
-        return
 
     def report(self):
         print('Name:', self.name)
@@ -233,7 +227,6 @@ class Compare(object):
         for k, v in sorted_weights:
             print('\t{}: {}'.format(k, round(v, self.precision)))
         print()
-        return
 
 
 class Compose(object):
@@ -260,7 +253,6 @@ class Compose(object):
             self.precision = precision
         else:
             self.precision = self.parent.precision
-        return
 
     def compute_total_priority(self):
         """
@@ -278,7 +270,6 @@ class Compose(object):
                         except KeyError:
                             self.weights[ck] = np.multiply(pv, cv)
                     break
-        return
 
     def normalize_total_priority(self):
         """
@@ -289,7 +280,6 @@ class Compose(object):
         total_sum = sum(self.weights.values())
         comp_dict = {key: np.divide(value, total_sum) for key, value in self.weights.items()}
         self.weights = {self.name: comp_dict}
-        return
 
     def report(self):
         print('Name:', self.name)
@@ -303,7 +293,6 @@ class Compose(object):
         #     print(child.weights)
         # print(self.weights)
         # print()
-        return
 
 
 class AHPException(Exception):
