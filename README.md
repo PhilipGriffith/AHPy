@@ -1,4 +1,4 @@
-# AHP
+# AHPy
 
 After sitting on the back burner for too long, I'm picking up this code again.
 I was pleasantly surprised when I was asked to include a license with the repository;
