@@ -1,5 +1,3 @@
-from ahpy import *
-
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005
 # crit = np.array([[1, .2, 3, .5, 5],
 #                   [5, 1, 7, 1, 7],
