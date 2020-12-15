@@ -1,3 +1,5 @@
+import numpy as np
+from ahpy import Compare, Compose
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005
 # crit = np.array([[1, .2, 3, .5, 5],
 #                   [5, 1, 7, 1, 7],
@@ -82,15 +84,15 @@
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
-# drinks_val = np.array([[1, 9, 5, 2, 1, 1, .5],
-#                     [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
-#                     [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
-#                     [.5, 9, 3, 1, .5, 1, 1/3.],
-#                     [1, 9, 4, 2, 1, 2, .5],
-#                     [1, 9, 3, 1, .5, 1, 1/3.],
-#                     [2, 9, 9, 3, 2, 3, 1]])
-# drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
-# Compare('Drinks', drinks_val, drinks_cri, precision=3, random_index='saaty').report()
+drinks_val = np.array([[1, 9, 5, 2, 1, 1, .5],
+                    [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
+                    [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
+                    [.5, 9, 3, 1, .5, 1, 1/3.],
+                    [1, 9, 4, 2, 1, 2, .5],
+                    [1, 9, 3, 1, .5, 1, 1/3.],
+                    [2, 9, 9, 3, 2, 3, 1]])
+drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
+Compare('Drinks', drinks_val, drinks_cri, precision=3, random_index='saaty').report()
 #
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
