@@ -190,6 +190,7 @@ class Compare(object):
         try:
             random_index = ri_dict[self.shape]
         except KeyError:
+
             import bisect
             s = sorted(ri_dict)
             smaller = s[bisect.bisect_left(s, self.shape) - 1]

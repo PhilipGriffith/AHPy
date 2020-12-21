@@ -44,20 +44,22 @@ from ahpy import Compare, Compose
 #
 # comp_matrices = [cu, f, h, j, t]
 # cr = Compare('Goal', crit, crits, 3, random_index='Saaty')
-# Compose('Goal', cr, comp_matrices).report()
-#
-# print('=================\n')
+# c = Compose('Goal', cr, comp_matrices)
+# print(c.weights)
+# #
+# # print('=================\n')
 # print('Donegan and Dodd')
-# cu = Compare('Culture', culture, cities, 3)
-# f = Compare('Family', family, cities, 3)
-# h = Compare('Housing', housing, cities, 3)
-# j = Compare('Jobs', jobs, cities, 3)
-# t = Compare('Transportation', transportation, cities, 3)
+# cu = Compare('Culture', culture, cities, 4)
+# f = Compare('Family', family, cities, 4)
+# h = Compare('Housing', housing, cities, 4)
+# j = Compare('Jobs', jobs, cities, 4)
+# t = Compare('Transportation', transportation, cities, 4)
 #
 # comp_matrices = [cu, f, h, j, t]
-# cr = Compare('Goal', crit, crits, 3)
+# cr = Compare('Goal', crit, crits, 4)
 #
-# Compose('Goal', cr, comp_matrices).report()
+# c = Compose('Goal', cr, comp_matrices)
+# print(c.weights)
 #
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
@@ -84,15 +86,15 @@ from ahpy import Compare, Compose
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
-drinks_val = np.array([[1, 9, 5, 2, 1, 1, .5],
-                    [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
-                    [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
-                    [.5, 9, 3, 1, .5, 1, 1/3.],
-                    [1, 9, 4, 2, 1, 2, .5],
-                    [1, 9, 3, 1, .5, 1, 1/3.],
-                    [2, 9, 9, 3, 2, 3, 1]])
-drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
-Compare('Drinks', drinks_val, drinks_cri, precision=3, random_index='saaty').report()
+# drinks_val = np.array([[1, 9, 5, 2, 1, 1, .5],
+#                     [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
+#                     [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
+#                     [.5, 9, 3, 1, .5, 1, 1/3.],
+#                     [1, 9, 4, 2, 1, 2, .5],
+#                     [1, 9, 3, 1, .5, 1, 1/3.],
+#                     [2, 9, 9, 3, 2, 3, 1]])
+# drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
+# c = Compare('Drinks', drinks_val, drinks_cri, precision=4, random_index='dd')
 #
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
