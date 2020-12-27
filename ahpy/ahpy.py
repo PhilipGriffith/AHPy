@@ -1,5 +1,6 @@
 import operator
 import numpy as np
+import itertools
 
 
 class Compare(object):
@@ -24,11 +25,15 @@ class Compare(object):
         information regarding the different estimates
     """
 
-    def __init__(self, name=None, matrix=None, criteria=None,
+    def __init__(self, name=None, comparisons=None, order=None,
                  precision=4, comp_type='qual', iters=100, random_index='dd'):
         self.name = name
+        self.comparisons = comparisons
+        self.order = order
+        self.elements = []
+        self.pairs = []
         self.matrix = None
-        self.criteria = criteria
+
         self.shape = None
         self.type = comp_type
         self.precision = precision
@@ -38,13 +43,40 @@ class Compare(object):
         self.consistency_ratio = None
         self.weights = None
 
-        try:
-            matrix = self.convert(matrix)
-        except AttributeError:
-            pass
+        # try:
+        #     matrix = self.convert(matrix)
+        # except AttributeError:
+        #     pass
+        self.permute_elements()
+        self.assign_elements()
+        self.build_matrix()
 
-        self.check_input(matrix)
-        self.compute()
+        # self.check_input(comparisons)
+        # self.compute()
+
+    def permute_elements(self):
+        for pair in self.comparisons:
+            for element in pair:
+                if element not in self.elements:
+                    self.elements.append(element)
+        self.pairs = dict.fromkeys(itertools.permutations(self.elements, 2))
+
+    def assign_elements(self):
+        for pair, value in self.comparisons.items():
+            inverse_pair = []
+            for element in pair:
+                inverse_pair.insert(0, element)
+            self.pairs[pair] = value
+            self.pairs[tuple(inverse_pair)] = np.reciprocal(float(value))
+
+    def build_matrix(self):
+        size = len(self.elements)
+        self.matrix = np.ones((size, size))
+        for pair, value in self.pairs.items():
+            location = []
+            for element in pair:
+                location.append(self.elements.index(element))
+            self.matrix.itemset(tuple(location), value)
 
     def convert(self, matrix_str):
         """

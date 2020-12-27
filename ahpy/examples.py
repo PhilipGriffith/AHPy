@@ -86,15 +86,22 @@ from ahpy import Compare, Compose
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
-# drinks_val = np.array([[1, 9, 5, 2, 1, 1, .5],
-#                     [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
-#                     [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
-#                     [.5, 9, 3, 1, .5, 1, 1/3.],
-#                     [1, 9, 4, 2, 1, 2, .5],
-#                     [1, 9, 3, 1, .5, 1, 1/3.],
-#                     [2, 9, 9, 3, 2, 3, 1]])
+#                             c  wi  t  b  s  m  wa
+# drinks_val = np.array c([[1, 9, 5, 2, 1, 1, .5],
+#                    wi [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
+#                    t [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
+#                    b [.5, 9, 3, 1, .5, 1, 1/3.],
+#                    s [1, 9, 4, 2, 1, 2, .5],
+#                    m [1, 9, 3, 1, .5, 1, 1/3.],
+#                    wa [2, 9, 9, 3, 2, 3, 1]])
 # drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
-# c = Compare('Drinks', drinks_val, drinks_cri, precision=4, random_index='dd')
+
+drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
+          ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
+          ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
+          ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
+          ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
+c = Compare('Drinks', drinks, precision=4, random_index='dd')
 #
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
