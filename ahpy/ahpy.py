@@ -31,6 +31,7 @@ class Compare(object):
         self.comparisons = comparisons
         self.order = order
         self.elements = []
+        self.size = None
         self.pairs = []
         self.matrix = None
 
@@ -43,25 +44,21 @@ class Compare(object):
         self.consistency_ratio = None
         self.weights = None
 
-        # try:
-        #     matrix = self.convert(matrix)
-        # except AttributeError:
-        #     pass
         self.permute_elements()
-        self.assign_elements()
+        self.insert_elements()
         self.build_matrix()
 
-        # self.check_input(comparisons)
-        # self.compute()
+        self.compute()
 
     def permute_elements(self):
         for pair in self.comparisons:
             for element in pair:
                 if element not in self.elements:
                     self.elements.append(element)
+        self.size = len(self.elements)
         self.pairs = dict.fromkeys(itertools.permutations(self.elements, 2))
 
-    def assign_elements(self):
+    def insert_elements(self):
         for pair, value in self.comparisons.items():
             inverse_pair = []
             for element in pair:
@@ -70,77 +67,19 @@ class Compare(object):
             self.pairs[tuple(inverse_pair)] = np.reciprocal(float(value))
 
     def build_matrix(self):
-        size = len(self.elements)
-        self.matrix = np.ones((size, size))
+        self.matrix = np.ones((self.size, self.size))
         for pair, value in self.pairs.items():
             location = []
             for element in pair:
                 location.append(self.elements.index(element))
             self.matrix.itemset(tuple(location), value)
 
-    def convert(self, matrix_str):
+    def check_size_for_cr(self):
         """
-        Converts a string of form '1, 2; 3, 4' (or '1 2; 3 4') into a numpy matrix.
-        Also converts a string representing only and all entries above the main
-        diagonal into a positive, square, reciprocal matrix.
-        For example, '2, 3; 4' converts to '1, 2, 3; .5, 1, 4; 1/3, .25, 1'.
-        :param matrix_str: string, the string to be converted into a numpy matrix
-        :returns numpy matrix
+        Insures that the matrix does not exceed 15 or 100 rows, depending on the chosen random index,
+        so that every Compare object will have a consistency ratio.
         """
-        matrix_1 = []
-        try:
-            for x in matrix_str.replace(',', ' ').split(';'):
-                matrix_1.append([eval(y, {'__builtin__': None}, {}) for y in x.split()])
-            dimension = len(matrix_1[0]) + 1
-            matrix_2 = np.ones((dimension, dimension))
-            for x, i in enumerate(matrix_1):
-                for y, j in enumerate(i):
-                    matrix_2.itemset((x, x + y + 1), j)
-                    matrix_2.itemset((x + y + 1, x), 1 / j)
-        except IndexError:
-            return matrix_1
-        except (NameError, SyntaxError, ZeroDivisionError, ValueError) as error:
-            if self.type == 'quant':
-                return matrix_1
-            else:
-                raise AHPException('Error converting to matrix: {}'.format(error))
-        return matrix_2
-
-    def check_input(self, input_matrix):
-        """
-        Tests whether the input matrix of the Compare object can be cast as a matrix,
-        and whether it is positive, square and reciprocal. Also, ensures that the matrix
-        does not exceed 15 or 20 rows, depending on the random index. This ensures that
-        every Compare object will have a consistency ratio. If all tests pass, it sets
-        the 'matrix' and 'shape' properties of the Compare object.
-        :param input_matrix: the matrix of the Compare object
-        """
-        # Input length equals one if an empty string is passed to the Compare object
-        if len(input_matrix) == 1:
-            raise AHPException('Input matrix is an empty string')
-        try:
-            matrix = np.array(input_matrix)
-        except Exception as error:
-            raise AHPException('Input cannot be cast as a matrix: {}'.format(error))
-        shape = matrix.shape[0]
-        # Only check these properties for qualitative matrices
-        if self.type != 'quant':
-            try:
-                if (matrix <= 0).any():
-                    raise AHPException('Input contains values less than one')
-            except AttributeError:
-                raise AHPException('Input contains invalid values')
-            if (self.random_index == 'saaty' and shape > 15) or shape > 100:
-                raise AHPException('Input too large: cannot compute consistency ratio')
-            try:
-                np.linalg.matrix_power(matrix, 2)
-            except ValueError as error:
-                raise AHPException('Input is not square: {}'.format(error))
-            if not (np.multiply(matrix, matrix.T) == np.ones(shape)).all():
-                raise AHPException('Input is not reciprocal')
-
-        self.matrix = matrix
-        self.shape = shape
+        return False if (self.random_index == 'saaty' and self.size > 15) or self.size > 100 else True
 
     def compute(self):
         try:
@@ -153,7 +92,7 @@ class Compare(object):
                 self.compute_priority_vector(self.matrix, self.iterations)
                 self.compute_consistency_ratio()
             # Create the weights dictionary
-            comp_dict = dict(zip(self.criteria, self.priority_vector))
+            comp_dict = dict(zip(self.elements, self.priority_vector))
             self.weights = {self.name: comp_dict}
         except Exception as error:
             raise AHPException(error)
@@ -167,7 +106,6 @@ class Compare(object):
         :param comp_eigenvector: numpy array, a comparison eigenvector used during
             recursion; DO NOT MODIFY
         """
-
         # Compute the principal eigenvector by normalizing the rows of a newly squared matrix
         sq_matrix = np.linalg.matrix_power(matrix, 2)
         row_sum = np.sum(sq_matrix, 1)
@@ -204,7 +142,7 @@ class Compare(object):
         Sets the 'consistency_ratio' property of the Compare object.
         """
         # A valid, square, reciprocal matrix with only one or two rows must be consistent
-        if self.shape < 3:
+        if self.size < 3:
             self.consistency_ratio = 0.0
             return
 
@@ -220,37 +158,25 @@ class Compare(object):
                        90: 1.6213, 100: 1.6339}
 
         try:
-            random_index = ri_dict[self.shape]
+            random_index = ri_dict[self.size]
         except KeyError:
 
             import bisect
             s = sorted(ri_dict)
-            smaller = s[bisect.bisect_left(s, self.shape) - 1]
-            larger = s[bisect.bisect_right(s, self.shape)]
+            smaller = s[bisect.bisect_left(s, self.size) - 1]
+            larger = s[bisect.bisect_right(s, self.size)]
             estimate = (ri_dict[larger] - ri_dict[smaller]) / (larger - smaller)
-            random_index = estimate * (self.shape - smaller) + ri_dict[smaller]
+            random_index = estimate * (self.size - smaller) + ri_dict[smaller]
 
         try:
             # Find the Perron-Frobenius eigenvalue of the matrix
             lambda_max = np.linalg.eigvals(self.matrix).max()
             # Compute the consistency index
-            consistency_index = (lambda_max - self.shape) / (self.shape - 1)
+            consistency_index = (lambda_max - self.size) / (self.size - 1)
             # Compute the consistency ratio
             self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
         except np.linalg.LinAlgError as error:
             raise AHPException(error)
-
-    def normalize(self):
-        """
-        Computes the priority vector of a valid matrix by normalizing the input values, then
-        sets the consistency ratio to 0.0.
-        """
-        total_sum = float(np.sum(self.matrix))
-        try:
-            self.priority_vector = np.divide(self.matrix, total_sum).round(self.precision).reshape(1, len(self.matrix))[0]
-        except ValueError as error:
-            raise AHPException('Error normalizing quantitative values: {}'.format(error))
-        self.consistency_ratio = 0.0
 
     def report(self):
         print('Name:', self.name)

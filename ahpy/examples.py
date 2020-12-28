@@ -102,6 +102,7 @@ drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('
           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
 c = Compare('Drinks', drinks, precision=4, random_index='dd')
+print(c.weights)
 #
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
