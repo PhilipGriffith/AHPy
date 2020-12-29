@@ -1,4 +1,3 @@
-import numpy as np
 from ahpy import Compare, Compose
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005
 # crit = np.array([[1, .2, 3, .5, 5],
