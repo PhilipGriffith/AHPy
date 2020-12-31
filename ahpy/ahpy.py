@@ -1,5 +1,6 @@
 import bisect
 import itertools
+import warnings
 
 import numpy as np
 import scipy.optimize as sp
@@ -54,7 +55,7 @@ class Compare(object):
         if self.missing_comparisons:
             self.complete_matrix()
 
-        print(self.pairs)
+        # print(self.pairs)
         # print(self.matrix)
 
         # self.compute()
@@ -94,8 +95,10 @@ class Compare(object):
             if key != comparison:
                 location = tuple(self.criteria.index(criterion) for criterion in key)
                 inverse_location = location[::-1]
-                self.matrix.itemset(location, value)
-                self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
+                with warnings.catch_warnings():
+                    warnings.filterwarnings('ignore')#, 'ComplexWarning')
+                    self.matrix.itemset(location, value)
+                    self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
 
     @staticmethod
     def matprint(mat, fmt="g"):
@@ -116,20 +119,27 @@ class Compare(object):
         upper_solution_bound = np.nanmax(self.matrix) * 10
 
         for comparison in self.missing_comparisons:
-            self.set_matrix(comparison)
-            location = tuple(self.criteria.index(criterion) for criterion in comparison)
 
-            self.matrix.itemset(location, None)
-            self.matrix.itemset(location[::-1], None)
-            self.matprint(self.matrix)
-            print('---')
+            comparison_location = tuple(self.criteria.index(criterion) for criterion in comparison)
 
-            optimal_solution = sp.minimize_scalar(lambda_max, args=(location,),
-                                                  method='bounded', bounds=(1, upper_solution_bound)).x
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=np.ComplexWarning)
+                self.set_matrix(comparison)
+
+                self.matrix.itemset(comparison_location, None)
+                self.matrix.itemset(comparison_location[::-1], None)
+                self.matprint(self.matrix)
+                print('---')
+
+                optimal_solution = sp.minimize_scalar(lambda_max, args=(comparison_location,),
+                                                      method='bounded', bounds=(0, upper_solution_bound)).x.real
+
             self.missing_comparisons[comparison] = optimal_solution
 
             self.matprint(self.matrix)
             print('-----------')
+        print(self.missing_comparisons)
+        self.matprint(self.matrix)
 
     def get_missing_comparisons(self):
         missing_comparisons = [key for key, value in self.pairs.items() if not value]
