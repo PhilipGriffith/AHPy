@@ -94,14 +94,14 @@ from ahpy import Compare, Compose
 #                    m [1, 9, 3, 1, .5, 1, 1/3.],
 #                    wa [2, 9, 9, 3, 2, 3, 1]])
 # drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
-
-drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
-          ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
-          ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
-          ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
-          ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-c = Compare('Drinks', drinks, precision=4, random_index='dd')
-print(c.weights)
+#
+# drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
+#           ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
+#           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
+#           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
+#           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
+# c = Compare('Drinks', drinks, precision=4, random_index='dd')
+# print(c.weights)
 #
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
@@ -195,3 +195,26 @@ print(c.weights)
 # goal = Compose('goal', criteria, (cost, safety, style, capacity))
 #
 # goal.report()
+
+u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4}
+cu = Compare('Incomplete Test', u)
+# SOLUTION: 0.7302965066047
+
+      # a     b    c     d     e      f    g      h
+# m = a{1     5    3     7     6      6    1/3    1/4
+#     b 1/5   1    x     5     x      3    x      1/7
+#     c 1/3   1/x  1     x     3      x    6      x
+#     d 1/7   1/5  1/x   1     x      1/4  x      1/8
+#     e 1/6   1/x  1/3   1/x   1      x    1/5    x
+#     f 1/6   1/3  1/x   4     1/x    1    x      1/6
+#     g 3     1/x  1/6   1/x   5      1/x  1      x
+#     h 4     7    1/x   8     1/x    6    1/x    1
+
+m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
+     ('b', 'd'): 5, ('b', 'f'): 3,
+     ('c', 'e'): 3, ('c', 'g'): 6,
+     ('f', 'd'): 4,
+     ('g', 'a'): 3, ('g', 'e'): 5,
+     ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
+
+cm = Compare('Incomplete Housing', m)

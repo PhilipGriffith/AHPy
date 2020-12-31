@@ -2,6 +2,7 @@ import bisect
 import itertools
 
 import numpy as np
+import scipy.optimize as sp
 
 
 class Compare(object):
@@ -35,9 +36,10 @@ class Compare(object):
         self.random_index = random_index.lower()
 
         self.criteria = []
-        self.size = None
         self.pairs = []
+        self.size = None
         self.matrix = None
+        self.missing_comparisons = None
         self.priority_vector = None
         self.consistency_ratio = None
         self.weights = None
@@ -46,7 +48,16 @@ class Compare(object):
         self.insert_comparisons()
         self.build_matrix()
 
-        self.compute()
+        # print(self.matrix)
+        print(self.pairs)
+        self.get_missing_comparisons()
+        if self.missing_comparisons:
+            self.complete_matrix()
+
+        print(self.pairs)
+        # print(self.matrix)
+
+        # self.compute()
 
         # TODO build report functionality
 
@@ -59,8 +70,8 @@ class Compare(object):
             for criterion in key:
                 if criterion not in self.criteria:
                     self.criteria.append(criterion)
-        self.size = len(self.criteria)
         self.pairs = dict.fromkeys(itertools.permutations(self.criteria, 2))
+        self.size = len(self.criteria)
 
     def insert_comparisons(self):
         """
@@ -68,19 +79,63 @@ class Compare(object):
         of the input 'comparisons' dictionary or their computed reciprocals.
         """
         for key, value in self.comparisons.items():
-            inverse_key = []
-            for criterion in key:
-                inverse_key.insert(0, criterion)
+            inverse_key = key[::-1]
             self.pairs[key] = value
-            self.pairs[tuple(inverse_key)] = np.reciprocal(float(value))
+            self.pairs[inverse_key] = np.reciprocal(float(value))
 
     def build_matrix(self):
         self.matrix = np.ones((self.size, self.size))
         for pair, value in self.pairs.items():
-            location = []
-            for element in pair:
-                location.append(self.criteria.index(element))
-            self.matrix.itemset(tuple(location), value)
+            location = tuple(self.criteria.index(criterion) for criterion in pair)
+            self.matrix.itemset(location, value)
+
+    def set_matrix(self, comparison):
+        for key, value in self.missing_comparisons.items():
+            if key != comparison:
+                location = tuple(self.criteria.index(criterion) for criterion in key)
+                inverse_location = location[::-1]
+                self.matrix.itemset(location, value)
+                self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
+
+    @staticmethod
+    def matprint(mat, fmt="g"):
+        col_maxes = [max([len(("{:" + fmt + "}").format(x)) for x in col]) for col in mat.T]
+        for x in mat:
+            for i, y in enumerate(x):
+                print(("{:" + str(col_maxes[i]) + fmt + "}").format(y), end="  ")
+            print("")
+
+    def complete_matrix(self):
+
+        def lambda_max(x, x_location):
+            inverse_x_location = x_location[::-1]
+            self.matrix.itemset(x_location, x)
+            self.matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
+            return np.linalg.eigvals(self.matrix).max()
+
+        upper_solution_bound = np.nanmax(self.matrix) * 10
+
+        for comparison in self.missing_comparisons:
+            self.set_matrix(comparison)
+            location = tuple(self.criteria.index(criterion) for criterion in comparison)
+
+            self.matrix.itemset(location, None)
+            self.matrix.itemset(location[::-1], None)
+            self.matprint(self.matrix)
+            print('---')
+
+            optimal_solution = sp.minimize_scalar(lambda_max, args=(location,),
+                                                  method='bounded', bounds=(1, upper_solution_bound)).x
+            self.missing_comparisons[comparison] = optimal_solution
+
+            self.matprint(self.matrix)
+            print('-----------')
+
+    def get_missing_comparisons(self):
+        missing_comparisons = [key for key, value in self.pairs.items() if not value]
+        for criteria in missing_comparisons:
+            del missing_comparisons[missing_comparisons.index(criteria[::-1])]
+        self.missing_comparisons = dict.fromkeys(missing_comparisons, 1)
 
     # TODO not yet used
     # TODO also check for all inputs being float or int >= 1
