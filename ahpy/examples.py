@@ -198,17 +198,6 @@ from ahpy import Compare, Compose
 
 u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4}
 cu = Compare('Incomplete Test', u)
-# SOLUTION: 0.7302965066047
-
-      # a     b    c     d     e      f    g      h
-# m = a{1     5    3     7     6      6    1/3    1/4
-#     b 1/5   1    x     5     x      3    x      1/7
-#     c 1/3   1/x  1     x     3      x    6      x
-#     d 1/7   1/5  1/x   1     x      1/4  x      1/8
-#     e 1/6   1/x  1/3   1/x   1      x    1/5    x
-#     f 1/6   1/3  1/x   4     1/x    1    x      1/6
-#     g 3     1/x  1/6   1/x   5      1/x  1      x
-#     h 4     7    1/x   8     1/x    6    1/x    1
 
 m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('b', 'd'): 5, ('b', 'f'): 3,

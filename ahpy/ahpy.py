@@ -49,16 +49,11 @@ class Compare(object):
         self.insert_comparisons()
         self.build_matrix()
 
-        # print(self.matrix)
-        print(self.pairs)
         self.get_missing_comparisons()
         if self.missing_comparisons:
             self.complete_matrix()
 
-        # print(self.pairs)
-        # print(self.matrix)
-
-        # self.compute()
+        self.compute()
 
         # TODO build report functionality
 
@@ -95,10 +90,8 @@ class Compare(object):
             if key != comparison:
                 location = tuple(self.criteria.index(criterion) for criterion in key)
                 inverse_location = location[::-1]
-                with warnings.catch_warnings():
-                    warnings.filterwarnings('ignore')#, 'ComplexWarning')
-                    self.matrix.itemset(location, value)
-                    self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
+                self.matrix.itemset(location, value)
+                self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
 
     @staticmethod
     def matprint(mat, fmt="g"):
@@ -109,6 +102,15 @@ class Compare(object):
             print("")
 
     def complete_matrix(self):
+        last_iteration = np.array(tuple(self.missing_comparisons.values()))
+        difference = 1
+        while difference > 0.0001:
+            self.minimize_coordinate_values()
+            current_iteration = np.array(tuple(self.missing_comparisons.values()))
+            difference = np.linalg.norm(last_iteration - current_iteration)
+            last_iteration = current_iteration
+
+    def minimize_coordinate_values(self):
 
         def lambda_max(x, x_location):
             inverse_x_location = x_location[::-1]
@@ -119,27 +121,13 @@ class Compare(object):
         upper_solution_bound = np.nanmax(self.matrix) * 10
 
         for comparison in self.missing_comparisons:
-
             comparison_location = tuple(self.criteria.index(criterion) for criterion in comparison)
-
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=np.ComplexWarning)
                 self.set_matrix(comparison)
-
-                self.matrix.itemset(comparison_location, None)
-                self.matrix.itemset(comparison_location[::-1], None)
-                self.matprint(self.matrix)
-                print('---')
-
                 optimal_solution = sp.minimize_scalar(lambda_max, args=(comparison_location,),
                                                       method='bounded', bounds=(0, upper_solution_bound)).x.real
-
             self.missing_comparisons[comparison] = optimal_solution
-
-            self.matprint(self.matrix)
-            print('-----------')
-        print(self.missing_comparisons)
-        self.matprint(self.matrix)
 
     def get_missing_comparisons(self):
         missing_comparisons = [key for key, value in self.pairs.items() if not value]
