@@ -1,3 +1,7 @@
+import itertools
+
+import pytest
+
 from ahpy import ahpy
 
 # Example from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
@@ -35,11 +39,11 @@ def test_drinks_weights_dd():
 
 
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005.
-crit = {('Culture', 'Housing'): 3, ('Culture', 'Transportation'): 5,
-        ('Family', 'Culture'): 5, ('Family', 'Housing'): 7, ('Family', 'Transportation'): 7,
-        ('Housing', 'Transportation'): 3,
-        ('Jobs', 'Culture'): 2, ('Jobs', 'Housing'): 4, ('Jobs', 'Transportation'): 7,
-        ('Family', 'Jobs'): 1}
+criteria = {('Culture', 'Housing'): 3, ('Culture', 'Transportation'): 5,
+            ('Family', 'Culture'): 5, ('Family', 'Housing'): 7, ('Family', 'Transportation'): 7,
+            ('Housing', 'Transportation'): 3,
+            ('Jobs', 'Culture'): 2, ('Jobs', 'Housing'): 4, ('Jobs', 'Transportation'): 7,
+            ('Family', 'Jobs'): 1}
 
 culture = {('Bethesda', 'Pittsburgh'): 1,
            ('Boston', 'Bethesda'): 2, ('Boston', 'Pittsburgh'): 2.5, ('Boston', 'Santa Fe'): 1,
@@ -74,7 +78,7 @@ def test_cities_weights_saaty_precision_3():
     t = ahpy.Compare('Transportation', transportation, precision=3, random_index='Saaty')
     comp_matrices = [cu, f, h, j, t]
 
-    cr = ahpy.Compare('Goal', crit, precision=3, random_index='Saaty')
+    cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
 
     c = ahpy.Compose('Goal', cr, comp_matrices)
     assert c.weights == {'Goal': {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}}
@@ -88,7 +92,7 @@ def test_cities_weights_dd_precision_4():
     t = ahpy.Compare('Transportation', transportation, precision=4)
     comp_matrices = [cu, f, h, j, t]
 
-    cr = ahpy.Compare('Goal', crit, precision=4)
+    cr = ahpy.Compare('Goal', criteria, precision=4)
 
     c = ahpy.Compose('Goal', cr, comp_matrices)
     assert c.weights == {'Goal': {'Bethesda': 0.2291, 'Boston': 0.2747, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}}
@@ -133,3 +137,28 @@ def test_normalized_weights():
     f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
     cf = ahpy.Compare('Fuel Economy', f)
     assert cf.weights == {'Fuel Economy': {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}}
+
+
+a = 'abcdefghijklmnopqrstuvwxyz'
+b = {'a': 0.0385, 'b': 0.0385, 'c': 0.0385, 'd': 0.0385, 'e': 0.0385, 'f': 0.0385, 'g': 0.0385, 'h': 0.0385,
+     'i': 0.0385, 'j': 0.0385, 'k': 0.0385, 'l': 0.0385, 'm': 0.0385, 'n': 0.0385, 'o': 0.0385, 'p': 0.0385,
+     'q': 0.0385, 'r': 0.0385, 's': 0.0385, 't': 0.0385, 'u': 0.0385, 'v': 0.0385, 'w': 0.0385, 'x': 0.0385,
+     'y': 0.0385, 'z': 0.0385}
+
+
+def test_size_limit_saaty():
+    with pytest.raises(ValueError):
+        x = dict.fromkeys(itertools.permutations(a, 2), 1)
+        cx = ahpy.Compare('CR Test', x, random_index='saaty')
+
+
+def test_size_limit_override_saaty():
+    x = dict.fromkeys(itertools.permutations(a, 2), 1)
+    cx = ahpy.Compare('CR Test', x, random_index='saaty', cr=False)
+    assert cx.weights == {'CR Test': b}
+
+
+def test_size_limit_normative_saaty():
+    y = dict.fromkeys([i[0] for i in itertools.combinations(a, 1)], 1)
+    cy = ahpy.Compare('CR Test', y, random_index='saaty')
+    assert cy.weights == {'CR Test': b}

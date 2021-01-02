@@ -19,7 +19,7 @@ class Compare:
     :param order: list of strings, the criteria of the matrix, listed in the order desired
     :param precision: integer, number of decimal places of precision to compute both the priority
         vector and the consistency ratio; default is 4
-    :param iters: integer, number of iterations before the compute_eigenvector function stops;
+    :param iterations: integer, number of iterations before the compute_eigenvector function stops;
         default is 100
     :param random_index: string, the random index estimates used to compute the consistency ratio;
         valid input: 'dd', 'saaty'; default is 'dd'; see the compute_consistency_ratio function for more
@@ -27,17 +27,17 @@ class Compare:
     """
 
     def __init__(self, name=None, comparisons=None, order=None,
-                 precision=4, iterations=100, random_index='dd', tolerance=0.0001):
+                 precision=4, iterations=100, random_index='dd', tolerance=0.0001, cr=True):
         self.name = name
         self.comparisons = comparisons
-        # TODO allow for ordering of the elements in a report
         self.order = order
         self.precision = precision
         self.iterations = iterations
-        self.random_index = random_index.lower()
+        self.random_index = random_index
         self.tolerance = tolerance
+        self.cr = cr
 
-        self.norm = not isinstance(tuple(self.comparisons)[0], tuple)
+        self.normalize = not isinstance(next(iter(self.comparisons)), tuple)
         self.criteria = []
         self.pairs = []
         self.size = None
@@ -47,12 +47,12 @@ class Compare:
         self.consistency_ratio = None
         self.weights = None
 
-        if self.norm:
-            self.set_normalized_criteria()
+        if self.normalize:
+            self.build_normalized_criteria()
             self.build_normalized_matrix()
-            self.normalize()
+            self.normalize_matrix()
         else:
-            self.permute_criteria()
+            self.build_criteria()
             self.insert_comparisons()
             self.build_matrix()
             self.get_missing_comparisons()
@@ -78,9 +78,21 @@ class Compare:
         # print(self.consistency_ratio)# = None
         # print(self.weights)# = None
 
-        # TODO build report functionality
+        # TODO build report functionality that uses the order property
 
-    def permute_criteria(self):
+    def check_size(self):
+        """
+        Returns True if the comparison matrix does not exceed either 15 or 100 rows, depending on the
+        chosen random index. This is required to insure that the Compare object has a consistency ratio.
+        """
+        if not self.normalize and self.cr and ((self.random_index == 'saaty' and self.size > 15) or self.size > 100):
+            msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
+                  "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
+                  "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
+                  "\tTo compute the priority vector without a consistency ratio, use the 'cr=False' argument."
+            raise ValueError(msg)
+
+    def build_criteria(self):
         """
         Creates an empty 'pairs' dictionary that contains all possible permutations
         of those criteria found within the keys of the input 'comparisons' dictionary.
@@ -91,10 +103,12 @@ class Compare:
                     self.criteria.append(criterion)
         self.pairs = dict.fromkeys(itertools.permutations(self.criteria, 2))
         self.size = len(self.criteria)
+        self.check_size()
 
-    def set_normalized_criteria(self):
+    def build_normalized_criteria(self):
         self.criteria = list(self.comparisons)
         self.size = len(self.criteria)
+        self.check_size()
 
     def insert_comparisons(self):
         """
@@ -115,21 +129,11 @@ class Compare:
     def build_normalized_matrix(self):
         self.matrix = np.array(tuple(value for value in self.comparisons.values()), float)
 
-    def set_matrix(self, comparison):
-        for key, value in self.missing_comparisons.items():
-            if key != comparison:
-                location = tuple(self.criteria.index(criterion) for criterion in key)
-                inverse_location = location[::-1]
-                self.matrix.itemset(location, value)
-                self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
-
-    @staticmethod
-    def matprint(mat, fmt="g"):
-        col_maxes = [max([len(("{:" + fmt + "}").format(x)) for x in col]) for col in mat.T]
-        for x in mat:
-            for i, y in enumerate(x):
-                print(("{:" + str(col_maxes[i]) + fmt + "}").format(y), end="  ")
-            print("")
+    def get_missing_comparisons(self):
+        missing_comparisons = [key for key, value in self.pairs.items() if not value]
+        for criteria in missing_comparisons:
+            del missing_comparisons[missing_comparisons.index(criteria[::-1])]
+        self.missing_comparisons = dict.fromkeys(missing_comparisons, 1)
 
     def complete_matrix(self):
         last_iteration = np.array(tuple(self.missing_comparisons.values()))
@@ -159,28 +163,30 @@ class Compare:
                                                       method='bounded', bounds=(0, upper_bound)).x.real
             self.missing_comparisons[comparison] = optimal_solution
 
-    def get_missing_comparisons(self):
-        missing_comparisons = [key for key, value in self.pairs.items() if not value]
-        for criteria in missing_comparisons:
-            del missing_comparisons[missing_comparisons.index(criteria[::-1])]
-        self.missing_comparisons = dict.fromkeys(missing_comparisons, 1)
+    def set_matrix(self, comparison):
+        for key, value in self.missing_comparisons.items():
+            if key != comparison:
+                location = tuple(self.criteria.index(criterion) for criterion in key)
+                inverse_location = location[::-1]
+                self.matrix.itemset(location, value)
+                self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
 
-    # TODO not yet used
-    # TODO also check for all inputs being float or int >= 1
-    def check_size_for_cr(self):
+    def normalize_matrix(self):
         """
-        Returns True if the comparison matrix does not exceed either 15 or 100 rows, depending on the
-        chosen random index. This is required to insure that the Compare object has a consistency ratio.
+        Computes the priority vector of a valid matrix by normalizing the input values
+        and sets the consistency ratio to 0.0.
         """
-        return False if (self.random_index == 'saaty' and self.size > 15) or self.size > 100 else True
+        self.priority_vector = np.divide(self.matrix, np.sum(self.matrix, keepdims=True)).round(self.precision)
+        self.consistency_ratio = 0.0
 
     def compute(self):
         """
         Runs all functions necessary for building the weights and consistency ratio of the Compare object.
         """
-        if not self.norm:
+        if not self.normalize:
             self.priority_vector = self.compute_priority_vector(self.matrix, self.iterations)
-            self.compute_consistency_ratio()
+            if self.cr:
+                self.compute_consistency_ratio()
         self.weights = {self.name: dict(zip(self.criteria, self.priority_vector))}
 
     def compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
@@ -188,7 +194,7 @@ class Compare:
         Sets the 'priority_vector' property of the Compare object.
         :param matrix: numpy matrix, the matrix from which to derive the priority vector
         :param iterations: integer, number of iterations to run before the function stops
-        :param comp_eigenvector: numpy array, a comparison eigenvector used during recursion; DO NOT MODIFY
+        :param comp_eigenvector: numpy array, a comparison eigenvector used during recursion
         """
         # Compute the principal eigenvector by normalizing the rows of a newly squared matrix
         sq_matrix = np.linalg.matrix_power(matrix, 2)
@@ -254,13 +260,13 @@ class Compare:
         consistency_index = (lambda_max - self.size) / (self.size - 1)
         self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
 
-    def normalize(self):
-        """
-        Computes the priority vector of a valid matrix by normalizing the input values
-        and sets the consistency ratio to 0.0.
-        """
-        self.priority_vector = np.divide(self.matrix, np.sum(self.matrix, keepdims=True)).round(self.precision)
-        self.consistency_ratio = 0.0
+    @staticmethod
+    def matprint(mat, fmt="g"):
+        col_maxes = [max([len(("{:" + fmt + "}").format(x)) for x in col]) for col in mat.T]
+        for x in mat:
+            for i, y in enumerate(x):
+                print(("{:" + str(col_maxes[i]) + fmt + "}").format(y), end="  ")
+            print("")
 
 
 class Compose:

@@ -198,8 +198,7 @@ c = Compare('Drinks', drinks, precision=4, random_index='dd')
 
 u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
      ('b', 'c'): 3, ('b', 'd'): 4}
-cu = Compare('Incomplete Test', u)
-print(cu.consistency_ratio)
+# cu = Compare('Incomplete Test', u)
 
 m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('b', 'd'): 5, ('b', 'f'): 3,
@@ -208,7 +207,7 @@ m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('g', 'a'): 3, ('g', 'e'): 5,
      ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
 
-cm = Compare('Incomplete Housing', m)
+# cm = Compare('Incomplete Housing', m)
 
 f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
-fm = Compare('Fuel Economy', f)
+# fm = Compare('Fuel Economy', f)
