@@ -199,6 +199,7 @@ c = Compare('Drinks', drinks, precision=4, random_index='dd')
 u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
      ('b', 'c'): 3, ('b', 'd'): 4}
 cu = Compare('Incomplete Test', u)
+print(cu.consistency_ratio)
 
 m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('b', 'd'): 5, ('b', 'f'): 3,

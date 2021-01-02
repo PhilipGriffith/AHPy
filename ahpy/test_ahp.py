@@ -94,11 +94,23 @@ def test_cities_weights_dd_precision_4():
     assert c.weights == {'Goal': {'Bethesda': 0.2291, 'Boston': 0.2747, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}}
 
 
+u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
+     ('b', 'c'): 3, ('b', 'd'): 4}
+
+
 def test_incomplete_example_missing_comparisons():
-    u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
-         ('b', 'c'): 3, ('b', 'd'): 4}
-    cu = ahpy.Compare('Incomplete Test', u)
+    cu = ahpy.Compare('Incomplete Example', u)
     assert cu.missing_comparisons == {('c', 'd'): 0.730297106886979}
+
+
+def test_incomplete_example_weights():
+    cu = ahpy.Compare('Incomplete Example', u)
+    assert cu.weights == {'Incomplete Example': {'a': 0.3738, 'b': 0.392, 'c': 0.0985, 'd': 0.1357}}
+
+
+def test_incomplete_example_cr():
+    cu = ahpy.Compare('Incomplete Example', u)
+    assert cu.consistency_ratio == 0.0372
 
 
 def test_incomplete_housing_missing_comparisons():
@@ -115,3 +127,9 @@ def test_incomplete_housing_missing_comparisons():
                                       ('d', 'e'): 0.5252768142894285, ('d', 'g'): 0.1424438146531802,
                                       ('e', 'f'): 0.9311973564754218, ('e', 'h'): 0.10930828182051665,
                                       ('f', 'g'): 0.2912120796181874, ('g', 'h'): 0.4030898885178746}
+
+
+def test_normalized_weights():
+    f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
+    cf = ahpy.Compare('Fuel Economy', f)
+    assert cf.weights == {'Fuel Economy': {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}}
