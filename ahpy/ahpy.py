@@ -6,7 +6,7 @@ import numpy as np
 import scipy.optimize as sp
 
 
-class Compare(object):
+class Compare:
     # TODO redo this
     """
     This class computes the priority vector and consistency ratio of a positive
@@ -27,15 +27,17 @@ class Compare(object):
     """
 
     def __init__(self, name=None, comparisons=None, order=None,
-                 precision=4, iters=100, random_index='dd'):
+                 precision=4, iterations=100, random_index='dd', tolerance=0.0001):
         self.name = name
         self.comparisons = comparisons
         # TODO allow for ordering of the elements in a report
         self.order = order
         self.precision = precision
-        self.iterations = iters
+        self.iterations = iterations
         self.random_index = random_index.lower()
+        self.tolerance = tolerance
 
+        self.norm = not isinstance(tuple(self.comparisons)[0], tuple)
         self.criteria = []
         self.pairs = []
         self.size = None
@@ -45,15 +47,36 @@ class Compare(object):
         self.consistency_ratio = None
         self.weights = None
 
-        self.permute_criteria()
-        self.insert_comparisons()
-        self.build_matrix()
-
-        self.get_missing_comparisons()
-        if self.missing_comparisons:
-            self.complete_matrix()
+        if self.norm:
+            self.set_normalized_criteria()
+            self.build_normalized_matrix()
+            self.normalize()
+        else:
+            self.permute_criteria()
+            self.insert_comparisons()
+            self.build_matrix()
+            self.get_missing_comparisons()
+            if self.missing_comparisons:
+                self.complete_matrix()
 
         self.compute()
+
+        # print(self.name)
+        # print(self.comparisons)# = comparisons
+        # print(self.order)# = order
+        # print(self.precision)# = precision
+        # print(self.iterations)# = iterations
+        # print(self.random_index)# = random_index.lower()
+        # print(self.tolerance)# = tolerance
+        # print(self.norm)# = not isinstance(tuple(self.comparisons)[0], tuple)
+        # print(self.criteria)# = []
+        # print(self.pairs)# = []
+        # print(self.size)# = None
+        # print(self.matrix)# = None
+        # print(self.missing_comparisons)# = None
+        # print(self.priority_vector)# = None
+        # print(self.consistency_ratio)# = None
+        # print(self.weights)# = None
 
         # TODO build report functionality
 
@@ -67,6 +90,10 @@ class Compare(object):
                 if criterion not in self.criteria:
                     self.criteria.append(criterion)
         self.pairs = dict.fromkeys(itertools.permutations(self.criteria, 2))
+        self.size = len(self.criteria)
+
+    def set_normalized_criteria(self):
+        self.criteria = list(self.comparisons)
         self.size = len(self.criteria)
 
     def insert_comparisons(self):
@@ -84,6 +111,9 @@ class Compare(object):
         for pair, value in self.pairs.items():
             location = tuple(self.criteria.index(criterion) for criterion in pair)
             self.matrix.itemset(location, value)
+
+    def build_normalized_matrix(self):
+        self.matrix = np.array(tuple(value for value in self.comparisons.values()), float)
 
     def set_matrix(self, comparison):
         for key, value in self.missing_comparisons.items():
@@ -103,8 +133,8 @@ class Compare(object):
 
     def complete_matrix(self):
         last_iteration = np.array(tuple(self.missing_comparisons.values()))
-        difference = 1
-        while difference > 0.0001:
+        difference = np.inf
+        while difference > self.tolerance:
             self.minimize_coordinate_values()
             current_iteration = np.array(tuple(self.missing_comparisons.values()))
             difference = np.linalg.norm(last_iteration - current_iteration)
@@ -118,7 +148,7 @@ class Compare(object):
             self.matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
             return np.linalg.eigvals(self.matrix).max()
 
-        upper_solution_bound = np.nanmax(self.matrix) * 10
+        upper_bound = np.nanmax(self.matrix) * 10
 
         for comparison in self.missing_comparisons:
             comparison_location = tuple(self.criteria.index(criterion) for criterion in comparison)
@@ -126,7 +156,7 @@ class Compare(object):
                 warnings.filterwarnings('ignore', category=np.ComplexWarning)
                 self.set_matrix(comparison)
                 optimal_solution = sp.minimize_scalar(lambda_max, args=(comparison_location,),
-                                                      method='bounded', bounds=(0, upper_solution_bound)).x.real
+                                                      method='bounded', bounds=(0, upper_bound)).x.real
             self.missing_comparisons[comparison] = optimal_solution
 
     def get_missing_comparisons(self):
@@ -148,9 +178,10 @@ class Compare(object):
         """
         Runs all functions necessary for building the weights and consistency ratio of the Compare object.
         """
-        priority_vector = self.compute_priority_vector(self.matrix, self.iterations)
-        self.weights = {self.name: dict(zip(self.criteria, priority_vector))}
-        self.compute_consistency_ratio()
+        if not self.norm:
+            self.priority_vector = self.compute_priority_vector(self.matrix, self.iterations)
+            self.compute_consistency_ratio()
+        self.weights = {self.name: dict(zip(self.criteria, self.priority_vector))}
 
     def compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
@@ -161,8 +192,8 @@ class Compare(object):
         """
         # Compute the principal eigenvector by normalizing the rows of a newly squared matrix
         sq_matrix = np.linalg.matrix_power(matrix, 2)
-        row_sum = np.sum(sq_matrix, 1)
-        total_sum = np.sum(row_sum)
+        row_sum = np.sum(sq_matrix, axis=1)
+        total_sum = np.sum(sq_matrix)
         princ_eigenvector = np.divide(row_sum, total_sum)
 
         # Create a zero matrix as the comparison eigenvector if this is the first iteration
@@ -209,12 +240,11 @@ class Compare(object):
                        18: 1.5262, 19: 1.5313, 20: 1.5371, 25: 1.5619, 30: 1.5772,
                        40: 1.5976, 50: 1.6102, 60: 1.6178, 70: 1.6237, 80: 1.6277,
                        90: 1.6213, 100: 1.6339}
-
         try:
             random_index = ri_dict[self.size]
         # If the size of the comparison matrix falls between two computed estimates, compute a weighted estimate
         except KeyError:
-            s = sorted(ri_dict)
+            s = tuple(ri_dict.keys())
             smaller = s[bisect.bisect_left(s, self.size) - 1]
             larger = s[bisect.bisect_right(s, self.size)]
             estimate = (ri_dict[larger] - ri_dict[smaller]) / (larger - smaller)
@@ -224,8 +254,16 @@ class Compare(object):
         consistency_index = (lambda_max - self.size) / (self.size - 1)
         self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
 
+    def normalize(self):
+        """
+        Computes the priority vector of a valid matrix by normalizing the input values
+        and sets the consistency ratio to 0.0.
+        """
+        self.priority_vector = np.divide(self.matrix, np.sum(self.matrix, keepdims=True)).round(self.precision)
+        self.consistency_ratio = 0.0
 
-class Compose(object):
+
+class Compose:
 
     def __init__(self, name=None, parent=None, children=None):
         self.name = name
