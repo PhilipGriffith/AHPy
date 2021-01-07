@@ -1,108 +1,39 @@
+import itertools
+
+import numpy as np
+
 from ahpy import Compare, Compose
-# Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005
-# crit = np.array([[1, .2, 3, .5, 5],
-#                   [5, 1, 7, 1, 7],
-#                   [1/3., 1/7., 1, .25, 3],
-#                   [2, 1, 4, 1, 7],
-#                   [.2, 1/7., 1/3., 1/7., 1]])
-#
-# culture = np.array([[1, .5, 1, .5],
-#                      [2, 1, 2.5, 1],
-#                      [1, 1/2.5, 1, 1/2.5],
-#                      [2, 1, 2.5, 1]])
-#
-# family = np.array([[1, 2, 1/3., 4],
-#                     [.5, 1, 1/8., 2],
-#                     [3, 8, 1, 9],
-#                     [.25, .5, 1/9., 1]])
-#
-# housing = np.array([[1, 5, .5, 2.5],
-#                      [.2, 1, 1/9., .25],
-#                      [2, 9, 1, 7],
-#                      [1/2.5, 4, 1/7., 1]])
-#
-# jobs = np.array([[1, .5, 3, 4],
-#                   [2, 1, 6, 8],
-#                   [1/3., 1/6., 1, 1],
-#                   [.25, 1/8., 1, 1]])
-#
-# transportation = np.array([[1, 1.5, .5, 4],
-#                             [1/1.5, 1, 1/3.5, 2.5],
-#                             [2, 3.5, 1, 9],
-#                             [.25, 1/2.5, 1/9., 1]])
-#
-# cities = ['Bethesda', 'Boston', 'Pittsburgh', 'Santa Fe']
-# crits = ['Culture', 'Family', 'Housing', 'Jobs', 'Transportation']
-#
-# print('Saaty')
-# cu = Compare('Culture', culture, cities, 3, random_index='Saaty')
-# f = Compare('Family', family, cities, 3, random_index='Saaty')
-# h = Compare('Housing', housing, cities, 3, random_index='Saaty')
-# j = Compare('Jobs', jobs, cities, 3, random_index='Saaty')
-# t = Compare('Transportation', transportation, cities, 3, random_index='Saaty')
-#
-# comp_matrices = [cu, f, h, j, t]
-# cr = Compare('Goal', crit, crits, 3, random_index='Saaty')
-# c = Compose('Goal', cr, comp_matrices)
-# print(c.weights)
-# #
-# # print('=================\n')
-# print('Donegan and Dodd')
-# cu = Compare('Culture', culture, cities, 4)
-# f = Compare('Family', family, cities, 4)
-# h = Compare('Housing', housing, cities, 4)
-# j = Compare('Jobs', jobs, cities, 4)
-# t = Compare('Transportation', transportation, cities, 4)
-#
-# comp_matrices = [cu, f, h, j, t]
-# cr = Compare('Goal', crit, crits, 4)
-#
-# c = Compose('Goal', cr, comp_matrices)
-# print(c.weights)
-#
-# ----------------------------------------------------------------------------------
+
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
-# experience = np.array([[1, .25, 4], [4, 1, 9], [.25, 1/9., 1]])
-# education = np.array([[1, 3, .2], [1/3., 1, 1/7.], [5, 7, 1]])
-# charisma = np.array([[1, 5, 9], [.2, 1, 4], [1/9., .25, 1]])
-# age = np.array([[1, 1/3., 5], [3, 1, 9], [.2, 1/9., 1]])
-# criteria = np.array([[1, 4, 3, 7], [.25, 1, 1/3., 3], [1/3., 3, 1, 5], [1/7., 1/3., .2, 1]])
+
+# experience = {('Tom', 'Dick'): 0.25, ('Tom', 'Harry'): 4, ('Dick', 'Harry'): 9}
+# education = {('Tom', 'Dick'): 3, ('Tom', 'Harry'): 0.2, ('Harry', 'Dick'): 7}
+# charisma = {('Tom', 'Dick'): 5, ('Tom', 'Harry'): 9, ('Dick', 'Harry'): 4}
+# age = {('Dick', 'Tom'): 3, ('Tom', 'Harry'): 5, ('Dick', 'Harry'): 9}
+# criteria = {('exp', 'edu'): 4, ('exp', 'cha'): 3, ('exp', 'age'): 7,
+#             ('edu', 'age'): 3,
+#             ('cha', 'edu'): 3, ('cha', 'age'): 5}
 #
-# alt1 = ['Tom', 'Dick', 'Harry']
-#
-# exp = Compare('exp', experience, alt1, 3, random_index='saaty')
-# edu = Compare('edu', education, alt1, 3, random_index='saaty')
-# cha = Compare('cha', charisma, alt1, 3, random_index='saaty')
-# age = Compare('age', age, alt1, 3, random_index='saaty')
+# exp = Compare('exp', experience, precision=3, random_index='saaty')
+# edu = Compare('edu', education, precision=3, random_index='saaty')
+# cha = Compare('cha', charisma, precision=3, random_index='saaty')
+# age = Compare('age', age, precision=3, random_index='saaty')
 #
 # children = [exp, edu, cha, age]
 #
-# alt2 = ['exp', 'edu', 'cha', 'age']
-#
-# parent = Compare('goal', criteria, alt2, 3, random_index='saaty')
-# Compose('goal', parent, children).report()
-#
+# parent = Compare('goal', criteria, precision=3, random_index='saaty')
+# c = Compose('goal', parent, children)
+
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
-#                             c  wi  t  b  s  m  wa
-# drinks_val = np.array c([[1, 9, 5, 2, 1, 1, .5],
-#                    wi [1/9., 1, 1/3., 1/9., 1/9., 1/9., 1/9.],
-#                    t [.2, 3, 1, 1/3., .25, 1/3., 1/9.],
-#                    b [.5, 9, 3, 1, .5, 1, 1/3.],
-#                    s [1, 9, 4, 2, 1, 2, .5],
-#                    m [1, 9, 3, 1, .5, 1, 1/3.],
-#                    wa [2, 9, 9, 3, 2, 3, 1]])
-# drinks_cri = ('coffee', 'wine', 'tea', 'beer', 'sodas', 'milk', 'water')
-#
-drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
-          ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
-          ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
-          ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
-          ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-c = Compare('Drinks', drinks, precision=4, random_index='dd')
-# print(c.weights)
-#
+# drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
+#           ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
+#           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
+#           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
+#           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
+# c = Compare('Drinks', drinks, precision=4, random_index='dd')
+
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
 # for Decision Making in Engineering Applications: Some Challenges,' Int. J. of Industrial
@@ -127,87 +58,97 @@ c = Compare('Drinks', drinks, precision=4, random_index='dd')
 # cri = Compare('goal', cri_m, cri_n, random_index='saaty')
 #
 # Compose('goal', cri, [maintain, user, finance, expand]).report()
-#
+
 # ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
+
+# cars = ('civic', 'saturn', 'escort', 'clio')
 #
-# car_cri = ('civic', 'saturn', 'escort', 'clio')
+# gas_m = dict(zip(cars, (34, 27, 24, 28)))
+# gas = Compare('gas', gas_m, precision=3)
 #
-# gas_m = np.array([[34], [27], [24], [28]])
-# gas_m2 = '34;27;24;28'
-# gas = Compare('gas', gas_m2, car_cri, 3, comp_type='quant')
+# rel_m = dict(zip(itertools.combinations(cars, 2), (2, 5, 1, 3, 2, 0.25)))
+# rel = Compare('rel', rel_m)
 #
-# rel_m = np.array([[1, 2, 5, 1], [.5, 1, 3, 2], [.2, 1/3., 1, .25], [1, .5, 4, 1]])
-# rel = Compare('rel', rel_m, car_cri)
+# style_m = {('civic', 'escort'): 4,
+#            ('saturn', 'civic'): 4, ('saturn', 'escort'): 4, ('saturn', 'clio'): 0.25,
+#            ('clio', 'civic'): 6, ('clio', 'escort'): 5}
+# style = Compare('style', style_m, precision=4)
 #
-# style_m = np.array([[1, .25, 4, 1/6.], [4, 1, 4, .25], [.25, .25, 1, .2], [6, 4, 5, 1]])
-# style = Compare('style', style_m, car_cri, 3)
+# cri_m = {('style', 'rel'): 0.5, ('style', 'gas'): 3,
+#          ('rel', 'gas'): 4}
+# parent = Compare('goal', cri_m)
 #
-# cri_m = np.array([[1, .5, 3], [2, 1, 4], [1/3., .25, 1]])
-# cri_cri = ('style', 'rel', 'gas')
-# parent = Compare('goal', cri_m, cri_cri)
-#
-# Compose('goal', parent, (style, rel, gas)).report()
-#
+# c = Compose('goal', parent, (style, rel, gas))
+
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
 
+
+# def r(x):
+#     return np.reciprocal(float(x))
+#
+#
+# def m(elements, judgments):
+#     return dict(zip(elements, judgments))
+#
+#
 # cri = ('cost', 'safety', 'style', 'capacity')
-# cri_m = '3 7 3; 9 1; 1/7'
-# criteria = Compare('goal', cri_m, cri)
+# c_cri = list(itertools.combinations(cri, 2))
+# criteria = Compare('goal', m(c_cri, (3, 7, 3, 9, 1, np.reciprocal(float(7)))))
 #
 # alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+# pairs = list(itertools.combinations(alt, 2))
 #
-# cost_sub_m = '2 5 3; 2 2; .5'
-# cost_sub = Compare('cost', cost_sub_m, ('cost price', 'cost fuel', 'cost maintenance', 'cost resale'))
-# cost_sub.report()
+# costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
+# c_pairs = list(itertools.combinations(costs, 2))
+# cost_sub = Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
 #
-# cost_price_m = '9 9 1 .5 5; 1 1/9 1/9 1/7; 1/9 1/9 1/7; .5 5; 6'
-# cost_price = Compare('cost price', cost_price_m, alt)
+# cost_price_m = (9, 9, 1, 0.5, 5, 1, r(9), r(9), r(7), r(9), r(9), r(7), .5, 5, 6)
+# cost_price = Compare('cost price', m(pairs, cost_price_m))
 #
-# cost_fuel_m = '1/1.13 1.41 1.15 1.24 1.19; 1.59 1.3 1.4 1.35; 1/1.23 1/1.14 1/1.18; 1.08 1.04; 1/1.04'
-# cost_fuel = Compare('cost fuel', cost_fuel_m, alt)
+# cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
+# cost_fuel = Compare('cost fuel', m(pairs, cost_fuel_m))
 #
-# cost_resale_m = '3 4 .5 2 2; 2 .2 1 1; 1/6 .5 .5; 4 4; 1'
-# cost_resale = Compare('cost resale', cost_resale_m, alt)
+# cost_resale_m = (3, 4, .5, 2, 2, 2, .2, 1, 1, r(6), .5, .5, 4, 4, 1)
+# cost_resale = Compare('cost resale', m(pairs, cost_resale_m))
 #
-# cost_maint_m = '1.5 4 4 4 5; 4 4 4 5; 1 1.2 1; 1 3; 2'
-# cost_maint = Compare('cost maintenance', cost_maint_m, alt)
+# cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+# cost_maint = Compare('cost maintenance', m(pairs, cost_maint_m))
 #
-# safety_m = '1 5 7 9 1/3; 5 7 9 1/3; 2 9 1/8; 2 1/8; 1/9'
-# safety = Compare('safety', safety_m, alt)
+# safety_m = (1, 5, 7, 9, r(3), 5, 7, 9, r(3), 2, 9, r(8), 2, r(8), r(9))
+# safety = Compare('safety', m(pairs, safety_m))
 #
-# style_m = '1 7 5 9 6; 7 5 9 6; 1/6 3 1/3; 7 5; .2'
-# style = Compare('style', style_m, alt)
+# style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, r(6), 3, r(3), 7, 5, .2)
+# style = Compare('style', m(pairs, style_m))
 #
-# capacity_sub_m = '.2'
-# capacity_sub = Compare('capacity', capacity_sub_m, ('capacity cargo', 'capacity passenger'))
-# capacity_sub.report()
+# capacity_sub = Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
 #
-# capacity_pass_m = '1 .5 1 3 .5; .5 1 3 .5; 2 6 1; 3 .5; 1/6'
-# capacity_pass = Compare('capacity passenger', capacity_pass_m, alt)
+# capacity_pass_m = (1, .5, 1, 3, .5, .5, 1, 3, .5, 2, 6, 1, 3, .5, r(6))
+# capacity_pass = Compare('capacity passenger', m(pairs, capacity_pass_m))
 #
-# capacity_cargo_m = '1 .5 .5 .5 1/3; .5 .5 .5 1/3; 1 1 .5; 1 .5; .5'
-# capacity_cargo = Compare('capacity cargo', capacity_cargo_m, alt)
+# capacity_cargo_m = (1, .5, .5, .5, r(3), .5, .5, .5, r(3), 1, 1, .5, 1, .5, .5)
+# capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
 #
 # cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
 # capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
 # goal = Compose('goal', criteria, (cost, safety, style, capacity))
-#
-# goal.report()
+# print(goal.weights)
 
-u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
-     ('b', 'c'): 3, ('b', 'd'): 4}
+# ----------------------------------------------------------------------------------
+
+# u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
+#      ('b', 'c'): 3, ('b', 'd'): 4}
 # cu = Compare('Incomplete Test', u)
-
-m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
-     ('b', 'd'): 5, ('b', 'f'): 3,
-     ('c', 'e'): 3, ('c', 'g'): 6,
-     ('f', 'd'): 4,
-     ('g', 'a'): 3, ('g', 'e'): 5,
-     ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
-
+#
+# m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
+#      ('b', 'd'): 5, ('b', 'f'): 3,
+#      ('c', 'e'): 3, ('c', 'g'): 6,
+#      ('f', 'd'): 4,
+#      ('g', 'a'): 3, ('g', 'e'): 5,
+#      ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
+#
 # cm = Compare('Incomplete Housing', m)
-
-f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
+#
+# f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
 # fm = Compare('Fuel Economy', f)
