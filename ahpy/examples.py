@@ -32,7 +32,7 @@ from ahpy import Compare, Compose
 #           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
 #           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
 #           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-# c = Compare('Drinks', drinks, precision=4, random_index='dd')
+# c = Compare('Drinks', drinks, precision=3, random_index='dd')
 
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
@@ -137,18 +137,24 @@ from ahpy import Compare, Compose
 
 # ----------------------------------------------------------------------------------
 
-# u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
-#      ('b', 'c'): 3, ('b', 'd'): 4}
-# cu = Compare('Incomplete Test', u)
+u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
+     ('b', 'c'): 3, ('b', 'd'): 4}
+cu = Compare('Incomplete Test', u)
 #
-# m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
-#      ('b', 'd'): 5, ('b', 'f'): 3,
-#      ('c', 'e'): 3, ('c', 'g'): 6,
-#      ('f', 'd'): 4,
-#      ('g', 'a'): 3, ('g', 'e'): 5,
-#      ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
-#
-# cm = Compare('Incomplete Housing', m)
+m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
+     ('b', 'd'): 5, ('b', 'f'): 3,
+     ('c', 'e'): 3, ('c', 'g'): 6,
+     ('f', 'd'): 4,
+     ('g', 'a'): 3, ('g', 'e'): 5,
+     ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
+
+cm = Compare('Incomplete Housing', u)
 #
 # f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
 # fm = Compare('Fuel Economy', f)
+
+print(cm.comparisons)
+print(cm.missing_comparisons)
+print(cm.pairs)
+print(cm.consistency_ratio)
+print(cm.weights)

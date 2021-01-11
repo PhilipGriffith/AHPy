@@ -5,7 +5,8 @@ import pytest
 from ahpy import ahpy
 
 # Example from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
-#   Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
+# Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
+
 drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
           ('coffee', 'milk'): 1,
           ('water', 'coffee'): 2, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
@@ -26,19 +27,20 @@ def test_drinks_cr_dd():
     assert c.consistency_ratio == 0.0235
 
 
-def test_drinks_weights_saaty():
+def test_drinks_weights_precision_3_saaty():
     c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
     assert c.weights == {'Drinks': {'beer': 0.116, 'coffee': 0.177, 'milk': 0.129, 'soda': 0.190,
                                     'tea': 0.042, 'water': 0.327, 'wine': 0.019}}
 
 
-def test_drinks_weights_dd():
+def test_drinks_weights_precision_4_dd():
     c = ahpy.Compare('Drinks', drinks, precision=4, random_index='dd')
     assert c.weights == {'Drinks': {'beer': 0.1164, 'coffee': 0.1775, 'milk': 0.1288, 'soda': 0.1896,
                                     'tea': 0.0418, 'water': 0.3268, 'wine': 0.0191}}
 
 
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005.
+
 criteria = {('Culture', 'Housing'): 3, ('Culture', 'Transportation'): 5,
             ('Family', 'Culture'): 5, ('Family', 'Housing'): 7, ('Family', 'Transportation'): 7,
             ('Housing', 'Transportation'): 3,
@@ -98,6 +100,10 @@ def test_cities_weights_dd_precision_4():
     assert c.weights == {'Goal': {'Bethesda': 0.2291, 'Boston': 0.2747, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}}
 
 
+# Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete
+# pairwise comparison matrices,' Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333.
+# https://doi.org/10.1016/j.mcm.2010.02.047
+
 u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
      ('b', 'c'): 3, ('b', 'd'): 4}
 
@@ -133,6 +139,9 @@ def test_incomplete_housing_missing_comparisons():
                                       ('f', 'g'): 0.2912120796181874, ('g', 'h'): 0.4030898885178746}
 
 
+# Example from Haas, R. and Meixner, L., 'An Illustrated Guide to the Analytic Hierarchy Process,'
+# http://www.inbest.co.il/NGO/ahptutorial.pdf
+
 def test_normalized_weights():
     f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
     cf = ahpy.Compare('Fuel Economy', f)
@@ -149,7 +158,7 @@ b = {'a': 0.0385, 'b': 0.0385, 'c': 0.0385, 'd': 0.0385, 'e': 0.0385, 'f': 0.038
 def test_size_limit_saaty():
     with pytest.raises(ValueError):
         x = dict.fromkeys(itertools.permutations(a, 2), 1)
-        cx = ahpy.Compare('CR Test', x, random_index='saaty')
+        ahpy.Compare('CR Test', x, random_index='saaty')
 
 
 def test_size_limit_override_saaty():

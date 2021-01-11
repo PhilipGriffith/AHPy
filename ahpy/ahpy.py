@@ -82,8 +82,8 @@ class Compare:
 
     def check_size(self):
         """
-        Returns True if the comparison matrix does not exceed either 15 or 100 rows, depending on the
-        chosen random index. This is required to insure that the Compare object has a consistency ratio.
+        Raises a Value Error if a consistency ratio is requested and the chosen random index
+        will not support the size of the resulting matrix.
         """
         if not self.normalize and self.cr and ((self.random_index == 'saaty' and self.size > 15) or self.size > 100):
             msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
@@ -95,7 +95,8 @@ class Compare:
     def build_criteria(self):
         """
         Creates an empty 'pairs' dictionary that contains all possible permutations
-        of those criteria found within the keys of the input 'comparisons' dictionary.
+        of those criteria found within the keys of the input 'comparisons' dictionary,
+        then makes sure the size of the resulting matrix will be supported by the chosen random index.
         """
         for key in self.comparisons:
             for criterion in key:
@@ -106,6 +107,10 @@ class Compare:
         self.check_size()
 
     def build_normalized_criteria(self):
+        """
+        Creates a list of those criteria found within the keys of the input 'comparisons' dictionary,
+        then makes sure the size of the resulting matrix will be supported by the chosen random index.
+        """
         self.criteria = list(self.comparisons)
         self.size = len(self.criteria)
         self.check_size()
@@ -121,21 +126,38 @@ class Compare:
             self.pairs[inverse_key] = np.reciprocal(float(value))
 
     def build_matrix(self):
+        """
+        Creates a correctly-sized numpy matrix of ones,
+        then fills the matrix with values from the 'pairs' dictionary.
+        """
         self.matrix = np.ones((self.size, self.size))
         for pair, value in self.pairs.items():
             location = tuple(self.criteria.index(criterion) for criterion in pair)
             self.matrix.itemset(location, value)
 
     def build_normalized_matrix(self):
+        """
+        Creates a correctly-sized numpy matrix of values from the input 'comparisons' dictionary.
+        """
         self.matrix = np.array(tuple(value for value in self.comparisons.values()), float)
 
     def get_missing_comparisons(self):
+        """
+        Creates the 'missing comparisons' dictionary by populating its keys with the unique comparisons
+        that are missing from the input 'comparisons' dictionary and populating its values with 1s.
+        """
         missing_comparisons = [key for key, value in self.pairs.items() if not value]
         for criteria in missing_comparisons:
             del missing_comparisons[missing_comparisons.index(criteria[::-1])]
         self.missing_comparisons = dict.fromkeys(missing_comparisons, 1)
 
     def complete_matrix(self):
+        """
+        Optimally completes an incomplete pairwise comparison matrix according to the algorithm described in
+        Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
+        Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333.
+        https://doi.org/10.1016/j.mcm.2010.02.047
+        """
         last_iteration = np.array(tuple(self.missing_comparisons.values()))
         difference = np.inf
         while difference > self.tolerance:
@@ -145,13 +167,20 @@ class Compare:
             last_iteration = current_iteration
 
     def minimize_coordinate_values(self):
-
+        """
+        Computes the minimum value for each missing value from the 'missing_comparisons' dictionary
+        using the cyclic coordinates method as described in the paper by Bozóki et al.
+        """
         def lambda_max(x, x_location):
+            """
+            The function to be minimized. Finds the largest eigenvalue of a matrix given a missing value.
+            """
             inverse_x_location = x_location[::-1]
             self.matrix.itemset(x_location, x)
             self.matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
             return np.linalg.eigvals(self.matrix).max()
 
+        # The upper bound of the solution space is 10 times the largest value of the matrix.
         upper_bound = np.nanmax(self.matrix) * 10
 
         for comparison in self.missing_comparisons:
@@ -164,6 +193,10 @@ class Compare:
             self.missing_comparisons[comparison] = optimal_solution
 
     def set_matrix(self, comparison):
+        """
+        Sets the value of every missing comparison in the comparison matrix (other than the current comparison)
+        to its current value in the 'missing_comparisons' dictionary or its reciprocal.
+        """
         for key, value in self.missing_comparisons.items():
             if key != comparison:
                 location = tuple(self.criteria.index(criterion) for criterion in key)
@@ -260,17 +293,9 @@ class Compare:
         consistency_index = (lambda_max - self.size) / (self.size - 1)
         self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
 
-    @staticmethod
-    def matprint(mat, fmt="g"):
-        col_maxes = [max([len(("{:" + fmt + "}").format(x)) for x in col]) for col in mat.T]
-        for x in mat:
-            for i, y in enumerate(x):
-                print(("{:" + str(col_maxes[i]) + fmt + "}").format(y), end="  ")
-            print("")
-
 
 class Compose:
-
+    # TODO Create a doc string for this
     def __init__(self, name=None, parent=None, children=None):
         self.name = name
         self.parent = parent
