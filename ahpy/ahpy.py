@@ -1,6 +1,7 @@
 import bisect
 import itertools
 import warnings
+import json
 
 import numpy as np
 import scipy.optimize as sp
@@ -26,14 +27,13 @@ class Compare:
         information regarding the different estimates
     """
 
-    def __init__(self, name=None, comparisons=None, order=None,
-                 precision=4, iterations=100, random_index='dd', tolerance=0.0001, cr=True):
+    def __init__(self, name=None, comparisons=None, precision=4, random_index='dd',
+                 iterations=100, tolerance=0.0001, cr=True):
         self.name = name
         self.comparisons = comparisons
-        self.order = order
         self.precision = precision
-        self.iterations = iterations
         self.random_index = random_index
+        self.iterations = iterations
         self.tolerance = tolerance
         self.cr = cr
 
@@ -43,14 +43,12 @@ class Compare:
         self.size = None
         self.matrix = None
         self.missing_comparisons = None
-        self.priority_vector = None
         self.consistency_ratio = None
         self.weights = None
 
         if self.normalize:
             self.build_normalized_criteria()
             self.build_normalized_matrix()
-            self.normalize_matrix()
         else:
             self.build_criteria()
             self.insert_comparisons()
@@ -60,25 +58,6 @@ class Compare:
                 self.complete_matrix()
 
         self.compute()
-
-        # print(self.name)
-        # print(self.comparisons)# = comparisons
-        # print(self.order)# = order
-        # print(self.precision)# = precision
-        # print(self.iterations)# = iterations
-        # print(self.random_index)# = random_index.lower()
-        # print(self.tolerance)# = tolerance
-        # print(self.norm)# = not isinstance(tuple(self.comparisons)[0], tuple)
-        # print(self.criteria)# = []
-        # print(self.pairs)# = []
-        # print(self.size)# = None
-        # print(self.matrix)# = None
-        # print(self.missing_comparisons)# = None
-        # print(self.priority_vector)# = None
-        # print(self.consistency_ratio)# = None
-        # print(self.weights)# = None
-
-        # TODO build report functionality that uses the order property
 
     def check_size(self):
         """
@@ -155,8 +134,7 @@ class Compare:
         """
         Optimally completes an incomplete pairwise comparison matrix according to the algorithm described in
         Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
-        Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333.
-        https://doi.org/10.1016/j.mcm.2010.02.047
+        Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. https://doi.org/10.1016/j.mcm.2010.02.047
         """
         last_iteration = np.array(tuple(self.missing_comparisons.values()))
         difference = np.inf
@@ -171,6 +149,7 @@ class Compare:
         Computes the minimum value for each missing value from the 'missing_comparisons' dictionary
         using the cyclic coordinates method as described in the paper by Bozóki et al.
         """
+
         def lambda_max(x, x_location):
             """
             The function to be minimized. Finds the largest eigenvalue of a matrix given a missing value.
@@ -204,23 +183,20 @@ class Compare:
                 self.matrix.itemset(location, value)
                 self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
 
-    def normalize_matrix(self):
-        """
-        Computes the priority vector of a valid matrix by normalizing the input values
-        and sets the consistency ratio to 0.0.
-        """
-        self.priority_vector = np.divide(self.matrix, np.sum(self.matrix, keepdims=True)).round(self.precision)
-        self.consistency_ratio = 0.0
-
     def compute(self):
         """
         Runs all functions necessary for building the weights and consistency ratio of the Compare object.
         """
         if not self.normalize:
-            self.priority_vector = self.compute_priority_vector(self.matrix, self.iterations)
+            priority_vector = self.compute_priority_vector(self.matrix, self.iterations)
             if self.cr:
                 self.compute_consistency_ratio()
-        self.weights = {self.name: dict(zip(self.criteria, self.priority_vector))}
+        else:
+            priority_vector = np.divide(self.matrix, np.sum(self.matrix, keepdims=True)).round(self.precision)
+            self.consistency_ratio = 0.0
+        weights = dict(zip(self.criteria, priority_vector))
+        sorted_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
+        self.weights = {self.name: sorted_weights}
 
     def compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
@@ -292,6 +268,26 @@ class Compare:
         lambda_max = np.linalg.eigvals(self.matrix).max()  # Find the Perron-Frobenius eigenvalue of the matrix
         consistency_index = (lambda_max - self.size) / (self.size - 1)
         self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
+
+    def report(self):
+
+        def convert_tuple_keys_to_str(tuple_keys):
+            if self.normalize:
+                return list({k: v} for k, v in tuple_keys.items())
+            else:
+                return list({','.join(k): v} for k, v in tuple_keys.items())
+
+        report = json.dumps({'Name': self.name,
+                             'Weights': self.weights[self.name],
+                             'Consistency Ratio': self.consistency_ratio,
+                             'Random Index': 'Donegan & Dodd' if self.random_index == 'dd' else 'Saaty',
+                             'Comparisons': {
+                                 'Input': convert_tuple_keys_to_str(self.comparisons),
+                                 'Computed': convert_tuple_keys_to_str(self.missing_comparisons)
+                                             if self.missing_comparisons else None}
+                             }, indent=4)
+        print(report)
+        return report
 
 
 class Compose:

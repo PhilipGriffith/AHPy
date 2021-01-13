@@ -167,7 +167,7 @@ def test_size_limit_override_saaty():
     assert cx.weights == {'CR Test': b}
 
 
-def test_size_limit_normative_saaty():
+def test_size_limit_normalize_saaty():
     y = dict.fromkeys([i[0] for i in itertools.combinations(a, 1)], 1)
     cy = ahpy.Compare('CR Test', y, random_index='saaty')
     assert cy.weights == {'CR Test': b}
