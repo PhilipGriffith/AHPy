@@ -173,8 +173,8 @@ class Compare:
                 warnings.filterwarnings('ignore', category=np.ComplexWarning)
                 self.set_matrix(comparison)
                 optimal_solution = spo.minimize_scalar(lambda_max, args=(comparison_location,),
-                                                       method='bounded', bounds=(0, upper_bound)).x.real
-            self.missing_comparisons[comparison] = optimal_solution
+                                                       method='bounded', bounds=(0, upper_bound))
+            self.missing_comparisons[comparison] = np.real(optimal_solution.x)
 
     def set_matrix(self, comparison):
         """
@@ -287,9 +287,9 @@ class Compare:
             :param input_dict: dictionary, the dictionary to be converted
             """
             if self.normalize:
-                return list({k: v} for k, v in input_dict.items())
+                return list({key: value} for key, value in input_dict.items())
             else:
-                return list({','.join(k): v} for k, v in input_dict.items())
+                return list({','.join(key): value} for key, value in input_dict.items())
 
         report = json.dumps({'Name': self.name,
                              'Weights': self.weights[self.name],
@@ -307,13 +307,14 @@ class Compare:
 
 class Compose:
     # TODO Create a doc string for this
+    # TODO Create report function
     def __init__(self, name=None, parent=None, children=None):
         self.name = name
         self.parent = parent
         self.children = children
 
-        self.weights = dict()
         self.precision = None
+        self.weights = dict()
 
         self.compute_precision()
         self.compute_total_priority()
@@ -335,15 +336,16 @@ class Compose:
         Computes the total priorities of the Compose object's parent criteria
         given the priority vectors of its children.
         """
-        for pk, pv in self.parent.weights[self.parent.name].items():
+        for parent_key, parent_value in self.parent.weights[self.parent.name].items():
             for child in self.children:
 
-                if pk in child.weights:
-                    for ck, cv in child.weights[pk].items():
+                if parent_key in child.weights:
+                    for child_key, child_value in child.weights[parent_key].items():
+                        value = parent_value * child_value
                         try:
-                            self.weights[ck] += np.multiply(pv, cv)
+                            self.weights[child_key] += value
                         except KeyError:
-                            self.weights[ck] = np.multiply(pv, cv)
+                            self.weights[child_key] = value
                     break
 
     def normalize_total_priority(self):
@@ -353,6 +355,19 @@ class Compose:
         total_sum = sum(self.weights.values())
         comp_dict = {key: np.divide(value, total_sum).round(self.precision) for key, value in self.weights.items()}
         self.weights = {self.name: comp_dict}
+
+    def report(self, silent=False):
+        """
+        Returns the key information of the Compose object as a JSON object, optionally printing it to the console.
+        :param silent: boolean, if True, does not print the report to the console; default is False
+        """
+        report = json.dumps({'Name': self.name,
+                             'Parent': self.parent.name,
+                             'Children': [child.name for child in self.children]
+                             }, indent=4)
+        if not silent:
+            print(report)
+        return report
 
 
 if __name__ == '__main__':

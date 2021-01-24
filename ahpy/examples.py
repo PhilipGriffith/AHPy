@@ -132,8 +132,10 @@ capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision
 
 cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
 capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
-goal = Compose('goal', criteria, (cost, safety, style, capacity))
+goal = Compose('final', criteria, (cost, safety, style, capacity))
 
+criteria.report()
+goal.report()
 
 # ----------------------------------------------------------------------------------
 
@@ -148,8 +150,8 @@ m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('g', 'a'): 3, ('g', 'e'): 5,
      ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
 
-cm = Compare('Incomplete Housing', m)
+# cm = Compare('Incomplete Housing', m)
 
 f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
-cf = Compare('Fuel Economy', f)
-cf.report()
+# cf = Compare('Fuel Economy', f)
+# cf.report()
