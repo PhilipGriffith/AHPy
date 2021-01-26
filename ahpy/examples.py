@@ -94,46 +94,46 @@ def m(elements, judgments):
     return dict(zip(elements, judgments))
 
 
-# cri = ('cost', 'safety', 'style', 'capacity')
-# c_cri = list(itertools.combinations(cri, 2))
-# criteria = Compare('goal', m(c_cri, (3, 7, 3, 9, 1, np.reciprocal(float(7)))))
-#
-# alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
-# pairs = list(itertools.combinations(alt, 2))
-#
-# costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
-# c_pairs = list(itertools.combinations(costs, 2))
-# cost_sub = Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
-#
-# cost_price_m = (9, 9, 1, 0.5, 5, 1, r(9), r(9), r(7), r(9), r(9), r(7), .5, 5, 6)
-# cost_price = Compare('cost price', m(pairs, cost_price_m))
-#
-# cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
-# cost_fuel = Compare('cost fuel', m(pairs, cost_fuel_m))
-#
-# cost_resale_m = (3, 4, .5, 2, 2, 2, .2, 1, 1, r(6), .5, .5, 4, 4, 1)
-# cost_resale = Compare('cost resale', m(pairs, cost_resale_m))
-#
-# cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
-# cost_maint = Compare('cost maintenance', m(pairs, cost_maint_m))
-#
-# safety_m = (1, 5, 7, 9, r(3), 5, 7, 9, r(3), 2, 9, r(8), 2, r(8), r(9))
-# safety = Compare('safety', m(pairs, safety_m))
-#
-# style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, r(6), 3, r(3), 7, 5, .2)
-# style = Compare('style', m(pairs, style_m))
-#
-# capacity_sub = Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
-#
-# capacity_pass_m = (1, .5, 1, 3, .5, .5, 1, 3, .5, 2, 6, 1, 3, .5, r(6))
-# capacity_pass = Compare('capacity passenger', m(pairs, capacity_pass_m))
-#
-# capacity_cargo_m = (1, .5, .5, .5, r(3), .5, .5, .5, r(3), 1, 1, .5, 1, .5, .5)
-# capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
-#
-# cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
-# capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
-# goal = Compose('final', criteria, (cost, safety, style, capacity))
+cri = ('cost', 'safety', 'style', 'capacity')
+c_cri = list(itertools.combinations(cri, 2))
+criteria = Compare('goal', m(c_cri, (3, 7, 3, 9, 1, np.reciprocal(float(7)))))
+
+alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+pairs = list(itertools.combinations(alt, 2))
+
+costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
+c_pairs = list(itertools.combinations(costs, 2))
+cost_sub = Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
+
+cost_price_m = (9, 9, 1, 0.5, 5, 1, r(9), r(9), r(7), r(9), r(9), r(7), .5, 5, 6)
+cost_price = Compare('cost price', m(pairs, cost_price_m))
+
+cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
+cost_fuel = Compare('cost fuel', m(pairs, cost_fuel_m))
+
+cost_resale_m = (3, 4, .5, 2, 2, 2, .2, 1, 1, r(6), .5, .5, 4, 4, 1)
+cost_resale = Compare('cost resale', m(pairs, cost_resale_m))
+
+cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+cost_maint = Compare('cost maintenance', m(pairs, cost_maint_m))
+
+safety_m = (1, 5, 7, 9, r(3), 5, 7, 9, r(3), 2, 9, r(8), 2, r(8), r(9))
+safety = Compare('safety', m(pairs, safety_m))
+
+style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, r(6), 3, r(3), 7, 5, .2)
+style = Compare('style', m(pairs, style_m))
+
+capacity_sub = Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
+
+capacity_pass_m = (1, .5, 1, 3, .5, .5, 1, 3, .5, 2, 6, 1, 3, .5, r(6))
+capacity_pass = Compare('capacity passenger', m(pairs, capacity_pass_m))
+
+capacity_cargo_m = (1, .5, .5, .5, r(3), .5, .5, .5, r(3), 1, 1, .5, 1, .5, .5)
+capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
+
+cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
+capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
+goal = Compose('final', criteria, (cost, safety, style, capacity))
 #
 # w = goal.parent.weights[goal.parent.name]['cost']
 # for child in cost.children:
@@ -141,13 +141,14 @@ def m(elements, judgments):
 
 # print(cost_price.weights)
 
-# print(goal.weights)
+print(goal.local_weights)
+capacity_cargo.report()
 
 # ----------------------------------------------------------------------------------
 
 u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
      ('beta', 'chi'): 3, ('beta', 'delta'): 4}
-# cu = Compare('Incomplete Test', u)
+cu = Compare('Incomplete Test', u)
 
 m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('b', 'd'): 5, ('b', 'f'): 3,
@@ -170,5 +171,5 @@ books = {('Jane Eyre', 'Moby Dick'): 5,
          ('Moby Dick', 'Catcher in the Rye'): 1 / 4,
          ('Pride & Prejudice', 'Catcher in the Rye'): 2}
 
-c = Compare('Book List', books)
-c.report()
+# c = Compare('Book List', books)
+# c.report()

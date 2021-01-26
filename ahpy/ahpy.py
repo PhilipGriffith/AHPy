@@ -12,8 +12,8 @@ class Compare:
     This class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using a
     dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons.
     The 'name' property is used to link the Compare object to its parent Compose object.
-    The 'weights' property contains the priority vector as a dictionary whose keys are the criteria and
-        whose values are the criteria's weights.
+    The 'local_weights' property contains the priority vector as a dictionary whose keys are the criteria and
+        whose values are the criteria's local weights.
     The 'consistency_ratio' property contains the computed consistency ratio of the priority vector as a float.
     :param name: string, the name of the Compare object; if the object has a parent, this name MUST be included
         as a criterion of its parent
@@ -48,9 +48,11 @@ class Compare:
         self.matrix = None
         self.missing_comparisons = None
         self.consistency_ratio = None
-        self.weights = None
+        self.local_weights = None
+        self.global_weights = None
 
         self.check_input()
+
         if self.normalize:
             self.build_normalized_criteria()
             self.build_normalized_matrix()
@@ -217,7 +219,7 @@ class Compare:
             self.consistency_ratio = 0.0
         weights = dict(zip(self.criteria, priority_vector))
         sorted_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
-        self.weights = {self.name: sorted_weights}
+        self.local_weights = {self.name: sorted_weights}
 
     def compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
@@ -269,13 +271,16 @@ class Compare:
         if self.random_index == 'saaty':
             ri_dict = {3: 0.52, 4: 0.89, 5: 1.11, 6: 1.25, 7: 1.35, 8: 1.40, 9: 1.45,
                        10: 1.49, 11: 1.52, 12: 1.54, 13: 1.56, 14: 1.58, 15: 1.59}
-        else:  # self.random_index == 'dd'
+        elif self.random_index == 'dd':
             ri_dict = {3: 0.4914, 4: 0.8286, 5: 1.0591, 6: 1.1797, 7: 1.2519,
                        8: 1.3171, 9: 1.3733, 10: 1.4055, 11: 1.4213, 12: 1.4497,
                        13: 1.4643, 14: 1.4822, 15: 1.4969, 16: 1.5078, 17: 1.5153,
                        18: 1.5262, 19: 1.5313, 20: 1.5371, 25: 1.5619, 30: 1.5772,
                        40: 1.5976, 50: 1.6102, 60: 1.6178, 70: 1.6237, 80: 1.6277,
                        90: 1.6213, 100: 1.6339}
+        else:
+            return
+
         try:
             random_index = ri_dict[self.size]
         # If the size of the comparison matrix falls between two computed estimates, compute a weighted estimate
@@ -306,10 +311,24 @@ class Compare:
             else:
                 return list({', '.join(key): value} for key, value in input_dict.items())
 
+        def set_random_index():
+            """
+            Returns the name of a valid random index as a string, else None.
+            """
+            random_index = None
+            if self.random_index == 'dd':
+                random_index = 'Donegan & Dodd'
+            elif self.random_index == 'saaty':
+                random_index = 'Saaty'
+            return random_index
+
         report = json.dumps({'Name': self.name,
-                             'Weights': self.weights[self.name],
+                             'Weights': {
+                                 'Local': self.local_weights[self.name],
+                                 'Global': self.global_weights[self.name]
+                                 if self.global_weights else None},
                              'Consistency Ratio': self.consistency_ratio,
-                             'Random Index': 'Donegan & Dodd' if self.random_index == 'dd' else 'Saaty',
+                             'Random Index': set_random_index(),
                              'Criteria': {
                                  'Count': len(self.criteria),
                                  'Names': self.criteria,
@@ -326,23 +345,21 @@ class Compare:
 
 class Compose:
     # TODO Create a doc string for this
-    # TODO Create report function
     def __init__(self, name=None, parent=None, children=None):
         self.name = name
         self.parent = parent
         self.children = children
 
         self.precision = None
-        self.weights = dict()
+        self.local_weights = dict()
 
         self.compute_precision()
-        self.compute_total_priority()
-        self.normalize_total_priority()
+        self.compute_local_priority()
+        self.normalize_local_priority()
 
     def compute_precision(self):
         """
-        Updates the 'precision' property of the Compose object
-        by selecting the lowest precision of all the input matrices.
+        Updates the 'precision' property of the Compose object by selecting the lowest precision of its children.
         """
         precision = np.min([child.precision for child in self.children])
         if precision < self.parent.precision:
@@ -350,44 +367,49 @@ class Compose:
         else:
             self.precision = self.parent.precision
 
-    def compute_total_priority(self):
+    def compute_local_priority(self):
         """
         Computes the total priorities of the Compose object's parent criteria
         given the priority vectors of its children.
         """
-        for parent_key, parent_value in self.parent.weights[self.parent.name].items():
+        for parent_key, parent_value in self.parent.local_weights[self.parent.name].items():
             for child in self.children:
-
-                if parent_key in child.weights:
-                    for child_key, child_value in child.weights[parent_key].items():
+                if parent_key in child.local_weights:
+                    for child_key, child_value in child.local_weights[parent_key].items():
                         value = parent_value * child_value
                         try:
-                            self.weights[child_key] += value
+                            self.local_weights[child_key] += value
                         except KeyError:
-                            self.weights[child_key] = value
+                            self.local_weights[child_key] = value
                     break
 
-    def normalize_total_priority(self):
+    def normalize_local_priority(self):
         """
-        Updates the 'weights' property of the Compose object with normalized values at the object's level of precision.
+        Updates the 'local_weights' property of the Compose object
+        with normalized values at the object's level of precision.
         """
-        total_sum = sum(self.weights.values())
-        comp_dict = {key: np.divide(value, total_sum).round(self.precision) for key, value in self.weights.items()}
-        self.weights = {self.name: comp_dict}
+        total_sum = sum(self.local_weights.values())
+        comp_dict = {key: np.divide(value, total_sum).round(self.precision)
+                     for key, value in self.local_weights.items()}
+        self.local_weights = {self.name: comp_dict}
+
+    def complete(self):
+        # TODO compute the global priority for every weight in its children
+        pass
 
     def report(self, silent=False):
         """
         Returns the key information of the Compose object as a JSON object, optionally printing it to the console.
         :param silent: boolean, if True, does not print the report to the console; default is False
         """
+        # TODO Provide option to print all reports for all children
         report = json.dumps({'Name': self.name,
                              'Parent': self.parent.name,
-                             'Children': [child.name for child in self.children]
+                             'Children': {
+                                 'Count': len(self.children),
+                                 'Names': [child.name for child in self.children]
+                             }
                              }, indent=4)
         if not silent:
             print(report)
         return report
-
-
-if __name__ == '__main__':
-    pass

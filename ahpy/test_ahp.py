@@ -29,13 +29,13 @@ def test_drinks_cr_dd():
 
 def test_drinks_weights_precision_3_saaty():
     c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
-    assert c.weights == {'Drinks': {'beer': 0.116, 'coffee': 0.177, 'milk': 0.129, 'soda': 0.190,
+    assert c.local_weights == {'Drinks': {'beer': 0.116, 'coffee': 0.177, 'milk': 0.129, 'soda': 0.190,
                                     'tea': 0.042, 'water': 0.327, 'wine': 0.019}}
 
 
 def test_drinks_weights_precision_4_dd():
     c = ahpy.Compare('Drinks', drinks, precision=4, random_index='dd')
-    assert c.weights == {'Drinks': {'beer': 0.1164, 'coffee': 0.1775, 'milk': 0.1288, 'soda': 0.1896,
+    assert c.local_weights == {'Drinks': {'beer': 0.1164, 'coffee': 0.1775, 'milk': 0.1288, 'soda': 0.1896,
                                     'tea': 0.0418, 'water': 0.3268, 'wine': 0.0191}}
 
 
@@ -83,7 +83,7 @@ def test_cities_weights_saaty_precision_3():
     cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
 
     c = ahpy.Compose('Goal', cr, comp_matrices)
-    assert c.weights == {'Goal': {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}}
+    assert c.local_weights == {'Goal': {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}}
 
 
 def test_cities_weights_dd_precision_4():
@@ -97,7 +97,7 @@ def test_cities_weights_dd_precision_4():
     cr = ahpy.Compare('Goal', criteria, precision=4)
 
     c = ahpy.Compose('Goal', cr, comp_matrices)
-    assert c.weights == {'Goal': {'Bethesda': 0.2291, 'Boston': 0.2747, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}}
+    assert c.local_weights == {'Goal': {'Bethesda': 0.2291, 'Boston': 0.2747, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}}
 
 
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete
@@ -115,7 +115,7 @@ def test_incomplete_example_missing_comparisons():
 
 def test_incomplete_example_weights():
     cu = ahpy.Compare('Incomplete Example', u)
-    assert cu.weights == {'Incomplete Example': {'a': 0.3738, 'b': 0.392, 'c': 0.0985, 'd': 0.1357}}
+    assert cu.local_weights == {'Incomplete Example': {'a': 0.3738, 'b': 0.392, 'c': 0.0985, 'd': 0.1357}}
 
 
 def test_incomplete_example_cr():
@@ -145,7 +145,7 @@ def test_incomplete_housing_missing_comparisons():
 def test_normalized_weights():
     f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
     cf = ahpy.Compare('Fuel Economy', f)
-    assert cf.weights == {'Fuel Economy': {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}}
+    assert cf.local_weights == {'Fuel Economy': {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}}
 
 
 a = 'abcdefghijklmnopqrstuvwxyz'
@@ -164,10 +164,10 @@ def test_size_limit_saaty():
 def test_size_limit_override_saaty():
     x = dict.fromkeys(itertools.permutations(a, 2), 1)
     cx = ahpy.Compare('CR Test', x, random_index='saaty', cr=False)
-    assert cx.weights == {'CR Test': b}
+    assert cx.local_weights == {'CR Test': b}
 
 
 def test_size_limit_normalize_saaty():
     y = dict.fromkeys([i[0] for i in itertools.combinations(a, 1)], 1)
     cy = ahpy.Compare('CR Test', y, random_index='saaty')
-    assert cy.weights == {'CR Test': b}
+    assert cy.local_weights == {'CR Test': b}
