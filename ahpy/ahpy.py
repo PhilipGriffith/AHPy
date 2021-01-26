@@ -50,6 +50,7 @@ class Compare:
         self.consistency_ratio = None
         self.weights = None
 
+        self.check_input()
         if self.normalize:
             self.build_normalized_criteria()
             self.build_normalized_matrix()
@@ -62,6 +63,20 @@ class Compare:
                 self.complete_matrix()
 
         self.compute()
+
+    def check_input(self):
+        """
+        Raises a ValueError if an input value is not greater than zero;
+        raises a TypeError if an input cannot be cast to a float.
+        """
+        for key, value in self.comparisons.items():
+            try:
+                if not float(value) > 0:
+                    msg = f'{key}: {value} is an invalid input. All input values must be greater than zero.'
+                    raise ValueError(msg)
+            except TypeError:
+                msg = f'{key}: {value} is an invalid input. All input values must be numeric.'
+                raise TypeError(msg)
 
     def check_size(self):
         """
@@ -289,12 +304,16 @@ class Compare:
             if self.normalize:
                 return list({key: value} for key, value in input_dict.items())
             else:
-                return list({','.join(key): value} for key, value in input_dict.items())
+                return list({', '.join(key): value} for key, value in input_dict.items())
 
         report = json.dumps({'Name': self.name,
                              'Weights': self.weights[self.name],
                              'Consistency Ratio': self.consistency_ratio,
                              'Random Index': 'Donegan & Dodd' if self.random_index == 'dd' else 'Saaty',
+                             'Criteria': {
+                                 'Count': len(self.criteria),
+                                 'Names': self.criteria,
+                             },
                              'Comparisons': {
                                  'Input': convert_to_json_format(self.comparisons),
                                  'Computed': convert_to_json_format(self.missing_comparisons)
