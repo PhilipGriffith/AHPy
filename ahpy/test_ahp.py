@@ -29,14 +29,14 @@ def test_drinks_cr_dd():
 
 def test_drinks_weights_precision_3_saaty():
     c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
-    assert c.local_weights == {'Drinks': {'beer': 0.116, 'coffee': 0.177, 'milk': 0.129, 'soda': 0.190,
-                                    'tea': 0.042, 'water': 0.327, 'wine': 0.019}}
+    assert c.local_weights == {'beer': 0.116, 'coffee': 0.177, 'milk': 0.129, 'soda': 0.190,
+                                    'tea': 0.042, 'water': 0.327, 'wine': 0.019}
 
 
 def test_drinks_weights_precision_4_dd():
     c = ahpy.Compare('Drinks', drinks, precision=4, random_index='dd')
-    assert c.local_weights == {'Drinks': {'beer': 0.1164, 'coffee': 0.1775, 'milk': 0.1288, 'soda': 0.1896,
-                                    'tea': 0.0418, 'water': 0.3268, 'wine': 0.0191}}
+    assert c.local_weights == {'beer': 0.1164, 'coffee': 0.1775, 'milk': 0.1288, 'soda': 0.1896,
+                                    'tea': 0.0418, 'water': 0.3268, 'wine': 0.0191}
 
 
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005.
@@ -78,12 +78,11 @@ def test_cities_weights_saaty_precision_3():
     h = ahpy.Compare('Housing', housing, precision=3, random_index='Saaty')
     j = ahpy.Compare('Jobs', jobs, precision=3, random_index='Saaty')
     t = ahpy.Compare('Transportation', transportation, precision=3, random_index='Saaty')
-    comp_matrices = [cu, f, h, j, t]
 
     cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
+    cr.children([cu, f, h, j, t])
 
-    c = ahpy.Compose('Goal', cr, comp_matrices)
-    assert c.local_weights == {'Goal': {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}}
+    assert cr.node_weights == {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}
 
 
 def test_cities_weights_dd_precision_4():
@@ -92,12 +91,11 @@ def test_cities_weights_dd_precision_4():
     h = ahpy.Compare('Housing', housing, precision=4)
     j = ahpy.Compare('Jobs', jobs, precision=4)
     t = ahpy.Compare('Transportation', transportation, precision=4)
-    comp_matrices = [cu, f, h, j, t]
 
     cr = ahpy.Compare('Goal', criteria, precision=4)
+    cr.children([cu, f, h, j, t])
 
-    c = ahpy.Compose('Goal', cr, comp_matrices)
-    assert c.local_weights == {'Goal': {'Bethesda': 0.2291, 'Boston': 0.2747, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}}
+    assert cr.node_weights == {'Bethesda': 0.2291, 'Boston': 0.2748, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}
 
 
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete
@@ -110,12 +108,12 @@ u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
 
 def test_incomplete_example_missing_comparisons():
     cu = ahpy.Compare('Incomplete Example', u)
-    assert cu.missing_comparisons == {('c', 'd'): 0.730297106886979}
+    assert cu._missing_comparisons == {('c', 'd'): 0.730297106886979}
 
 
 def test_incomplete_example_weights():
     cu = ahpy.Compare('Incomplete Example', u)
-    assert cu.local_weights == {'Incomplete Example': {'a': 0.3738, 'b': 0.392, 'c': 0.0985, 'd': 0.1357}}
+    assert cu.local_weights == {'a': 0.3738, 'b': 0.392, 'c': 0.0985, 'd': 0.1357}
 
 
 def test_incomplete_example_cr():
@@ -131,12 +129,12 @@ def test_incomplete_housing_missing_comparisons():
          ('g', 'a'): 3, ('g', 'e'): 5,
          ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
     cm = ahpy.Compare('Incomplete Housing', m)
-    assert cm.missing_comparisons == {('b', 'c'): 0.3300187496240363, ('b', 'e'): 1.7197409185349517,
-                                      ('b', 'g'): 0.4663515002203321, ('c', 'd'): 9.920512661898753,
-                                      ('c', 'f'): 4.852486449214693, ('c', 'h'): 0.5696073301509899,
-                                      ('d', 'e'): 0.5252768142894285, ('d', 'g'): 0.1424438146531802,
-                                      ('e', 'f'): 0.9311973564754218, ('e', 'h'): 0.10930828182051665,
-                                      ('f', 'g'): 0.2912120796181874, ('g', 'h'): 0.4030898885178746}
+    assert cm._missing_comparisons == {('b', 'c'): 0.3300187496240363, ('b', 'e'): 1.7197409185349517,
+                                       ('b', 'g'): 0.4663515002203321, ('c', 'd'): 9.920512661898753,
+                                       ('c', 'f'): 4.852486449214693, ('c', 'h'): 0.5696073301509899,
+                                       ('d', 'e'): 0.5252768142894285, ('d', 'g'): 0.1424438146531802,
+                                       ('e', 'f'): 0.9311973564754218, ('e', 'h'): 0.10930828182051665,
+                                       ('f', 'g'): 0.2912120796181874, ('g', 'h'): 0.4030898885178746}
 
 
 # Example from Haas, R. and Meixner, L., 'An Illustrated Guide to the Analytic Hierarchy Process,'
@@ -145,7 +143,7 @@ def test_incomplete_housing_missing_comparisons():
 def test_normalized_weights():
     f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
     cf = ahpy.Compare('Fuel Economy', f)
-    assert cf.local_weights == {'Fuel Economy': {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}}
+    assert cf.local_weights == {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}
 
 
 a = 'abcdefghijklmnopqrstuvwxyz'
@@ -164,10 +162,10 @@ def test_size_limit_saaty():
 def test_size_limit_override_saaty():
     x = dict.fromkeys(itertools.permutations(a, 2), 1)
     cx = ahpy.Compare('CR Test', x, random_index='saaty', cr=False)
-    assert cx.local_weights == {'CR Test': b}
+    assert cx.local_weights == b
 
 
 def test_size_limit_normalize_saaty():
     y = dict.fromkeys([i[0] for i in itertools.combinations(a, 1)], 1)
     cy = ahpy.Compare('CR Test', y, random_index='saaty')
-    assert cy.local_weights == {'CR Test': b}
+    assert cy.local_weights == b

@@ -2,7 +2,7 @@ import itertools
 
 import numpy as np
 
-from ahpy import Compare, Compose
+from ahpy import Compare
 
 
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
@@ -62,25 +62,69 @@ from ahpy import Compare, Compose
 
 # ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
-
+#
 # cars = ('civic', 'saturn', 'escort', 'clio')
 #
 # gas_m = dict(zip(cars, (34, 27, 24, 28)))
 # gas = Compare('gas', gas_m, precision=3)
 #
 # rel_m = dict(zip(itertools.combinations(cars, 2), (2, 5, 1, 3, 2, 0.25)))
-# rel = Compare('rel', rel_m)
+# rel = Compare('rel', rel_m, 3)
 #
 # style_m = {('civic', 'escort'): 4,
 #            ('saturn', 'civic'): 4, ('saturn', 'escort'): 4, ('saturn', 'clio'): 0.25,
 #            ('clio', 'civic'): 6, ('clio', 'escort'): 5}
-# style = Compare('style', style_m, precision=4)
+# style = Compare('style', style_m, precision=3)
 #
 # cri_m = {('style', 'rel'): 0.5, ('style', 'gas'): 3,
 #          ('rel', 'gas'): 4}
-# parent = Compare('goal', cri_m)
+# goal = Compare('goal', cri_m)
 #
-# c = Compose('goal', parent, (style, rel, gas))
+# goal.children([gas, rel, style])
+
+# ----------------------------------------------------------------------------------
+# Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005.
+# Also at https://www.passagetechnology.com/what-is-the-analytic-hierarchy-process
+#
+# criteria = {('Culture', 'Housing'): 3, ('Culture', 'Transportation'): 5,
+#             ('Family', 'Culture'): 5, ('Family', 'Housing'): 7, ('Family', 'Transportation'): 7,
+#             ('Housing', 'Transportation'): 3,
+#             ('Jobs', 'Culture'): 2, ('Jobs', 'Housing'): 4, ('Jobs', 'Transportation'): 7,
+#             ('Family', 'Jobs'): 1}
+#
+# culture = {('Bethesda', 'Pittsburgh'): 1,
+#            ('Boston', 'Bethesda'): 2, ('Boston', 'Pittsburgh'): 2.5, ('Boston', 'Santa Fe'): 1,
+#            ('Pittsburgh', 'Bethesda'): 1,
+#            ('Santa Fe', 'Bethesda'): 2, ('Santa Fe', 'Pittsburgh'): 2.5}
+#
+# family = {('Bethesda', 'Boston'): 2, ('Bethesda', 'Santa Fe'): 4,
+#           ('Boston', 'Santa Fe'): 2,
+#           ('Pittsburgh', 'Bethesda'): 3, ('Pittsburgh', 'Boston'): 8, ('Pittsburgh', 'Santa Fe'): 9}
+#
+# housing = {('Bethesda', 'Boston'): 5, ('Bethesda', 'Santa Fe'): 2.5,
+#            ('Pittsburgh', 'Bethesda'): 2, ('Pittsburgh', 'Boston'): 9, ('Pittsburgh', 'Santa Fe'): 7,
+#            ('Santa Fe', 'Boston'): 4}
+#
+# jobs = {('Bethesda', 'Pittsburgh'): 3, ('Bethesda', 'Santa Fe'): 4,
+#         ('Boston', 'Bethesda'): 2, ('Boston', 'Pittsburgh'): 6, ('Boston', 'Santa Fe'): 8,
+#         ('Pittsburgh', 'Santa Fe'): 1}
+#
+# transportation = {('Bethesda', 'Boston'): 1.5,
+#                   ('Bethesda', 'Santa Fe'): 4,
+#                   ('Boston', 'Santa Fe'): 2.5,
+#                   ('Pittsburgh', 'Bethesda'): 2,
+#                   ('Pittsburgh', 'Boston'): 3.5,
+#                   ('Pittsburgh', 'Santa Fe'): 9}
+#
+#
+# cu = Compare('Culture', culture, precision=3, random_index='Saaty')
+# f = Compare('Family', family, precision=3, random_index='Saaty')
+# h = Compare('Housing', housing, precision=3, random_index='Saaty')
+# j = Compare('Jobs', jobs, precision=3, random_index='Saaty')
+# t = Compare('Transportation', transportation, precision=3, random_index='Saaty')
+#
+# cr = Compare('Goal', criteria, precision=3, random_index='Saaty')
+# cr.children([cu, f, h, j, t])
 
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
@@ -96,59 +140,56 @@ def m(elements, judgments):
 
 cri = ('cost', 'safety', 'style', 'capacity')
 c_cri = list(itertools.combinations(cri, 2))
-criteria = Compare('goal', m(c_cri, (3, 7, 3, 9, 1, np.reciprocal(float(7)))))
+criteria = Compare('goal', m(c_cri, (3, 7, 3, 9, 1, 1/7)))
 
 alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
 pairs = list(itertools.combinations(alt, 2))
 
 costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
 c_pairs = list(itertools.combinations(costs, 2))
-cost_sub = Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
+cost = Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
 
-cost_price_m = (9, 9, 1, 0.5, 5, 1, r(9), r(9), r(7), r(9), r(9), r(7), .5, 5, 6)
+cost_price_m = (9, 9, 1, 0.5, 5, 1, 1/9, 1/9, 1/7, 1/9, 1/9, 1/7, 1/2, 5, 6)
 cost_price = Compare('cost price', m(pairs, cost_price_m))
 
 cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
 cost_fuel = Compare('cost fuel', m(pairs, cost_fuel_m))
 
-cost_resale_m = (3, 4, .5, 2, 2, 2, .2, 1, 1, r(6), .5, .5, 4, 4, 1)
+cost_resale_m = (3, 4, 1/2, 2, 2, 2, 1/5, 1, 1, 1/6, 1/2, 1/2, 4, 4, 1)
 cost_resale = Compare('cost resale', m(pairs, cost_resale_m))
 
 cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
 cost_maint = Compare('cost maintenance', m(pairs, cost_maint_m))
 
-safety_m = (1, 5, 7, 9, r(3), 5, 7, 9, r(3), 2, 9, r(8), 2, r(8), r(9))
+safety_m = (1, 5, 7, 9, 1/3, 5, 7, 9, 1/3, 2, 9, 1/8, 2, 1/8, 1/9)
 safety = Compare('safety', m(pairs, safety_m))
 
-style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, r(6), 3, r(3), 7, 5, .2)
+style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1/6, 3, 1/3, 7, 5, 1/5)
 style = Compare('style', m(pairs, style_m))
 
-capacity_sub = Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
+capacity = Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
 
-capacity_pass_m = (1, .5, 1, 3, .5, .5, 1, 3, .5, 2, 6, 1, 3, .5, r(6))
+capacity_pass_m = (1, 1/2, 1, 3, 1/2, 1/2, 1, 3, 1/2, 2, 6, 1, 3, 1/2, 1/6)
 capacity_pass = Compare('capacity passenger', m(pairs, capacity_pass_m))
 
-capacity_cargo_m = (1, .5, .5, .5, r(3), .5, .5, .5, r(3), 1, 1, .5, 1, .5, .5)
+capacity_cargo_m = (1, 1/2, 1/2, 1/2, 1/3, 1/2, 1/2, 1/2, 1/3, 1, 1, 1/2, 1, 1/2, 1/2)
 capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
 
-cost = Compose('cost', cost_sub, (cost_price, cost_fuel, cost_resale, cost_maint))
-capacity = Compose('capacity', capacity_sub, (capacity_cargo, capacity_pass))
-goal = Compose('final', criteria, (cost, safety, style, capacity))
-#
 # w = goal.parent.weights[goal.parent.name]['cost']
 # for child in cost.children:
 #     print(cost.parent.weights[cost.parent.name][child.name] * w)
 
-# print(cost_price.weights)
-
-print(goal.local_weights)
-capacity_cargo.report()
+cost.children([cost_price, cost_fuel, cost_resale, cost_maint])
+capacity.children([capacity_pass, capacity_cargo])
+criteria.children([cost, safety, style, capacity])
+criteria.report()
+print(criteria.node_weights)
 
 # ----------------------------------------------------------------------------------
 
 u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
      ('beta', 'chi'): 3, ('beta', 'delta'): 4}
-cu = Compare('Incomplete Test', u)
+# cu = Compare('Incomplete Test', u)
 
 m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
      ('b', 'd'): 5, ('b', 'f'): 3,

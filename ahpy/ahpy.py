@@ -36,37 +36,41 @@ class Compare:
         self.name = name
         self.comparisons = comparisons
         self.precision = precision
-        self.random_index = random_index
+        self.random_index = random_index.lower()
         self.iterations = iterations
         self.tolerance = tolerance
         self.cr = cr
 
-        self.normalize = not isinstance(next(iter(self.comparisons)), tuple)
-        self.criteria = []
-        self.pairs = []
-        self.size = None
-        self.matrix = None
-        self.missing_comparisons = None
+        self._normalize = not isinstance(next(iter(self.comparisons)), tuple)
+        self._criteria = []
+        self._pairs = []
+        self._size = None
+        self._matrix = None
+        self._missing_comparisons = None
+        self._node_children = None
+        self._node_precision = precision
+
         self.consistency_ratio = None
         self.local_weights = None
         self.global_weights = None
+        self.node_weights = None
 
-        self.check_input()
-
-        if self.normalize:
-            self.build_normalized_criteria()
-            self.build_normalized_matrix()
+        self._check_input()
+        if self._normalize:
+            self._build_normalized_criteria()
+            self._check_size()
+            self._build_normalized_matrix()
         else:
-            self.build_criteria()
-            self.insert_comparisons()
-            self.build_matrix()
-            self.get_missing_comparisons()
-            if self.missing_comparisons:
-                self.complete_matrix()
+            self._build_criteria()
+            self._check_size()
+            self._insert_comparisons()
+            self._build_matrix()
+            self._get_missing_comparisons()
+            if self._missing_comparisons:
+                self._complete_matrix()
+        self._compute()
 
-        self.compute()
-
-    def check_input(self):
+    def _check_input(self):
         """
         Raises a ValueError if an input value is not greater than zero;
         raises a TypeError if an input cannot be cast to a float.
@@ -80,91 +84,87 @@ class Compare:
                 msg = f'{key}: {value} is an invalid input. All input values must be numeric.'
                 raise TypeError(msg)
 
-    def check_size(self):
+    def _check_size(self):
         """
         Raises a ValueError if a consistency ratio is requested and
         the chosen random index does not support the size of the matrix.
         """
-        if not self.normalize and self.cr and ((self.random_index == 'saaty' and self.size > 15) or self.size > 100):
+        if not self._normalize and self.cr and ((self.random_index == 'saaty' and self._size > 15) or self._size > 100):
             msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
                   "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
                   "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
                   "\tTo compute the priority vector without a consistency ratio, use the 'cr=False' argument."
             raise ValueError(msg)
 
-    def build_criteria(self):
+    def _build_criteria(self):
         """
         Creates an empty 'pairs' dictionary that contains all possible permutations
-        of those criteria found within the keys of the input 'comparisons' dictionary,
-        then makes sure the size of the resulting matrix will be supported by the chosen random index.
+        of those criteria found within the keys of the input 'comparisons' dictionary.
         """
         for key in self.comparisons:
             for criterion in key:
-                if criterion not in self.criteria:
-                    self.criteria.append(criterion)
-        self.pairs = dict.fromkeys(itertools.permutations(self.criteria, 2))
-        self.size = len(self.criteria)
-        self.check_size()
+                if criterion not in self._criteria:
+                    self._criteria.append(criterion)
+        self._pairs = dict.fromkeys(itertools.permutations(self._criteria, 2))
+        self._size = len(self._criteria)
 
-    def build_normalized_criteria(self):
+    def _build_normalized_criteria(self):
         """
-        Creates a list of those criteria found within the keys of the input 'comparisons' dictionary,
-        then makes sure the size of the resulting matrix will be supported by the chosen random index.
+        Creates a list of those criteria found within the keys of the input 'comparisons' dictionary.
         """
-        self.criteria = list(self.comparisons)
-        self.size = len(self.criteria)
-        self.check_size()
+        self._criteria = list(self.comparisons)
+        self._size = len(self._criteria)
 
-    def insert_comparisons(self):
+    def _insert_comparisons(self):
         """
         Fills the entries of the 'pairs' dictionary with the corresponding comparison values
         of the input 'comparisons' dictionary or their computed reciprocals.
         """
         for key, value in self.comparisons.items():
             inverse_key = key[::-1]
-            self.pairs[key] = value
-            self.pairs[inverse_key] = np.reciprocal(float(value))
+            self._pairs[key] = value
+            self._pairs[inverse_key] = np.reciprocal(float(value))
 
-    def build_matrix(self):
+    def _build_matrix(self):
         """
         Creates a correctly-sized numpy matrix of 1s, then fills the matrix with values from the 'pairs' dictionary.
         """
-        self.matrix = np.ones((self.size, self.size))
-        for pair, value in self.pairs.items():
-            location = tuple(self.criteria.index(criterion) for criterion in pair)
-            self.matrix.itemset(location, value)
+        self._matrix = np.ones((self._size, self._size))
+        for pair, value in self._pairs.items():
+            location = tuple(self._criteria.index(criterion) for criterion in pair)
+            self._matrix.itemset(location, value)
 
-    def build_normalized_matrix(self):
+    def _build_normalized_matrix(self):
         """
         Creates a numpy matrix of values from the input 'comparisons' dictionary.
         """
-        self.matrix = np.array(tuple(value for value in self.comparisons.values()), float)
+        self._matrix = np.array(tuple(value for value in self.comparisons.values()), float)
 
-    def get_missing_comparisons(self):
+    def _get_missing_comparisons(self):
         """
         Creates the 'missing comparisons' dictionary by populating its keys with the unique comparisons
         missing from the input 'comparisons' dictionary and populating its values with 1s.
         """
-        missing_comparisons = [key for key, value in self.pairs.items() if not value]
+        missing_comparisons = [key for key, value in self._pairs.items() if not value]
         for criteria in missing_comparisons:
             del missing_comparisons[missing_comparisons.index(criteria[::-1])]
-        self.missing_comparisons = dict.fromkeys(missing_comparisons, 1)
+        self._missing_comparisons = dict.fromkeys(missing_comparisons, 1)
 
-    def complete_matrix(self):
+    def _complete_matrix(self):
         """
         Optimally completes an incomplete pairwise comparison matrix according to the algorithm described in
         Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
         Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. https://doi.org/10.1016/j.mcm.2010.02.047
         """
-        last_iteration = np.array(tuple(self.missing_comparisons.values()))
+        last_iteration = np.array(tuple(self._missing_comparisons.values()))
         difference = np.inf
         while difference > self.tolerance:
-            self.minimize_coordinate_values()
-            current_iteration = np.array(tuple(self.missing_comparisons.values()))
+            self._minimize_coordinate_values()
+            current_iteration = np.array(tuple(self._missing_comparisons.values()))
             difference = np.linalg.norm(last_iteration - current_iteration)
             last_iteration = current_iteration
 
-    def minimize_coordinate_values(self):
+    def _minimize_coordinate_values(self):
         """
         Computes the minimum value for each missing value from the 'missing_comparisons' dictionary
         using the cyclic coordinates method described in Bozóki et al.
@@ -177,51 +177,51 @@ class Compare:
             :param x_location: tuple, the matrix location of the variable to be minimized
             """
             inverse_x_location = x_location[::-1]
-            self.matrix.itemset(x_location, x)
-            self.matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
-            return np.max(np.linalg.eigvals(self.matrix))
+            self._matrix.itemset(x_location, x)
+            self._matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
+            return np.max(np.linalg.eigvals(self._matrix))
 
         # The upper bound of the solution space is 10 times the largest value of the matrix.
-        upper_bound = np.nanmax(self.matrix) * 10
+        upper_bound = np.nanmax(self._matrix) * 10
 
-        for comparison in self.missing_comparisons:
-            comparison_location = tuple(self.criteria.index(criterion) for criterion in comparison)
+        for comparison in self._missing_comparisons:
+            comparison_location = tuple(self._criteria.index(criterion) for criterion in comparison)
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=np.ComplexWarning)
-                self.set_matrix(comparison)
+                self._set_matrix(comparison)
                 optimal_solution = spo.minimize_scalar(lambda_max, args=(comparison_location,),
                                                        method='bounded', bounds=(0, upper_bound))
-            self.missing_comparisons[comparison] = np.real(optimal_solution.x)
+            self._missing_comparisons[comparison] = np.real(optimal_solution.x)
 
-    def set_matrix(self, comparison):
+    def _set_matrix(self, comparison):
         """
         Sets the value of every missing comparison in the comparison matrix (other than the current comparison)
         to its current value in the 'missing_comparisons' dictionary or its reciprocal.
         :param comparison: tuple, a key from the 'missing_comparisons' dictionary
         """
-        for key, value in self.missing_comparisons.items():
+        for key, value in self._missing_comparisons.items():
             if key != comparison:
-                location = tuple(self.criteria.index(criterion) for criterion in key)
+                location = tuple(self._criteria.index(criterion) for criterion in key)
                 inverse_location = location[::-1]
-                self.matrix.itemset(location, value)
-                self.matrix.itemset(inverse_location, np.reciprocal(float(value)))
+                self._matrix.itemset(location, value)
+                self._matrix.itemset(inverse_location, np.reciprocal(float(value)))
 
-    def compute(self):
+    def _compute(self):
         """
-        Runs all functions necessary for building the weights and consistency ratio of the Compare object.
+        Runs all functions necessary for building the local weights and consistency ratio of the Compare object.
         """
-        if not self.normalize:
-            priority_vector = self.compute_priority_vector(self.matrix, self.iterations)
+        if not self._normalize:
+            priority_vector = self._compute_priority_vector(self._matrix, self.iterations)
             if self.cr:
-                self.compute_consistency_ratio()
+                self._compute_consistency_ratio()
         else:
-            priority_vector = np.divide(self.matrix, np.sum(self.matrix, keepdims=True)).round(self.precision)
+            priority_vector = np.divide(self._matrix, np.sum(self._matrix, keepdims=True)).round(self.precision)
             self.consistency_ratio = 0.0
-        weights = dict(zip(self.criteria, priority_vector))
-        sorted_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
-        self.local_weights = {self.name: sorted_weights}
+        weights = dict(zip(self._criteria, priority_vector))
+        self.local_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
+        self.node_weights = self.local_weights.copy()
 
-    def compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
+    def _compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
         Returns the priority vector of the Compare object.
         :param matrix: numpy matrix, the matrix from which to derive the priority vector
@@ -236,7 +236,7 @@ class Compare:
 
         # Create a zero matrix as the comparison eigenvector if this is the first iteration
         if comp_eigenvector is None:
-            comp_eigenvector = np.zeros(self.size)
+            comp_eigenvector = np.zeros(self._size)
 
         # Compute the difference between the principal and comparison eigenvectors
         remainder = np.subtract(principal_eigenvector, comp_eigenvector).round(self.precision)
@@ -251,11 +251,11 @@ class Compare:
         # in which case set the last principal eigenvector as the priority vector
         iterations -= 1
         if iterations > 0:
-            return self.compute_priority_vector(sq_matrix, iterations, principal_eigenvector)
+            return self._compute_priority_vector(sq_matrix, iterations, principal_eigenvector)
         else:
             return principal_eigenvector.round(self.precision)
 
-    def compute_consistency_ratio(self):
+    def _compute_consistency_ratio(self):
         """
         Sets the 'consistency_ratio' property of the Compare object, using random index estimates from
         Donegan and Dodd's 'A note on Saaty's Random Indexes' in Mathematical and Computer Modelling,
@@ -264,10 +264,9 @@ class Compare:
         Saaty's Theory And Applications Of The Analytic Network Process, Pittsburgh: RWS Publications, 2005, pg. 31.
         """
         # A valid, square, reciprocal matrix with only one or two rows must be consistent
-        if self.size < 3:
+        if self._size < 3:
             self.consistency_ratio = 0.0
             return
-
         if self.random_index == 'saaty':
             ri_dict = {3: 0.52, 4: 0.89, 5: 1.11, 6: 1.25, 7: 1.35, 8: 1.40, 9: 1.45,
                        10: 1.49, 11: 1.52, 12: 1.54, 13: 1.56, 14: 1.58, 15: 1.59}
@@ -282,18 +281,51 @@ class Compare:
             return
 
         try:
-            random_index = ri_dict[self.size]
+            random_index = ri_dict[self._size]
         # If the size of the comparison matrix falls between two computed estimates, compute a weighted estimate
         except KeyError:
             s = tuple(ri_dict.keys())
-            smaller = s[bisect.bisect_left(s, self.size) - 1]
-            larger = s[bisect.bisect_right(s, self.size)]
+            smaller = s[bisect.bisect_left(s, self._size) - 1]
+            larger = s[bisect.bisect_right(s, self._size)]
             estimate = (ri_dict[larger] - ri_dict[smaller]) / (larger - smaller)
-            random_index = estimate * (self.size - smaller) + ri_dict[smaller]
+            random_index = estimate * (self._size - smaller) + ri_dict[smaller]
 
-        lambda_max = np.max(np.linalg.eigvals(self.matrix))  # Find the Perron-Frobenius eigenvalue of the matrix
-        consistency_index = (lambda_max - self.size) / (self.size - 1)
+        lambda_max = np.max(np.linalg.eigvals(self._matrix))  # Find the Perron-Frobenius eigenvalue of the matrix
+        consistency_index = (lambda_max - self._size) / (self._size - 1)
         self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
+
+    def children(self, children):
+        """
+        Runs all functions necessary for building the node weights of the Compare object, given its children.
+        """
+        self._node_children = children
+        self._compute_node_precision()
+        self._compute_node_weights()
+
+    def _compute_node_precision(self):
+        """
+        Updates the 'node_precision' property of the Compare object by selecting the lowest precision of its children.
+        """
+        lowest_precision = np.min([child.precision for child in self._node_children])
+        if lowest_precision < self._node_precision:
+            self._node_precision = lowest_precision
+
+    def _compute_node_weights(self):
+        """
+        Updates the node weights of the Compare object given the node weights of its children.
+        """
+        self.node_weights = dict()
+        for parent_key, parent_value in self.local_weights.items():
+            for child in self._node_children:
+                if parent_key == child.name:
+                    for child_key, child_value in child.node_weights.items():
+                        value = parent_value * child_value
+                        try:
+                            self.node_weights[child_key] += value
+                        except KeyError:
+                            self.node_weights[child_key] = value
+                    break
+        self.node_weights = {key: value.round(self._node_precision) for key, value in self.node_weights.items()}
 
     def report(self, silent=False):
         """
@@ -306,7 +338,7 @@ class Compare:
             Returns a dictionary as a list of JSON compatible objects.
             :param input_dict: dictionary, the dictionary to be converted
             """
-            if self.normalize:
+            if self._normalize:
                 return list({key: value} for key, value in input_dict.items())
             else:
                 return list({', '.join(key): value} for key, value in input_dict.items())
@@ -324,91 +356,19 @@ class Compare:
 
         report = json.dumps({'Name': self.name,
                              'Weights': {
-                                 'Local': self.local_weights[self.name],
-                                 'Global': self.global_weights[self.name]
+                                 'Local': self.local_weights,
+                                 'Global': self.global_weights
                                  if self.global_weights else None},
                              'Consistency Ratio': self.consistency_ratio,
                              'Random Index': set_random_index(),
                              'Criteria': {
-                                 'Count': len(self.criteria),
-                                 'Names': self.criteria,
+                                 'Count': len(self._criteria),
+                                 'Names': self._criteria,
                              },
                              'Comparisons': {
                                  'Input': convert_to_json_format(self.comparisons),
-                                 'Computed': convert_to_json_format(self.missing_comparisons)
-                                 if self.missing_comparisons else None}
-                             }, indent=4)
-        if not silent:
-            print(report)
-        return report
-
-
-class Compose:
-    # TODO Create a doc string for this
-    def __init__(self, name=None, parent=None, children=None):
-        self.name = name
-        self.parent = parent
-        self.children = children
-
-        self.precision = None
-        self.local_weights = dict()
-
-        self.compute_precision()
-        self.compute_local_priority()
-        self.normalize_local_priority()
-
-    def compute_precision(self):
-        """
-        Updates the 'precision' property of the Compose object by selecting the lowest precision of its children.
-        """
-        precision = np.min([child.precision for child in self.children])
-        if precision < self.parent.precision:
-            self.precision = precision
-        else:
-            self.precision = self.parent.precision
-
-    def compute_local_priority(self):
-        """
-        Computes the total priorities of the Compose object's parent criteria
-        given the priority vectors of its children.
-        """
-        for parent_key, parent_value in self.parent.local_weights[self.parent.name].items():
-            for child in self.children:
-                if parent_key in child.local_weights:
-                    for child_key, child_value in child.local_weights[parent_key].items():
-                        value = parent_value * child_value
-                        try:
-                            self.local_weights[child_key] += value
-                        except KeyError:
-                            self.local_weights[child_key] = value
-                    break
-
-    def normalize_local_priority(self):
-        """
-        Updates the 'local_weights' property of the Compose object
-        with normalized values at the object's level of precision.
-        """
-        total_sum = sum(self.local_weights.values())
-        comp_dict = {key: np.divide(value, total_sum).round(self.precision)
-                     for key, value in self.local_weights.items()}
-        self.local_weights = {self.name: comp_dict}
-
-    def complete(self):
-        # TODO compute the global priority for every weight in its children
-        pass
-
-    def report(self, silent=False):
-        """
-        Returns the key information of the Compose object as a JSON object, optionally printing it to the console.
-        :param silent: boolean, if True, does not print the report to the console; default is False
-        """
-        # TODO Provide option to print all reports for all children
-        report = json.dumps({'Name': self.name,
-                             'Parent': self.parent.name,
-                             'Children': {
-                                 'Count': len(self.children),
-                                 'Names': [child.name for child in self.children]
-                             }
+                                 'Computed': convert_to_json_format(self._missing_comparisons)
+                                 if self._missing_comparisons else None}
                              }, indent=4)
         if not silent:
             print(report)
