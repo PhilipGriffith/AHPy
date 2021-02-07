@@ -47,12 +47,13 @@ class Compare:
         self._size = None
         self._matrix = None
         self._missing_comparisons = None
-        self._node_children = None
-        self._node_precision = precision
 
         self.consistency_ratio = None
         self.local_weights = None
         self.global_weights = None
+
+        self.node_children = None
+        self._node_precision = None
         self.node_weights = None
 
         self._check_input()
@@ -295,20 +296,28 @@ class Compare:
         self.consistency_ratio = np.real(consistency_index / random_index).round(self.precision)
 
     def children(self, children):
+
+        self.node_children = children
+        self.complete()
+
+    def complete(self):
         """
-        Runs all functions necessary for building the node weights of the Compare object, given its children.
+        Runs all functions necessary for building the node weights of the Compare object, given its children,
+        as well as updating the global weights of the Compare object's children.
         """
-        self._node_children = children
         self._compute_node_precision()
         self._compute_node_weights()
+        self.compute_global_weights()
 
     def _compute_node_precision(self):
         """
         Updates the 'node_precision' property of the Compare object by selecting the lowest precision of its children.
         """
-        lowest_precision = np.min([child.precision for child in self._node_children])
-        if lowest_precision < self._node_precision:
+        lowest_precision = np.min([child.precision for child in self.node_children])
+        if lowest_precision < self.precision:
             self._node_precision = lowest_precision
+        else:
+            self._node_precision = self.precision
 
     def _compute_node_weights(self):
         """
@@ -316,7 +325,7 @@ class Compare:
         """
         self.node_weights = dict()
         for parent_key, parent_value in self.local_weights.items():
-            for child in self._node_children:
+            for child in self.node_children:
                 if parent_key == child.name:
                     for child_key, child_value in child.node_weights.items():
                         value = parent_value * child_value
@@ -326,6 +335,16 @@ class Compare:
                             self.node_weights[child_key] = value
                     break
         self.node_weights = {key: value.round(self._node_precision) for key, value in self.node_weights.items()}
+
+    def compute_global_weights(self):
+
+        for parent_key, parent_value in self.local_weights.items():
+            for child in self.node_children:
+                if parent_key == child.name:
+        # for child in self.node_children:
+            # if child.node_children:
+            #     child.compute_global_weights()
+                    print(self.name, parent_key, child.name, child.node_weights)
 
     def report(self, silent=False):
         """

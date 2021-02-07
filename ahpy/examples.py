@@ -182,8 +182,9 @@ capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision
 cost.children([cost_price, cost_fuel, cost_resale, cost_maint])
 capacity.children([capacity_pass, capacity_cargo])
 criteria.children([cost, safety, style, capacity])
-criteria.report()
-print(criteria.node_weights)
+# capacity_cargo.report()
+# capacity.report()
+# criteria.report()
 
 # ----------------------------------------------------------------------------------
 
