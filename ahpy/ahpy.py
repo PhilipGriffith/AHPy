@@ -405,8 +405,7 @@ class Compare:
                              'Children': {
                                  'Count': len(self._node_children),
                                  'Names': [child._name for child in self._node_children]
-                                 if self._node_children else None
-                             },
+                             } if self._node_children else None,
                              'Comparisons': {
                                  'Input': convert_to_json_format(self._comparisons),
                                  'Computed': convert_to_json_format(self._missing_comparisons)
