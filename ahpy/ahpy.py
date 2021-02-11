@@ -45,14 +45,14 @@ class Compare:
         self._matrix = None
         self._missing_comparisons = None
 
+        self._node_weight = 1.0
+        self._node_children = None
+        self._node_precision = None
+
         self.consistency_ratio = None
         self.local_weights = None
         self.global_weights = None
-
-        self._weight = 1.0
-        self._node_children = None
-        self._node_precision = None
-        self.node_weights = None
+        self.target_weights = None
 
         self._check_input()
         if self._normalize:
@@ -88,7 +88,8 @@ class Compare:
         Raises a ValueError if a consistency ratio is requested and
         the chosen random index does not support the size of the matrix.
         """
-        if not self._normalize and self._cr and ((self._random_index == 'saaty' and self._size > 15) or self._size > 100):
+        if not self._normalize and self._cr and (
+                (self._random_index == 'saaty' and self._size > 15) or self._size > 100):
             msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
                   "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
                   "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
@@ -219,7 +220,7 @@ class Compare:
         weights = dict(zip(self._elements, priority_vector))
         self.local_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
         self.global_weights = self.local_weights.copy()
-        self.node_weights = self.local_weights.copy()
+        self.target_weights = self.local_weights.copy()
 
     def _compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
@@ -304,13 +305,13 @@ class Compare:
         :param children: list or tuple, Compare objects that form the children of the current Compare object
         """
         self._node_children = children
-        self._compute_node_precision()
-        self._compute_node_weights()
+        self._set_node_precision()
+        self._compute_target_weights()
         self._compute_global_weights()
 
-    def _compute_node_precision(self):
+    def _set_node_precision(self):
         """
-        Updates the 'node_precision' property of the Compare object by selecting the lowest precision of its children.
+        Sets the 'node_precision' property of the Compare object by selecting the lowest precision of its children.
         """
         lowest_precision = np.min([child._precision for child in self._node_children])
         if lowest_precision < self._precision:
@@ -318,28 +319,22 @@ class Compare:
         else:
             self._node_precision = self._precision
 
-    def _compute_node_weights(self):
+    def _compute_target_weights(self):
         """
-        Updates the 'node_weights' dictionary of the Compare object given the node weights of its children.
+        Builds the 'target_weights' dictionary of the Compare object given the target weights of its children.
         """
-        self.node_weights = dict()
+        self.target_weights = dict()
         for parent_key, parent_value in self.local_weights.items():
             for child in self._node_children:
                 if parent_key == child._name:
-                    for child_key, child_value in child.node_weights.items():
+                    for child_key, child_value in child.target_weights.items():
                         value = parent_value * child_value
                         try:
-                            self.node_weights[child_key] += value
+                            self.target_weights[child_key] += value
                         except KeyError:
-                            self.node_weights[child_key] = value
+                            self.target_weights[child_key] = value
                     break
-        self.node_weights = {key: value.round(self._node_precision) for key, value in self.node_weights.items()}
-
-    def complete(self):
-        """
-        The public method for calling _compute_global_weights().
-        """
-        self._compute_global_weights()
+        self.target_weights = {key: value.round(self._node_precision) for key, value in self.target_weights.items()}
 
     def _compute_global_weights(self):
         """
@@ -349,7 +344,7 @@ class Compare:
             for parent_key, parent_value in self.local_weights.items():
                 for child in self._node_children:
                     if parent_key == child._name:
-                        child._weight = np.round(self._weight * parent_value, self._precision)
+                        child._node_weight = np.round(self._node_weight * parent_value, self._precision)
                         child._apply_weight()
                         child._compute_global_weights()
                         break
@@ -359,7 +354,13 @@ class Compare:
         Updates the 'global_weights' dictionary of the Compare object given the global weight of the node.
         """
         for key in self.global_weights:
-            self.global_weights[key] = np.round(self._weight * self.local_weights[key], self._precision)
+            self.global_weights[key] = np.round(self._node_weight * self.local_weights[key], self._precision)
+
+    def complete(self):
+        """
+        The public method for calling _compute_global_weights().
+        """
+        self._compute_global_weights()
 
     def report(self, silent=False):
         """
@@ -387,18 +388,24 @@ class Compare:
             elif self._random_index == 'saaty':
                 random_index = 'Saaty'
             return random_index
-# TODO Add children to report and goal weights if weight = 1.0
+
         report = json.dumps({'Name': self._name,
-                             'Weight': self._weight,
+                             'Weight': self._node_weight,
                              'Weights': {
                                  'Local': self.local_weights,
-                                 'Global': self.global_weights
+                                 'Global': self.global_weights,
+                                 'Target': self.target_weights if self._node_weight == 1.0 else None
                              },
                              'Consistency Ratio': self.consistency_ratio,
                              'Random Index': set_random_index(),
                              'Elements': {
                                  'Count': len(self._elements),
                                  'Names': self._elements
+                             },
+                             'Children': {
+                                 'Count': len(self._node_children),
+                                 'Names': [child._name for child in self._node_children]
+                                 if self._node_children else None
                              },
                              'Comparisons': {
                                  'Input': convert_to_json_format(self._comparisons),

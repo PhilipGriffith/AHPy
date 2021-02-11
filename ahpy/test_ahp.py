@@ -80,9 +80,9 @@ def test_cities_weights_saaty_precision_3():
     t = ahpy.Compare('Transportation', transportation, precision=3, random_index='Saaty')
 
     cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
-    cr.children([cu, f, h, j, t])
+    cr.add_children([cu, f, h, j, t])
 
-    assert cr.node_weights == {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}
+    assert cr.target_weights == {'Bethesda': 0.229, 'Boston': 0.275, 'Pittsburgh': 0.385, 'Santa Fe': 0.111}
 
 
 def test_cities_weights_dd_precision_4():
@@ -93,9 +93,9 @@ def test_cities_weights_dd_precision_4():
     t = ahpy.Compare('Transportation', transportation, precision=4)
 
     cr = ahpy.Compare('Goal', criteria, precision=4)
-    cr.children([cu, f, h, j, t])
+    cr.add_children([cu, f, h, j, t])
 
-    assert cr.node_weights == {'Bethesda': 0.2291, 'Boston': 0.2748, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}
+    assert cr.target_weights == {'Bethesda': 0.2291, 'Boston': 0.2748, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}
 
 
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete

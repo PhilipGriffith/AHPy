@@ -181,29 +181,30 @@ capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision
 
 # capacity_pass.add_children([leg_room, seats])
 cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
-# capacity.add_children([capacity_pass, capacity_cargo])
+capacity.add_children([capacity_pass, capacity_cargo])
 criteria.add_children([cost, safety, style, capacity])
 
 # leg_room.report()
 # seats.report()
 # capacity_pass.report()
-print('Criteria')
-for k, v in criteria.node_weights.items():
-    print(k, v)
-capacity.report()
-print('Capacity before children')
-for k, v in capacity.node_weights.items():
-    print(k, v)
-capacity.add_children([capacity_pass, capacity_cargo])
-print('Capacity after children')
-for k, v in capacity.node_weights.items():
-    print(k, v)
-capacity.report()
-print('Criteria')
-for k, v in criteria.node_weights.items():
-    print(k, v)
+# print('Criteria')
 # for k, v in criteria.node_weights.items():
 #     print(k, v)
+# capacity.report()
+# print('Capacity before children')
+# for k, v in capacity.node_weights.items():
+#     print(k, v)
+# capacity.add_children([capacity_pass, capacity_cargo])
+# print('Capacity after children')
+# for k, v in capacity.node_weights.items():
+#     print(k, v)
+capacity.report()
+# print('Criteria')
+# for k, v in criteria.node_weights.items():
+#     print(k, v)
+# for k, v in criteria.node_weights.items():
+#     print(k, v)
+criteria.report()
 
 # ----------------------------------------------------------------------------------
 
