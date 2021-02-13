@@ -2,7 +2,7 @@ import itertools
 
 import pytest
 
-from ahpy import ahpy
+import ahpy
 
 # Example from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.

@@ -24,7 +24,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords='ahp, mcdm, mcda',
+    keywords='AHP, MCDM, MCDA',
     install_requires=[
         'numpy',
         'scipy'
