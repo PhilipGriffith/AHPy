@@ -11,21 +11,24 @@ class Compare:
     """
     This class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using a
     dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons.
-    The 'name' property is used to link the Compare object to its parent Compose object.
-    :param name: string, the name of the Compare object; if the object has a parent, this name MUST be included
-        as a label of its parent
+    NB: The 'name' property is used to link a child Compare object to its parent Compare object.
+    :param name: string, the name of the Compare object;
+        if the object has a parent, this name MUST be included as an element of its parent
     :param comparisons: dictionary, a dictionary in one of two forms: (i) each key is a tuple of two elements and
         each value is their pairwise comparison value, or (ii) each key is a string of one element and each value
         is that element's measured value
+        Examples: (i) {('a', 'b'): 3, ('b', 'c'): 2}, (ii) {'a': 1.2, 'b': 2.3, 'c': 3.4}
     :param precision: integer, number of decimal places of precision to compute both the priority
         vector and the consistency ratio; default is 4
-    :param random_index: string, the random index estimates used to compute the consistency ratio
-        (see the compute_consistency_ratio function for more information regarding the different estimates);
+    :param random_index: string, the random index estimates used to compute the consistency ratio;
+        see the compute_consistency_ratio function for more information regarding the different estimates;
         valid input: 'dd', 'saaty'; default is 'dd'
-    :param iterations: integer, number of iterations before the compute_eigenvector function stops; default is 100
-    :param tolerance: float, the stopping criteria for the cycling coordinates algorithm; the algorithm stops when the
-        difference between the norms of two cycles of coordinates is less than this value; default is 0.0001
-    :param cr: boolean, override to enable computing priority vectors without a consistency ratio
+    :param iterations: integer, number of iterations before the 'compute_priority_vector' function stops;
+        default is 100
+    :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by the
+        'complete_matrix' function; the algorithm stops when the difference between the norms of two cycles
+         of coordinates is less than this value; default is 0.0001
+    :param cr: boolean, override to enable computing priority vectors without a corresponding consistency ratio
     """
 
     def __init__(self, name=None, comparisons=None,
@@ -72,7 +75,7 @@ class Compare:
     def _check_input(self):
         """
         Raises a ValueError if an input value is not greater than zero;
-        raises a TypeError if an input cannot be cast to a float.
+        raises a TypeError if an input value cannot be cast to a float.
         """
         for key, value in self._comparisons.items():
             try:
@@ -88,8 +91,8 @@ class Compare:
         Raises a ValueError if a consistency ratio is requested and
         the chosen random index does not support the size of the matrix.
         """
-        if not self._normalize and self._cr and (
-                (self._random_index == 'saaty' and self._size > 15) or self._size > 100):
+        if not self._normalize and self._cr and \
+                ((self._random_index == 'saaty' and self._size > 15) or self._size > 100):
             msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
                   "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
                   "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
@@ -102,9 +105,9 @@ class Compare:
         of those elements found within the keys of the input 'comparisons' dictionary.
         """
         for key in self._comparisons:
-            for criterion in key:
-                if criterion not in self._elements:
-                    self._elements.append(criterion)
+            for element in key:
+                if element not in self._elements:
+                    self._elements.append(element)
         self._pairs = dict.fromkeys(itertools.permutations(self._elements, 2))
         self._size = len(self._elements)
 
@@ -131,7 +134,7 @@ class Compare:
         """
         self._matrix = np.ones((self._size, self._size))
         for pair, value in self._pairs.items():
-            location = tuple(self._elements.index(criterion) for criterion in pair)
+            location = tuple(self._elements.index(elements) for elements in pair)
             self._matrix.itemset(location, value)
 
     def _build_normalized_matrix(self):
@@ -146,15 +149,15 @@ class Compare:
         missing from the input 'comparisons' dictionary and populating its values with 1s.
         """
         missing_comparisons = [key for key, value in self._pairs.items() if not value]
-        for criteria in missing_comparisons:
-            del missing_comparisons[missing_comparisons.index(criteria[::-1])]
+        for elements in missing_comparisons:
+            del missing_comparisons[missing_comparisons.index(elements[::-1])]
         self._missing_comparisons = dict.fromkeys(missing_comparisons, 1)
 
     def _complete_matrix(self):
         """
         Optimally completes an incomplete pairwise comparison matrix according to the algorithm described in
         Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
-        Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. https://doi.org/10.1016/j.mcm.2010.02.047
+        Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. (https://doi.org/10.1016/j.mcm.2010.02.047)
         """
         last_iteration = np.array(tuple(self._missing_comparisons.values()))
         difference = np.inf
@@ -166,7 +169,7 @@ class Compare:
 
     def _minimize_coordinate_values(self):
         """
-        Computes the minimum value for each missing value from the 'missing_comparisons' dictionary
+        Computes the minimum value for each missing value of the 'missing_comparisons' dictionary
         using the cyclic coordinates method described in Bozóki et al.
         """
 
@@ -181,11 +184,11 @@ class Compare:
             self._matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
             return np.max(np.linalg.eigvals(self._matrix))
 
-        # The upper bound of the solution space is 10 times the largest value of the matrix.
+        # The upper bound of the solution space is set to be 10 times the largest value of the matrix.
         upper_bound = np.nanmax(self._matrix) * 10
 
         for comparison in self._missing_comparisons:
-            comparison_location = tuple(self._elements.index(criterion) for criterion in comparison)
+            comparison_location = tuple(self._elements.index(element) for element in comparison)
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=np.ComplexWarning)
                 self._set_matrix(comparison)
@@ -201,7 +204,7 @@ class Compare:
         """
         for key, value in self._missing_comparisons.items():
             if key != comparison:
-                location = tuple(self._elements.index(criterion) for criterion in key)
+                location = tuple(self._elements.index(element) for element in key)
                 inverse_location = location[::-1]
                 self._matrix.itemset(location, value)
                 self._matrix.itemset(inverse_location, np.reciprocal(float(value)))
@@ -247,8 +250,8 @@ class Compare:
         if not np.any(remainder):
             return principal_eigenvector.round(self._precision)
 
-        # ...else recursively run the function until either there is no difference between
-        # the principal and comparison eigenvectors, or until the predefined number of iterations has been met,
+        # ...else recursively run the function until either there is no difference between the rounded
+        # principal and comparison eigenvectors, or until the predefined number of iterations has been met,
         # in which case set the last principal eigenvector as the priority vector
         iterations -= 1
         if iterations > 0:
@@ -291,23 +294,20 @@ class Compare:
             estimate = (ri_dict[larger] - ri_dict[smaller]) / (larger - smaller)
             random_index = estimate * (self._size - smaller) + ri_dict[smaller]
 
-        lambda_max = np.max(np.linalg.eigvals(self._matrix))  # Find the Perron-Frobenius eigenvalue of the matrix
+        # Find the Perron-Frobenius eigenvalue of the matrix
+        lambda_max = np.max(np.linalg.eigvals(self._matrix))
         consistency_index = (lambda_max - self._size) / (self._size - 1)
-        # The absolute value avoids confusion in those rare cases where a small negative float is rounded to -0.0.
+        # The absolute value avoids confusion in those rare cases where a small negative float is rounded to -0.0
         self.consistency_ratio = np.abs(np.real(consistency_index / random_index).round(self._precision))
 
     def add_children(self, children):
         """
-        Sets the input Compare objects as children of the current Compare object,
-        then runs all functions necessary for building the node weights of the Compare object, given its children,
-        as well as updating the global weights of the Compare object's descendants.
-        A child Compare object's name MUST be included in the labels of the current Compare object.
+        Sets the input Compare objects as children of the current Compare object, then calls the 'complete' function.
+        NB: A child Compare object's name MUST be included as an element of the current Compare object.
         :param children: list or tuple, Compare objects that form the children of the current Compare object
         """
         self._node_children = children
-        self._set_node_precision()
-        self._compute_target_weights()
-        self._compute_global_weights()
+        self.complete()
 
     def _set_node_precision(self):
         """
@@ -338,7 +338,7 @@ class Compare:
 
     def _compute_global_weights(self):
         """
-        Updates the global weights of the Compare object's descendants.
+        Recursively updates the global weights of the Compare object's immediate descendants.
         """
         if self._node_children:
             for parent_key, parent_value in self.local_weights.items():
@@ -358,9 +358,13 @@ class Compare:
 
     def complete(self):
         """
-        The public method for calling _compute_global_weights().
+        Calls all functions necessary for building the node weights of the Compare object, given its children,
+        as well as updating the global weights of the Compare object's descendants.
         """
-        self._compute_global_weights()
+        if self._node_children:
+            self._set_node_precision()
+            self._compute_target_weights()
+            self._compute_global_weights()
 
     def report(self, silent=False):
         """
