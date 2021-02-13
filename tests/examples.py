@@ -2,7 +2,7 @@ import itertools
 
 import numpy as np
 
-from ahpy import Compare
+from ahpy import ahpy
 
 
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
@@ -15,15 +15,15 @@ from ahpy import Compare
 #             ('edu', 'age'): 3,
 #             ('cha', 'edu'): 3, ('cha', 'age'): 5}
 #
-# exp = Compare('exp', experience, precision=3, random_index='saaty')
-# edu = Compare('edu', education, precision=3, random_index='saaty')
-# cha = Compare('cha', charisma, precision=3, random_index='saaty')
-# age = Compare('age', age, precision=3, random_index='saaty')
+# exp = ahpy.Compare('exp', experience, precision=3, random_index='saaty')
+# edu = ahpy.Compare('edu', education, precision=3, random_index='saaty')
+# cha = ahpy.Compare('cha', charisma, precision=3, random_index='saaty')
+# age = ahpy.Compare('age', age, precision=3, random_index='saaty')
 #
 # children = [exp, edu, cha, age]
 #
-# parent = Compare('goal', criteria, precision=3, random_index='saaty')
-# c = Compose('goal', parent, children)
+# parent = ahpy.Compare('goal', criteria, precision=3, random_index='saaty')
+# c = ahpy.Compose('goal', parent, children)
 
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
@@ -34,7 +34,7 @@ from ahpy import Compare
 #           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
 #           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
 #           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-# c = Compare('Drinks', drinks, precision=3, random_index='dd')
+# c = ahpy.Compare('Drinks', drinks, precision=3, random_index='dd')
 
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process

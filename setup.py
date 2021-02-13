@@ -1,7 +1,7 @@
 import os
 import setuptools
 
-with open("README.md", "r") as fh:
+with open('README.md') as fh:
     long_description = fh.read()
 
 version = {}
@@ -18,13 +18,16 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/PhilipGriffith/AHPy",
-    packages=setuptools.find_packages(exclude=['docs', 'tests']),
+    packages=setuptools.find_packages(exclude=['tests']),
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    keywords='ahp, mcdm, mcda',
     install_requires=[
-        'numpy'
-    ]
+        'numpy',
+        'scipy'
+    ],
+    python_requires='>=3.7, <4'
 )
