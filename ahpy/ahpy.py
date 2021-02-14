@@ -30,8 +30,7 @@ class Compare:
     :param cr: boolean, override to enable computing priority vectors without a corresponding consistency ratio
     """
 
-    def __init__(self, name=None, comparisons=None,
-                 precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
+    def __init__(self, name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
         self._name = name
         self._comparisons = comparisons
         self._precision = precision
