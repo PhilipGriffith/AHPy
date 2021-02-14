@@ -29,14 +29,12 @@ from ahpy import ahpy
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
 
-drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
-          ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
-          ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
-          ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
-          ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
-r = c.report()
-print(r)
+# drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
+#           ('coffee', 'milk'): 1, ('water', 'coffee'): 2, ('tea', 'wine'): 3, ('beer', 'wine'): 9, ('beer', 'tea'): 3,
+#           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
+#           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
+#           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
+# c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
 
 # ----------------------------------------------------------------------------------
 # Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
@@ -197,11 +195,13 @@ print(r)
 
 # ----------------------------------------------------------------------------------
 
-# u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
-#      ('beta', 'chi'): 3, ('beta', 'delta'): 4}
-# cu = ahpy.Compare('Incomplete Test', u)
-# cu.report()
-
+u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
+     ('beta', 'chi'): 3, ('beta', 'delta'): 4}#, ('chi', 'delta'): 3/4}
+cu = ahpy.Compare('Incomplete Test', u)
+print(cu.target_weights)
+print(cu.consistency_ratio)
+r = cu.report()
+print(r)
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
 #      ('c', 'e'): 3, ('c', 'g'): 6,
