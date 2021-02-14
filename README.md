@@ -2,9 +2,9 @@
 
 **AHPy** is an implementation of the Analytic Hierarchy Process (AHP), a method for structuring, synthesizing and evaluating the elements of a decision problem. Developed by Thomas Saaty in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
 
-The amount of available information on the AHP and its uses is legion. For a lovingly constructed and gentle tutorial, I recommend [Kardi Teknomo's 2006 Analytic Hierarchy Process (AHP) Tutorial](https://people.revoledu.com/kardi/tutorial/AHP/AHP.htm).
-If you'd prefer to watch a video on the subject (in English), I recommend Klaus Göpel's [Analytic Hierarchy Process AHP - Business Performance Management](https://www.youtube.com/watch?v=18GWVtVAAzs).
-And, of course, there's always [Wikipedia](https://en.wikipedia.org/wiki/Analytic_hierarchy_process).
+The amount of available information on the AHP and its uses is legion. For a lovingly constructed and gentle tutorial, I recommend [Kardi Teknomo's 2006 Analytic Hierarchy Process (AHP) Tutorial](https://people.revoledu.com/kardi/tutorial/AHP/AHP.htm){target='_blank'}.
+If you'd prefer to watch a video on the subject, I recommend Klaus Göpel's [Analytic Hierarchy Process AHP - Business Performance Management](https://www.youtube.com/watch?v=18GWVtVAAzs){target='_blank'}.
+And, of course, there's always [Wikipedia](https://en.wikipedia.org/wiki/Analytic_hierarchy_process){target='_blank'}.
 
 ### Installing AHPy
 
@@ -14,7 +14,7 @@ AHPy is available on the Python Package Index (PyPI):
 python -m pip install ahpy
 ```
 
-AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https://numpy.org/) and [scipy](https://scipy.org/).
+AHPy requires [Python 3.7+](https://www.python.org/){target='_blank'}, as well as [numpy](https://numpy.org/){target='_blank'} and [scipy](https://scipy.org/){target='_blank'}.
 
 
 ```python

@@ -14,7 +14,7 @@ setuptools.setup(
     version=version['__version__'],
     author="Philip Griffith",
     author_email="philip.griffith@gmail.com",
-    description="An implementation of the Analytic Hierarchy Process",
+    description="A Python implementation of the Analytic Hierarchy Process",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/PhilipGriffith/AHPy",
