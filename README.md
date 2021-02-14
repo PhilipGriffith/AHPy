@@ -14,7 +14,7 @@ AHPy is available on the Python Package Index (PyPI):
 python -m pip install ahpy
 ```
 
-AHPy requires [Python 3.7+](https://www.python.org/){:target='_blank'}, as well as [numpy](https://numpy.org/) and [scipy](https://scipy.org/).
+AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https://numpy.org/) and [scipy](https://scipy.org/).
 
 
 ```python
