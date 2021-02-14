@@ -1,6 +1,5 @@
 import bisect
 import itertools
-import json
 import warnings
 
 import numpy as np
@@ -366,10 +365,9 @@ class Compare:
             self._compute_target_weights()
             self._compute_global_weights()
 
-    def report(self, silent=False):
+    def report(self):
         """
-        Returns the key information of the Compare object as a JSON object, optionally printing it to the console.
-        :param silent: boolean, if True, does not print the report to the console; default is False
+        Returns the key information of the Compare object as a dictionary.
         """
 
         def convert_to_json_format(input_dict):
@@ -393,28 +391,27 @@ class Compare:
                 random_index = 'Saaty'
             return random_index
 
-        report = json.dumps({'Name': self._name,
-                             'Weight': self._node_weight,
-                             'Weights': {
-                                 'Local': self.local_weights,
-                                 'Global': self.global_weights,
-                                 'Target': self.target_weights if self._node_weight == 1.0 else None
-                             },
-                             'Consistency Ratio': self.consistency_ratio,
-                             'Random Index': set_random_index(),
-                             'Elements': {
-                                 'Count': len(self._elements),
-                                 'Names': self._elements
-                             },
-                             'Children': {
-                                 'Count': len(self._node_children),
-                                 'Names': [child._name for child in self._node_children]
-                             } if self._node_children else None,
-                             'Comparisons': {
-                                 'Input': convert_to_json_format(self._comparisons),
-                                 'Computed': convert_to_json_format(self._missing_comparisons)
-                                 if self._missing_comparisons else None}
-                             }, indent=4)
-        if not silent:
-            print(report)
+        report = {'name': self._name,
+                  'weight': self._node_weight,
+                  'weights': {
+                      'local': self.local_weights,
+                      'global': self.global_weights,
+                      'target': self.target_weights if self._node_weight == 1.0 else None
+                  },
+                  'consistency ratio': self.consistency_ratio,
+                  'random index': set_random_index(),
+                  'elements': {
+                      'count': len(self._elements),
+                      'names': self._elements
+                  },
+                  'children': {
+                      'count': len(self._node_children),
+                      'names': [child._name for child in self._node_children]
+                  } if self._node_children else None,
+                  'comparisons': {
+                      'count': len(self._comparisons) + len(self._missing_comparisons),
+                      'input': convert_to_json_format(self._comparisons),
+                      'computed': convert_to_json_format(self._missing_comparisons)
+                      if self._missing_comparisons else None}
+                  }
         return report
