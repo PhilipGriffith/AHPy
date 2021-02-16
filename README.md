@@ -18,19 +18,17 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 ### Compare()
 
-The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be linked together to form a hierarchy representing the decision problem; global problem solutions are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can be linked together to form a hierarchy representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
-- `name`: *str*, this property is used to link a child object to its parent
-- `comparisons`: *dict*, the pairwise comparisons of the object's elements
-- `precision`: *int*, the number of decimal places of precision used when computing both the priority vector and the consistency ratio
-- `random_index`: *'dd' or 'saaty'*, the random index estimates used to compute the priority vector's consistency ratio
-- `iterations`: *int*, the stopping criteria for the number of iterations used to compute the priority vector
-- `tolerance`: *float*, the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
-- `cr`: *bool*, an override to compute the object's priority vector when a consistency ratio cannot be determined due to the size of the matrix
+- `name`: *str*, the name of the Compare object
 
-A Compare object requires a unique name and a dictionary of elements and values when initialized. The dictionary can be provided in one of two forms:
+This property is used to link a child object to its parent and must be unique.
+
+- `comparisons`: *dict*, the elements and values to be compared
+
+The dictionary can be provided in one of two forms:
 
 1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
   - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
@@ -38,6 +36,13 @@ A Compare object requires a unique name and a dictionary of elements and values 
 2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
   - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
   - AHPy automatically creates a priority vector of normalized values, given this form
+
+- `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio
+- `random_index`: *'dd' or 'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
+- `iterations`: *int*, the stopping criteria for the algorithm used to compute the priority vector; the algorithm stops when the number of iterations is equal to this value
+- `tolerance`: *float*, the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+- `cr`: *bool*, an override to compute the object's priority vector when a consistency ratio cannot be determined due to the size of the matrix
+
 
 
 permutations
