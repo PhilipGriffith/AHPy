@@ -24,18 +24,18 @@ The Compare class computes the priority vector and consistency ratio of a positi
 
 - `name`: *str*, the name of the Compare object
 
-This property is used to link a child object to its parent and must be unique.
+  - This property is used to link a child object to its parent and must be unique.
 
 - `comparisons`: *dict*, the elements and values to be compared
 
-The dictionary can be provided in one of two forms:
+  - The dictionary can be provided in one of two forms:
 
-1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
-  - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
-  - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
-2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
-  - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-  - AHPy automatically creates a priority vector of normalized values, given this form
+    1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
+      - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
+      - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
+    2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
+      - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+      - AHPy automatically creates a priority vector of normalized values, given this form
 
 - `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio
 - `random_index`: *'dd' or 'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
