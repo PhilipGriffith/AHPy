@@ -18,29 +18,32 @@ UNDER CONSTRUCTION!
 
 ### Compare()
 
-The Compare class computes the priority vector (referred to as the 'local weights') and consistency ratio of a positive reciprocal matrix, created using a dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can be linked together to form a hierarchy
+The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be linked together to form a hierarchy representing the decision problem; global problem solutions are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
-- `name`
-- `comparisons`
-- `precision`
-- `random_index`
-- `iterations`
-- `tolerance`
-- `cr`
+- `name`: *str*, this property is used to link a child object to its parent
+- `comparisons`: *dict*, the pairwise comparisons of the object's elements
+- `precision`: *int*, the number of decimal places of precision used when computing both the priority vector and the consistency ratio
+- `random_index`: *'dd' or 'saaty'*, the random index estimates used to compute the priority vector's consistency ratio
+- `iterations`: *int*, the stopping criteria for the number of iterations used to compute the priority vector
+- `tolerance`: *float*, the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+- `cr`: *bool*, an override to compute the object's priority vector when a consistency ratio cannot be determined due to the size of the matrix
 
- 
+A Compare object requires a unique name and a dictionary of elements and values when initialized. The dictionary can be provided in one of two forms:
+
+1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
+  - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
+  - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
+2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
+  - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+  - AHPy automatically creates a priority vector of normalized values, given this form
 
 
-checks for values over 0 and that all values are numeric
-
-how comparisons work
 permutations
-(a, b): 2 implies a over (?) b by 2
-normalizing by values
+
 missing values
-link to paper
+
 Optimally completes an incomplete pairwise comparison matrix according to the cyclic coordinates algorithm described in
         Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
         Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. (https://doi.org/10.1016/j.mcm.2010.02.047)

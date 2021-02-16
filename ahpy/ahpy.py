@@ -8,16 +8,16 @@ import scipy.optimize as spo
 
 class Compare:
     """
-    This class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using a
-    dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons.
-    NB: The 'name' property is used to link a child Compare object to its parent Compare object.
+    This class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using
+    an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons.
+    NB: The 'name' property is used to link a child Compare object to its parent.
     :param name: string, the name of the Compare object;
         if the object has a parent, this name MUST be included as an element of its parent
     :param comparisons: dictionary, a dictionary in one of two forms: (i) each key is a tuple of two elements and
-        each value is their pairwise comparison value, or (ii) each key is a string of one element and each value
+        each value is their pairwise comparison value, or (ii) each key is a single element and each value
         is that element's measured value
         Examples: (i) {('a', 'b'): 3, ('b', 'c'): 2}, (ii) {'a': 1.2, 'b': 2.3, 'c': 3.4}
-    :param precision: integer, number of decimal places of precision to compute both the priority
+    :param precision: integer, number of decimal places of precision used when computing both the priority
         vector and the consistency ratio; default is 4
     :param random_index: string, the random index estimates used to compute the consistency ratio;
         see the compute_consistency_ratio function for more information regarding the different estimates;
