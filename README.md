@@ -1,10 +1,12 @@
 # AHPy
 
-**AHPy** is an implementation of the Analytic Hierarchy Process (AHP), a method for structuring, synthesizing and evaluating the elements of a decision problem. Developed by Thomas Saaty in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
+:construction: UNDER CONSTRUCTION! :construction:
+
+**AHPy** is an implementation of the Analytic Hierarchy Process (AHP), a method used to structure, synthesize and evaluate the elements of a decision problem. Developed by [Thomas Saaty](http://www.creativedecisions.org/about/ThomasLSaaty.php) in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
 
 #### Installing AHPy
 
-AHPy is available on the Python Package Index (PyPI):
+AHPy is available on the Python Package Index ([PyPI](https://pypi.org/)):
 
 ```
 python -m pip install ahpy
@@ -13,8 +15,6 @@ python -m pip install ahpy
 AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https://numpy.org/) and [scipy](https://scipy.org/).
 
 ## Using AHPy
-
-UNDER CONSTRUCTION!
 
 ### Compare()
 
