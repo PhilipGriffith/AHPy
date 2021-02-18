@@ -23,77 +23,50 @@ The Compare class computes the priority vector and consistency ratio of a positi
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
 - `name`: *str*, the name of the Compare object
+  - This property is used to link a child object to its parent and must be unique
 
-  - This property is used to link a child object to its parent and must be unique.
-
-- `comparisons`: *dict*, the elements and values to be compared
-
-  - The dictionary can be provided in one of two forms:
-
+- `comparisons`: *dict*, the elements and values to be compared, provided in one of two forms:
     1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
         - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
         - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
     2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
-      - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-      - AHPy automatically creates a priority vector of normalized values, given this form
+        - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+        - Given this form, AHPy will automatically create a priority vector of normalized values
 
 - `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio
+
 - `random_index`: *'dd' or 'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
+  - 'dd' uses estimates from Donegan and Dodd's 'A note on Saaty's Random Indexes' in Mathematical and Computer Modelling, 15:10, 1991, pp. 135-137 ([DOI: 10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
+    - 'dd' supports matrices up to 100 x 100 in size
+  - 'saaty' uses estimates from Saaty's *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
+    - 'saaty' supports matrices up to 15 x 15 in size
+
 - `iterations`: *int*, the stopping criteria for the algorithm used to compute the priority vector; the algorithm stops when the number of iterations is equal to this value
+
 - `tolerance`: *float*, the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+
 - `cr`: *bool*, an override to compute the object's priority vector when a consistency ratio cannot be determined due to the size of the matrix
+  - This allows for the computation of matrices greater than 100 x 100 in size
 
+#### Missing Pairwise Comparisons
 
-
-permutations
-
-missing values
-
-Optimally completes an incomplete pairwise comparison matrix according to the cyclic coordinates algorithm described in
-        Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
-        Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. (https://doi.org/10.1016/j.mcm.2010.02.047)
-        
-
-precision
-target differs from node's local/global
-
-Random indices
-Sets the 'consistency_ratio' property of the Compare object, using random index estimates from
-        Donegan and Dodd's 'A note on Saaty's Random Indexes' in Mathematical and Computer Modelling,
-        15:10, 1991, pp. 135-137 (doi: 10.1016/0895-7177(91)90098-R) by default (random_index='dd').
-        If the random index of the object equals 'saaty', uses the estimates from
-        Saaty's Theory And Applications Of The Analytic Network Process, Pittsburgh: RWS Publications, 2005, p. 31.
-        
-link to paper
-when to use saaty
-
-iterations
-
-tolerance
-
-cr override
-saaty <= 15
-dd <= 100
-
+When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 ([DOI: 10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
 ### add_children()
 
 how to link in a hierarchy
 names
 order
+complete()
 
-add_children()
-
+precision
+target differs from node's local/global
 
 ### complete()
 
 ### report()
 
-complete()
-
-report()
 structure
-json
 name
 weight
 weights: local, global, target
