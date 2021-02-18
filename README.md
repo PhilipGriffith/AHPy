@@ -17,9 +17,13 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 ## Using AHPy
 
 [Compare()](#compare)
+
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
+
 [add_children()](#add_children)
+
 [complete()](#complete)
+
 [report()](#report)
 
 ### Compare()
