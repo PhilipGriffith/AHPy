@@ -39,11 +39,11 @@ The Compare class computes the priority vector and consistency ratio of a positi
 
 - `comparisons`: *dict*, the elements and values to be compared, provided in one of two forms:
   1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
-    - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
-    - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
+      - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
+      - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
   2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
-    - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-    - Given this form, AHPy will automatically create a priority vector of normalized values
+      - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+      - Given this form, AHPy will automatically create a priority vector of normalized values
 
 - `precision`: *int*, *(optional)* the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object
 
