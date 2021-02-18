@@ -2,7 +2,7 @@
 
 :construction: UNDER CONSTRUCTION! :construction:
 
-**AHPy** is an implementation of the Analytic Hierarchy Process (AHP), a method used to structure, synthesize and evaluate the elements of a decision problem. Developed by [Thomas Saaty](http://www.creativedecisions.org/about/ThomasLSaaty.php) in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
+**AHPy** is an implementation of the Analytic Hierarchy Process ([AHP](https://en.wikipedia.org/wiki/Analytic_hierarchy_process)), a method used to structure, synthesize and evaluate the elements of a decision problem. Developed by [Thomas Saaty](http://www.creativedecisions.org/about/ThomasLSaaty.php) in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
 
 #### Installing AHPy
 
@@ -15,6 +15,12 @@ python -m pip install ahpy
 AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https://numpy.org/) and [scipy](https://scipy.org/).
 
 ## Using AHPy
+
+[Compare()](#compare)
+[Missing Pairwise Comparisons](#missing-pairwise-comparisons)
+[add_children()](#add_children)
+[complete()](#complete)
+[report()](#report)
 
 ### Compare()
 
@@ -33,24 +39,24 @@ The Compare class computes the priority vector and consistency ratio of a positi
         - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
         - Given this form, AHPy will automatically create a priority vector of normalized values
 
-- `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio
+- `precision`: *int*, *(optional)* the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object
 
-- `random_index`: *'dd' or 'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
-  - 'dd' uses estimates from Donegan and Dodd's 'A note on Saaty's Random Indexes' in Mathematical and Computer Modelling, 15:10, 1991, pp. 135-137 ([DOI: 10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
-    - 'dd' supports matrices up to 100 x 100 in size
-  - 'saaty' uses estimates from Saaty's *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
-    - 'saaty' supports matrices up to 15 x 15 in size
+- `random_index`: *'dd'* or *'saaty'*, *(optional)* the set of random index estimates used to compute the priority vector's consistency ratio
+  - 'dd' uses estimates from Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
+    - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 x 100 in size
+  - 'saaty' uses estimates from Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
+    - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 x 15 in size
 
-- `iterations`: *int*, the stopping criteria for the algorithm used to compute the priority vector; the algorithm stops when the number of iterations is equal to this value
+- `iterations`: *int*, *(optional)* the stopping criteria for the algorithm used to compute the Compare object's priority vector; the algorithm stops when the number of iterations is equal to this value
 
-- `tolerance`: *float*, the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+- `tolerance`: *float*, *(optional)* the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
 
-- `cr`: *bool*, an override to compute the object's priority vector when a consistency ratio cannot be determined due to the size of the matrix
+- `cr`: *bool*, *(optional)* an override to compute the Compare object's priority vector even when a consistency ratio cannot be computed due to the size of the matrix
   - This allows for the computation of matrices greater than 100 x 100 in size
 
 #### Missing Pairwise Comparisons
 
-When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 ([DOI: 10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
+When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
 ### add_children()
 

@@ -260,7 +260,7 @@ class Compare:
     def _compute_consistency_ratio(self):
         """
         Sets the 'consistency_ratio' property of the Compare object, using random index estimates from
-        Donegan and Dodd's 'A note on Saaty's Random Indexes' in Mathematical and Computer Modelling,
+        Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' Mathematical and Computer Modelling,
         15:10, 1991, pp. 135-137 (DOI: 10.1016/0895-7177(91)90098-R) by default (random_index='dd').
         If the random index of the object equals 'saaty', uses the estimates from
         Saaty's Theory And Applications Of The Analytic Network Process, Pittsburgh: RWS Publications, 2005, p. 31.
