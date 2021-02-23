@@ -197,7 +197,7 @@ from ahpy import ahpy
 
 u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
      ('beta', 'chi'): 3, ('beta', 'delta'): 4}#, ('chi', 'delta'): 3/4}
-cu = ahpy.Compare('Incomplete Test', u)
+cu = ahpy.Compare('Incomplete Test', u, cr=False)
 print(cu.target_weights)
 print(cu.consistency_ratio)
 r = cu.report()

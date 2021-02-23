@@ -30,37 +30,42 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 ### Compare()
 
-The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be linked together to form a hierarchy representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be [linked together to form a hierarchy](#add_children) representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
-- `name`: *str*, the name of the Compare object
+- `name`: *str (required)*, the name of the Compare object
   - This property is used to link a child object to its parent and must be unique
 
-- `comparisons`: *dict*, the elements and values to be compared, provided in one of two forms:
+- `comparisons`: *dict (required)*, the elements and values to be compared, provided in one of two forms:
   1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
       - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
-      - The comparison `('a', 'b'): 3` means "a is moderately more important than b"
+      - The order of the key elements matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"
   2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
       - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
       - Given this form, AHPy will automatically create a priority vector of normalized values
 
-- `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object *(optional)*
+- `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object
+  - The default precision is 4
 
-- `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio *(optional)*
+- `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
   - 'dd' uses estimates from Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
     - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size
   - 'saaty' uses estimates from Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
     - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size
+  - The default random index is 'dd'
 
-- `iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector *(optional)*
+- `iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector
   - If the priority vector has not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the priority vector
+  - The default number of iterations is 100
 
-- `tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons *(optional)*
+- `tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons
   - The algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+  - The default tolerance value is 0.0001
 
-- `cr`: *bool*, an override to compute the Compare object's priority vector even when a consistency ratio cannot be computed due to the size of the matrix *(optional)*
-  - This allows for the computation of matrices greater than 100 &times; 100 in size
+- `cr`: *bool*, whether to compute the priority vector's consistency ratio
+  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (*i.e.* > 100 &times; 100)
+  - The default value is True
 
 ### Missing Pairwise Comparisons
 

@@ -27,14 +27,14 @@ class Compare:
     :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by the
         'complete_matrix' function; the algorithm stops when the difference between the norms of two cycles
          of coordinates is less than this value; default is 0.0001
-    :param cr: boolean, override to enable computing priority vectors without a corresponding consistency ratio
+    :param cr: boolean, whether to compute the priority vector's consistency ratio
     """
 
     def __init__(self, name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
         self._name = name
         self._comparisons = comparisons
         self._precision = precision
-        self._random_index = random_index.lower()
+        self._random_index = random_index.lower() if cr else None
         self._iterations = iterations
         self._tolerance = tolerance
         self._cr = cr
