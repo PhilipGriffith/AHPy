@@ -64,7 +64,7 @@ The Compare class computes the priority vector and consistency ratio of a positi
   - The default tolerance value is 0.0001
 
 - `cr`: *bool*, whether to compute the priority vector's consistency ratio
-  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (*i.e.* > 100 &times; 100)
+  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (*i.e.* due to the size of the matrix being greater than 100 &times; 100)
   - The default value is True
 
 ### Missing Pairwise Comparisons
