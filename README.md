@@ -30,7 +30,7 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 ### Compare()
 
-The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can be linked together to form a hierarchy representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be linked together to form a hierarchy representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
@@ -45,19 +45,21 @@ The Compare class computes the priority vector and consistency ratio of a positi
       - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
       - Given this form, AHPy will automatically create a priority vector of normalized values
 
-- `precision`: *int*, *(optional)* the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object
+- `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object *(optional)*
 
-- `random_index`: *'dd'* or *'saaty'*, *(optional)* the set of random index estimates used to compute the priority vector's consistency ratio
+- `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio *(optional)*
   - 'dd' uses estimates from Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
     - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size
   - 'saaty' uses estimates from Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
     - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size
 
-- `iterations`: *int*, *(optional)* the stopping criteria for the algorithm used to compute the Compare object's priority vector; the algorithm stops when the number of iterations is equal to this value
+- `iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector *(optional)*
+  - If the priority vector has not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the priority vector
 
-- `tolerance`: *float*, *(optional)* the stopping criteria for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons; the algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+- `tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons *(optional)*
+  - The algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
 
-- `cr`: *bool*, *(optional)* an override to compute the Compare object's priority vector even when a consistency ratio cannot be computed due to the size of the matrix
+- `cr`: *bool*, an override to compute the Compare object's priority vector even when a consistency ratio cannot be computed due to the size of the matrix *(optional)*
   - This allows for the computation of matrices greater than 100 &times; 100 in size
 
 ### Missing Pairwise Comparisons
@@ -68,9 +70,18 @@ Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete p
 
 ### add_children()
 
-Compare objects can be linked together to form a hierarchy representing the decision problem
+Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together, call the `add_children()` method of the object in the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects that will form the lower level (the *children*):
 
-how to link in a hierarchy
+```python
+>>> child1 = ahpy.Compare('child1', ...)
+>>> child2 = ahpy.Compare('child2', ...)
+>>> parent = ahpy.Compare('parent', ...)
+>>> parent.add_children([child1, child2])
+```
+
+In order to synthesize the levels of the problem hierarchy, objects in the lower levels must appear as elements in their parent's pairwise comparisons dictionary.
+
+
 names
 order
 complete()
