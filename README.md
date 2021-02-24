@@ -20,17 +20,17 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Compare()](#compare)
 
-[Compare.report()](#compare.report)
+[Compare.report()](#comparereport)
 
-[Compare.add_children()](#compare.add_children)
+[Compare.add_children()](#compareadd_children)
 
-[Compare.complete()](#compare.complete)
+[Compare.complete()](#comparecomplete)
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
 ### Compare()
 
-The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be [linked together to form a hierarchy](#add_children) representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
