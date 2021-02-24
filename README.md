@@ -102,7 +102,7 @@ The precision of the target weights are also updated as the hierarchy is constru
 
 ### Compare.complete()
 
-**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step in constructing the hierarchy MUST be to call `complete()` on the Compare object at its highest level**. This will insure that the global and target weights of each Compare object in the hierarchy are correctly computed.
+**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step MUST be to call `complete()` on the Compare object at the hierarchy's highest level**. This will insure that the global and target weights of each Compare object in the hierarchy are correctly computed.
 
 
 ### Missing Pairwise Comparisons
