@@ -81,19 +81,20 @@ comparisons: input, computed
 
 ### Compare.add_children()
 
-Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form the lower level (the *children*). In order to synthesize the levels of the problem hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary:
+Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form the lower level (the *children*).
+
+**In order to properly synthesize the levels of the problem hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**.
 
 ```python
->>> child1 = ahpy.Compare('child1', ...)
->>> child2 = ahpy.Compare('child2', ...)
->>> parent_comparisons = {('child1', 'child2'): 5}
->>> parent = ahpy.Compare('parent', parent_comparisons)
+>>> child1 = ahpy.Compare(name='child1', ...)
+>>> child2 = ahpy.Compare(name='child2', ...)
+>>> parent = ahpy.Compare(name='parent', comparisons={('child1', 'child2'): 5})
 >>> parent.add_children([child1, child2])
 ```
 
 The global and target weights of the Compare objects in a hierarchy are updated as the hierarchy is constructed: each time `add_children()` is called, the parent object's global weight is set to 1.0 and all of its descendants' global weights are updated accordingly. For this reason, the order in which the hierarchy is constructed is important. While it is possible to construct the hierarchy in any order, **it is best practice to construct the hierarchy beginning with the Compare objects on the lowest level and working up**. This will insure that the global weights of each lower level are always properly computed as the hierarchy is built.
 
-The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the target weights of the parent object is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means it is possible for the precision of the target weights of a Compare object to be different from the precision of its local and global weights.
+The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the parent object's target weights is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the final target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means it is possible for the precision of the Compare object's target weights to be different from the precision of its local and global weights.
 
 ### Compare.complete()
 
