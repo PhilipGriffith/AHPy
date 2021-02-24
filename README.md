@@ -28,6 +28,10 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
+Examples
+
+[Relative consumption of drinks in the United States](#relative-consumption-of-drinks-in-the-united-states)
+
 ### Compare()
 
 The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem elements are then derived by synthesizing all levels of the hierarchy.
@@ -92,6 +96,7 @@ Compare objects can be linked together to form a hierarchy representing the deci
 ```python
 >>> child1 = ahpy.Compare(name='child1', ...)
 >>> child2 = ahpy.Compare(name='child2', ...)
+
 >>> parent = ahpy.Compare(name='parent', comparisons={('child1', 'child2'): 5})
 >>> parent.add_children([child1, child2])
 ```
@@ -112,15 +117,24 @@ When a Compare object is initialized, the elements forming the keys of the input
 Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
 
+||a|b|c|d|
+|-|-|-|-|-|
+|a|1|1|5|2|
+|b|1|1|3|4|
+|c|1/5|1/3|1|3/4|
+|d|1/2|1/4|4/3|1|
+
 ```python
->>> import ahpy
 >>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3/4}
+
 >>> complete = ahpy.Compare('complete', comparisons)
 >>> print(complete.target_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
 >>> print(complete.consistency_ratio)
 0.0372
+
 >>> del comparisons[('c', 'd')]
+
 >>> partial = ahpy.Compare('partial', comparisons)
 >>> print(partial.target_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
@@ -128,7 +142,9 @@ Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete p
 0.0372
 ```
 
+## Examples
 
+### Relative consumption of drinks in the United States
 
 ```python
 drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1, ('coffee', 'milk'): 1, ('coffee', 'water'): 1/2,
@@ -140,3 +156,9 @@ drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('
 c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
 c['target_weights']
 ```
+
+
+
+
+
+
