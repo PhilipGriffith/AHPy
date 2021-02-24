@@ -116,13 +116,16 @@ When a Compare object is initialized, the elements forming the keys of the input
 
 Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
+The following example demonstrates this functionality using the matrix below:
 
 ||a|b|c|d|
 |-|-|-|-|-|
 |a|1|1|5|2|
 |b|1|1|3|4|
-|c|1/5|1/3|1|3/4|
-|d|1/2|1/4|4/3|1|
+|c|1/5|1/3|1|**3/4**|
+|d|1/2|1/4|**4/3**|1|
+
+We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the (c, d) entry in bold.
 
 ```python
 >>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3/4}
