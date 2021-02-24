@@ -20,13 +20,13 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Compare()](#compare)
 
+[Compare.report()](#compare.report)
+
+[Compare.add_children()](#compare.add_children)
+
+[Compare.complete()](#compare.complete)
+
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
-
-[add_children()](#add_children)
-
-[complete()](#complete)
-
-[report()](#report)
 
 ### Compare()
 
@@ -64,39 +64,10 @@ The Compare class computes the priority vector and consistency ratio of a positi
   - The default tolerance value is 0.0001
 
 - `cr`: *bool*, whether to compute the priority vector's consistency ratio
-  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (*i.e.* due to the size of the matrix being greater than 100 &times; 100)
+  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (e.g. due to the size of the matrix being greater than 100 &times; 100)
   - The default value is True
 
-### Missing Pairwise Comparisons
-
-When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in:
-
-Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
-
-### add_children()
-
-Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together, call the `add_children()` method of the object in the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects that will form the lower level (the *children*):
-
-```python
->>> child1 = ahpy.Compare('child1', ...)
->>> child2 = ahpy.Compare('child2', ...)
->>> parent = ahpy.Compare('parent', ...)
->>> parent.add_children([child1, child2])
-```
-
-In order to synthesize the levels of the problem hierarchy, objects in the lower levels must appear as elements in their parent's pairwise comparisons dictionary.
-
-
-names
-order
-complete()
-
-precision
-target differs from node's local/global
-
-### complete()
-
-### report()
+### Compare.report()
 
 structure
 name
@@ -107,6 +78,33 @@ ri
 elements: count, names
 children: count, names
 comparisons: input, computed
+
+### Compare.add_children()
+
+Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form the lower level (the *children*). In order to synthesize the levels of the problem hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary:
+
+```python
+>>> child1 = ahpy.Compare('child1', ...)
+>>> child2 = ahpy.Compare('child2', ...)
+>>> parent_comparisons = {('child1', 'child2'): 5}
+>>> parent = ahpy.Compare('parent', parent_comparisons)
+>>> parent.add_children([child1, child2])
+```
+
+The global and target weights of the Compare objects in a hierarchy are updated as the hierarchy is constructed: each time `add_children()` is called, the parent object's global weight is set to 1.0 and all of its descendants' global weights are updated accordingly. For this reason, the order in which the hierarchy is constructed is important. While it is possible to construct the hierarchy in any order, **it is best practice to construct the hierarchy beginning with the Compare objects on the lowest level and working up**. This will insure that the global weights of each lower level are always properly computed as the hierarchy is built.
+
+The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the target weights of the parent object is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means it is possible for the precision of the target weights of a Compare object to be different from the precision of its local and global weights.
+
+### Compare.complete()
+
+If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step in constructing the hierarchy MUST be to call `complete()` on the Compare object at its highest level. This will insure that the global and target weights of each Compare object in the hierarchy are correctly computed.
+
+
+### Missing Pairwise Comparisons
+
+When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in:
+
+Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
 
 ```python
