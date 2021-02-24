@@ -30,7 +30,7 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 ### Compare()
 
-The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem solutions are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any missing pairwise comparisons. Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem elements are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
@@ -64,7 +64,7 @@ The Compare class computes the priority vector and consistency ratio of a positi
   - The default tolerance value is 0.0001
 
 - `cr`: *bool*, whether to compute the priority vector's consistency ratio
-  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (e.g. due to the size of the matrix being greater than 100 &times; 100)
+  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (due to the size of the matrix)
   - The default value is True
 
 ### Compare.report()
@@ -83,7 +83,11 @@ comparisons: input, computed
 
 Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form the lower level (the *children*).
 
-**In order to properly synthesize the levels of the problem hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**.
+`Compare.add_children(children)`
+
+- `children`: *list* or *tuple (required)*, the Compare objects intended to become the children of the current Compare object
+
+**In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**:
 
 ```python
 >>> child1 = ahpy.Compare(name='child1', ...)
@@ -94,16 +98,16 @@ Compare objects can be linked together to form a hierarchy representing the deci
 
 The global and target weights of the Compare objects in a hierarchy are updated as the hierarchy is constructed: each time `add_children()` is called, the parent object's global weight is set to 1.0 and all of its descendants' global weights are updated accordingly. For this reason, the order in which the hierarchy is constructed is important. While it is possible to construct the hierarchy in any order, **it is best practice to construct the hierarchy beginning with the Compare objects on the lowest level and working up**. This will insure that the global weights of each lower level are always properly computed as the hierarchy is built.
 
-The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the parent object's target weights is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the final target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means it is possible for the precision of the Compare object's target weights to be different from the precision of its local and global weights.
+The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the parent object's target weights is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the final target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
 
 ### Compare.complete()
 
-If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step in constructing the hierarchy MUST be to call `complete()` on the Compare object at its highest level. This will insure that the global and target weights of each Compare object in the hierarchy are correctly computed.
+**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step in constructing the hierarchy MUST be to call `complete()` on the Compare object at its highest level**. This will insure that the global and target weights of each Compare object in the hierarchy are correctly computed.
 
 
 ### Missing Pairwise Comparisons
 
-When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in:
+When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the input `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in:
 
 Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
