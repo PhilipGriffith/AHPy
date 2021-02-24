@@ -118,7 +118,7 @@ Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete p
 
 The following example demonstrates this functionality using the matrix below. We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the (c, d) entry in bold.
 
-||||||
+| | | | | |
 |-|-|-|-|-|
 ||a|b|c|d|
 |a|1|1|5|2|
