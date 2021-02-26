@@ -16,7 +16,7 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 ## Using AHPy
 
-### Table of Contents
+### Commands
 
 [Compare()](#compare)
 
@@ -28,7 +28,7 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
-Examples
+#### Examples
 
 [Relative consumption of drinks in the United States](#relative-consumption-of-drinks-in-the-united-states)
 
@@ -47,9 +47,9 @@ The Compare class computes the priority vector and consistency ratio of a positi
       - The order of the key elements matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"
   2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
       - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-      - Given this form, AHPy will automatically create a priority vector of normalized values
+      - Given this form, AHPy will automatically create a consistent priority vector of normalized values
 
-- `precision`: *int*, the number of decimal places to consider when computing both the priority vector and the consistency ratio of the Compare object
+- `precision`: *int*, the number of decimal places to take into account when computing both the priority vector and the consistency ratio of the Compare object
   - The default precision is 4
 
 - `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
@@ -68,11 +68,12 @@ The Compare class computes the priority vector and consistency ratio of a positi
   - The default tolerance value is 0.0001
 
 - `cr`: *bool*, whether to compute the priority vector's consistency ratio
-  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined (due to the size of the matrix)
+  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined due to the size of the matrix
   - The default value is True
 
 ### Compare.report()
 
+describe "target"
 structure
 name
 weight
@@ -85,11 +86,11 @@ comparisons: input, computed
 
 ### Compare.add_children()
 
-Compare objects can be linked together to form a hierarchy representing the decision problem. To link two Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form the lower level (the *children*).
+Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its lower level (the *children*).
 
 `Compare.add_children(children)`
 
-- `children`: *list* or *tuple (required)*, the Compare objects intended to become the children of the current Compare object
+- `children`: *list* or *tuple (required)*, the Compare objects that form the lower level of the current Compare object
 
 **In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**:
 
@@ -107,8 +108,7 @@ The precision of the target weights are also updated as the hierarchy is constru
 
 ### Compare.complete()
 
-**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step MUST be to call `complete()` on the Compare object at the hierarchy's highest level**. This will insure that the global and target weights of each Compare object in the hierarchy are correctly computed.
-
+**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step MUST be to call `complete()` on the Compare object at the hierarchy's highest level**. This will insure that both the target weights and the global weights of each Compare object in the hierarchy are correctly computed.
 
 ### Missing Pairwise Comparisons
 
@@ -116,7 +116,7 @@ When a Compare object is initialized, the elements forming the keys of the input
 
 Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
-The following example demonstrates this functionality using the matrix below. We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the (c, d) entry in bold.
+The following example demonstrates this functionality using the matrix below. We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the (c, d) entry marked in bold.
 
 ||a|b|c|d|
 |-|-|-|-|-|
@@ -136,10 +136,10 @@ The following example demonstrates this functionality using the matrix below. We
 
 >>> del comparisons[('c', 'd')]
 
->>> partial = ahpy.Compare('partial', comparisons)
->>> print(partial.target_weights)
+>>> missing_cd = ahpy.Compare('missing_cd', comparisons)
+>>> print(missing_cd.target_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
->>> print(partial.consistency_ratio)
+>>> print(missing_cd.consistency_ratio)
 0.0372
 ```
 

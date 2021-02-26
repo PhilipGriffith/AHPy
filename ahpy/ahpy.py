@@ -1,6 +1,7 @@
 import bisect
 import itertools
 import warnings
+import json
 
 import numpy as np
 import scipy.optimize as spo
@@ -364,7 +365,7 @@ class Compare:
             self._compute_target_weights()
             self._compute_global_weights()
 
-    def report(self):
+    def report(self, print=False):
         """
         Returns the key information of the Compare object as a dictionary.
         """
@@ -413,4 +414,8 @@ class Compare:
                       'computed': convert_to_json_format(self._missing_comparisons)
                       if self._missing_comparisons else None}
                   }
-        return report
+        if print:
+            # print(json.dumps(report, indent=4))
+            pass
+        else:
+            return report
