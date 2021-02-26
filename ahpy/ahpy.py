@@ -28,7 +28,7 @@ class Compare:
     :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by the
         'complete_matrix' function; the algorithm stops when the difference between the norms of two cycles
          of coordinates is less than this value; default is 0.0001
-    :param cr: boolean, whether to compute the priority vector's consistency ratio
+    :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
     """
 
     def __init__(self, name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
@@ -303,7 +303,7 @@ class Compare:
         """
         Sets the input Compare objects as children of the current Compare object, then calls the 'complete' function.
         NB: A child Compare object's name MUST be included as an element of the current Compare object.
-        :param children: list or tuple, Compare objects that form the children of the current Compare object
+        :param children: list or tuple, Compare objects to form the children of the current Compare object
         """
         self._node_children = children
         self.complete()
@@ -367,7 +367,8 @@ class Compare:
 
     def report(self, show=False):
         """
-        Returns the key information of the Compare object as a dictionary.
+        Returns the key information of the Compare object as a dictionary, optionally prints to the console.
+        :param show: bool, whether to print the report to the console; default is False
         """
 
         def convert_to_json_format(input_dict):
