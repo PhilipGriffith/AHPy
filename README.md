@@ -16,8 +16,6 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 ## Using AHPy
 
-### Commands
-
 [Compare()](#compare)
 
 [Compare.report()](#comparereport)
@@ -28,9 +26,11 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
-#### Examples
+### Examples
 
 [Relative consumption of drinks in the United States](#relative-consumption-of-drinks-in-the-united-states)
+
+---
 
 ### Compare()
 
@@ -90,7 +90,7 @@ Compare objects can be linked together to form a hierarchy representing the deci
 
 `Compare.add_children(children)`
 
-- `children`: *list* or *tuple (required)*, the Compare objects that form the lower level of the current Compare object
+- `children`: *list* or *tuple (required)*, the Compare objects to form the lower level of the current Compare object
 
 **In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**:
 
