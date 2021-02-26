@@ -200,7 +200,8 @@ u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
 cu = ahpy.Compare('Incomplete Test', u, cr=False)
 print(cu.target_weights)
 print(cu.consistency_ratio)
-r = cu.report(True)
+r = cu.report()
+print(r)
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
 #      ('c', 'e'): 3, ('c', 'g'): 6,

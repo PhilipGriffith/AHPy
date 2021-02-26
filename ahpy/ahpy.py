@@ -365,7 +365,7 @@ class Compare:
             self._compute_target_weights()
             self._compute_global_weights()
 
-    def report(self, print=False):
+    def report(self, show=False):
         """
         Returns the key information of the Compare object as a dictionary.
         """
@@ -414,8 +414,6 @@ class Compare:
                       'computed': convert_to_json_format(self._missing_comparisons)
                       if self._missing_comparisons else None}
                   }
-        if print:
-            # print(json.dumps(report, indent=4))
-            pass
-        else:
-            return report
+        if show:
+            print(json.dumps(report, indent=4))
+        return report
