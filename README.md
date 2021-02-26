@@ -26,7 +26,7 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
-### Examples
+## Examples
 
 [Relative consumption of drinks in the United States](#relative-consumption-of-drinks-in-the-united-states)
 
@@ -90,7 +90,7 @@ Compare objects can be linked together to form a hierarchy representing the deci
 
 `Compare.add_children(children)`
 
-- `children`: *list* or *tuple (required)*, the Compare objects to form the lower level of the current Compare object
+- `children`: *list* or *tuple (required)*, the Compare objects that form the lower level of the current Compare object
 
 **In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**:
 
@@ -119,7 +119,7 @@ Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete p
 The following example demonstrates this functionality using the matrix below. We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the (c, d) entry marked in bold.
 
 ||a|b|c|d|
-|-|-|-|-|:-:|
+|-|:-:|:-:|:-:|:-:|
 |a|1|1|5|2|
 |b|1|1|3|4|
 |c|1/5|1/3|1|**3/4**|
