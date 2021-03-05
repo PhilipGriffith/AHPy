@@ -88,6 +88,7 @@ A report on the details of each Compare object is available as a dictionary and 
 
 The report takes the following form:
 
+```python
 {'name': the name of the Compare object,
  'weight': the global weight of the node within the hierarchy,
  'weights': {
@@ -110,6 +111,7 @@ The report takes the following form:
 	'input': the input comparisons of the Compare object,
 	'computed': the number of comparisons computed by the Compare object
 }
+```
 
 If the Compare object has no children, the value of 'children' will be `None`.
 
