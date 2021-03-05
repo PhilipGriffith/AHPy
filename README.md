@@ -88,7 +88,7 @@ A report on the details of each Compare object is available as a dictionary and 
 
 The report takes the following form:
 
-```python
+```
 {'name': the name of the Compare object,
  'weight': the global weight of the node within the hierarchy,
  'weights': {
