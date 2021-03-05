@@ -86,32 +86,27 @@ A report on the details of each Compare object is available as a dictionary and 
 - `show`: *bool*, whether to print the report to the console
   - The default value is False
 
-The report takes the following form:
+The keys of the report take the following form:
 
-```
-{'name': the name of the Compare object,
- 'weight': the global weight of the node within the hierarchy,
- 'weights': {
-	'local': the local weights of the Compare object's elements,
-	'global': the global weights of the Compare object's elements,
-	'target': self.target_weights if self._node_weight == 1.0 else None
- },
- 'consistency_ratio': the consistency ratio of the Compare object,
- 'random_index': the random index used to compute the consistency ratio,
- 'elements': {
-	'count': the number of elements used to build the Compare object,
-	'names': the names of the elements used to build the Compare object
- },
- 'children': {
-	'count': the number of the Compare object's children,
-	'names': the names of the Compare object's children
- },
- 'comparisons': {
-	'count': the number of comparisons made within the Compare object, not counting their reciprocals,
-	'input': the input comparisons of the Compare object,
-	'computed': the number of comparisons computed by the Compare object
-}
-```
+- `name`: the name of the Compare object
+- `weight`: the global weight of the node within the hierarchy
+- `weights`: a dictionary with the following keys:
+  - `local`: the local weights of the Compare object's elements
+  - `global`: the global weights of the Compare object's elements
+  - `target`: the final weights of the Compare hierarchy's lowest level elements
+    - This is only returned by the highest level Compare object in the hierarchy
+- `consistency_ratio`: the consistency ratio of the Compare object
+- `random_index`: the random index used to compute the consistency ratio
+- `elements`: a dictionary with the following keys:
+  - `count`: the number of elements used to build the Compare object
+  - `names`: the names of the elements used to build the Compare object
+- `children`: a dictionary with the following keys:
+  - `count`: the number of the Compare object's children
+  - `names`: the names of the Compare object's children
+- `comparisons`: a dictionary with the following keys:
+  - `count`: the number of comparisons made within the Compare object, not counting their reciprocals
+  - `input`: the input comparisons of the Compare object
+  - `computed`: the number of comparisons computed by the Compare object
 
 If the Compare object has no children, the value of 'children' will be `None`.
 
