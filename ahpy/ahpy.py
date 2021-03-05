@@ -399,8 +399,8 @@ class Compare:
                       'global': self.global_weights,
                       'target': self.target_weights if self._node_weight == 1.0 else None
                   },
-                  'consistency ratio': self.consistency_ratio,
-                  'random index': set_random_index(),
+                  'consistency_ratio': self.consistency_ratio,
+                  'random_index': set_random_index(),
                   'elements': {
                       'count': len(self._elements),
                       'names': self._elements

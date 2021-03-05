@@ -130,68 +130,69 @@ from ahpy import ahpy
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
 
 
-# def r(x):
-#     return np.reciprocal(float(x))
-#
-#
-# def m(elements, judgments):
-#     return dict(zip(elements, judgments))
-#
-#
-# cri = ('cost', 'safety', 'style', 'capacity')
-# c_cri = list(itertools.combinations(cri, 2))
-# criteria = Compare('goal', m(c_cri, (3, 7, 3, 9, 1, 1/7)))
-#
-# alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
-# pairs = list(itertools.combinations(alt, 2))
-#
-# costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
-# c_pairs = list(itertools.combinations(costs, 2))
-# cost = Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
-#
-# cost_price_m = (9, 9, 1, 0.5, 5, 1, 1/9, 1/9, 1/7, 1/9, 1/9, 1/7, 1/2, 5, 6)
-# cost_price = Compare('cost price', m(pairs, cost_price_m))
-#
-# cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
-# cost_fuel = Compare('cost fuel', m(pairs, cost_fuel_m))
-#
-# cost_resale_m = (3, 4, 1/2, 2, 2, 2, 1/5, 1, 1, 1/6, 1/2, 1/2, 4, 4, 1)
-# cost_resale = Compare('cost resale', m(pairs, cost_resale_m))
-#
-# cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
-# cost_maint = Compare('cost maintenance', m(pairs, cost_maint_m))
-#
-# safety_m = (1, 5, 7, 9, 1/3, 5, 7, 9, 1/3, 2, 9, 1/8, 2, 1/8, 1/9)
-# safety = Compare('safety', m(pairs, safety_m))
-#
-# style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1/6, 3, 1/3, 7, 5, 1/5)
-# style = Compare('style', m(pairs, style_m))
-#
-# capacity = Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
-#
-# capacity_pass_m = (1, 1/2, 1, 3, 1/2, 1/2, 1, 3, 1/2, 2, 6, 1, 3, 1/2, 1/6)
-# capacity_pass = Compare('capacity passenger', m(pairs, capacity_pass_m))
-#
-# capacity_cargo_m = (1, 1/2, 1/2, 1/2, 1/3, 1/2, 1/2, 1/2, 1/3, 1, 1, 1/2, 1, 1/2, 1/2)
-# capacity_cargo = Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
-#
-# capacity_pass = Compare('capacity passenger', {('leg room', 'seats'): 0.2})
-# leg_room = Compare('leg room', m(pairs, capacity_cargo_m))
-# seats = Compare('seats', {('top', 'bottom'): 0.2})
-# top = Compare('top', m(pairs, capacity_cargo_m))
-# bottom = Compare('bottom', m(pairs, capacity_pass_m))
-# seats.add_children([top, bottom])
-#
-# capacity_pass.add_children([leg_room, seats])
-# cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
-# capacity.add_children([capacity_pass, capacity_cargo])
-# criteria.add_children([cost, safety, style, capacity])
-#
-# cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
-# capacity.add_children([capacity_pass, capacity_cargo])
-# criteria.report()
-# criteria.complete()
-# criteria.report()
+def r(x):
+    return np.reciprocal(float(x))
+
+
+def m(elements, judgments):
+    return dict(zip(elements, judgments))
+
+
+cri = ('cost', 'safety', 'style', 'capacity')
+c_cri = list(itertools.combinations(cri, 2))
+criteria = ahpy.Compare('goal', m(c_cri, (3, 7, 3, 9, 1, 1/7)))
+
+alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+pairs = list(itertools.combinations(alt, 2))
+
+costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
+c_pairs = list(itertools.combinations(costs, 2))
+cost = ahpy.Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
+
+cost_price_m = (9, 9, 1, 0.5, 5, 1, 1/9, 1/9, 1/7, 1/9, 1/9, 1/7, 1/2, 5, 6)
+cost_price = ahpy.Compare('cost price', m(pairs, cost_price_m))
+
+cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
+cost_fuel = ahpy.Compare('cost fuel', m(pairs, cost_fuel_m))
+
+cost_resale_m = (3, 4, 1/2, 2, 2, 2, 1/5, 1, 1, 1/6, 1/2, 1/2, 4, 4, 1)
+cost_resale = ahpy.Compare('cost resale', m(pairs, cost_resale_m))
+
+cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+cost_maint = ahpy.Compare('cost maintenance', m(pairs, cost_maint_m))
+
+safety_m = (1, 5, 7, 9, 1/3, 5, 7, 9, 1/3, 2, 9, 1/8, 2, 1/8, 1/9)
+safety = ahpy.Compare('safety', m(pairs, safety_m))
+
+style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1/6, 3, 1/3, 7, 5, 1/5)
+style = ahpy.Compare('style', m(pairs, style_m))
+
+capacity = ahpy.Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
+
+capacity_pass_m = (1, 1/2, 1, 3, 1/2, 1/2, 1, 3, 1/2, 2, 6, 1, 3, 1/2, 1/6)
+capacity_pass = ahpy.Compare('capacity passenger', m(pairs, capacity_pass_m))
+
+capacity_cargo_m = (1, 1/2, 1/2, 1/2, 1/3, 1/2, 1/2, 1/2, 1/3, 1, 1, 1/2, 1, 1/2, 1/2)
+capacity_cargo = ahpy.Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
+
+capacity_pass = ahpy.Compare('capacity passenger', {('leg room', 'seats'): 0.2})
+leg_room = ahpy.Compare('leg room', m(pairs, capacity_cargo_m))
+seats = ahpy.Compare('seats', {('top', 'bottom'): 0.2})
+top = ahpy.Compare('top', m(pairs, capacity_cargo_m))
+bottom = ahpy.Compare('bottom', m(pairs, capacity_pass_m))
+seats.add_children([top, bottom])
+
+capacity_pass.add_children([leg_room, seats])
+cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
+capacity.add_children([capacity_pass, capacity_cargo])
+criteria.add_children([cost, safety, style, capacity])
+
+cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
+capacity.add_children([capacity_pass, capacity_cargo])
+capacity_pass.report(1)
+criteria.report()
+criteria.complete()
+criteria.report(1)
 
 # ----------------------------------------------------------------------------------
 
