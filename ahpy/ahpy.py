@@ -394,10 +394,10 @@ class Compare:
 
         report = {'name': self._name,
                   'weight': self._node_weight,
+                  'target': self.target_weights if self._node_weight == 1.0 else None,
                   'weights': {
                       'local': self.local_weights,
                       'global': self.global_weights,
-                      'target': self.target_weights if self._node_weight == 1.0 else None
                   },
                   'consistency_ratio': self.consistency_ratio,
                   'random_index': set_random_index(),

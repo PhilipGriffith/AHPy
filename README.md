@@ -79,22 +79,24 @@ The Compare class computes the priority vector and consistency ratio of a positi
 
 ### Compare.report()
 
-A report on the details of each Compare object is available as a dictionary and can also be printed to the console. To return the information as a dictionary, call `report()` on the Compare object; to simultaneously print the information to the console, set `show=True`.
+A report on the details of each Compare object is available as a dictionary, and can also be printed to the console. To return the report as a dictionary, call `report()` on the Compare object; to simultaneously print the information to the console, set `show=True`.
 
 `Compare.report(show=False)`
 
-- `show`: *bool*, whether to print the report to the console
+- `show`: *bool*, whether to pretty print the report to the console
   - The default value is False
 
 The keys of the report take the following form:
 
-- `name`: the name of the Compare object
-- `weight`: the global weight of the node within the hierarchy
-- `weights`: a dictionary with the following keys:
-  - `local`: the local weights of the Compare object's elements
+- `name`: *str*, the name of the Compare object
+- `weight`: *float*, the global weight of the Compare object within the hierarchy
+- `target`: the final weights of the Compare hierarchy's lowest level elements
+  - This is only returned by the highest level Compare object in the hierarchy
+- `weights`: *dict*, the weights of the Compare object
+  - `local`: *dict*, the local weights of the Compare object's elements
+    - `'element': weight`
   - `global`: the global weights of the Compare object's elements
-  - `target`: the final weights of the Compare hierarchy's lowest level elements
-    - This is only returned by the highest level Compare object in the hierarchy
+  
 - `consistency_ratio`: the consistency ratio of the Compare object
 - `random_index`: the random index used to compute the consistency ratio
 - `elements`: a dictionary with the following keys:
