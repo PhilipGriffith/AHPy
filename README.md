@@ -14,6 +14,10 @@ python -m pip install ahpy
 
 AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https://numpy.org/) and [scipy](https://scipy.org/).
 
+## Examples
+
+[Relative consumption of drinks in the United States](#relative-consumption-of-drinks-in-the-united-states)
+
 ## Using AHPy
 
 [Terminology](#terminology)
@@ -28,11 +32,22 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
+---
+
 ## Examples
 
-[Relative consumption of drinks in the United States](#relative-consumption-of-drinks-in-the-united-states)
+### Relative consumption of drinks in the United States
 
----
+```python
+drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1, ('coffee', 'milk'): 1, ('coffee', 'water'): 1/2,
+('wine', 'tea'): 1/3, ('wine', 'beer'): 1/9, ('wine', 'soda'): 1/9, ('wine', 'milk'): 1/9, ('wine', 'water'): 1/9,
+('tea', 'beer'): 1/3, ('tea', 'soda'): 1/4, ('tea', 'milk'): 1/3, ('tea', 'water'): 1/9,
+('beer', 'soda'): 1/2, ('beer', 'milk'): 1, ('beer', 'water'): 1/3,
+('soda', 'milk'): 2, ('soda', 'water'): 1/2,
+('milk', 'water'): 1/3}
+c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
+c['target_weights']
+```
 
 ### Terminology
 
@@ -79,38 +94,38 @@ The Compare class computes the priority vector and consistency ratio of a positi
 
 ### Compare.report()
 
-A report on the details of each Compare object is available as a dictionary, and can also be printed to the console. To return the report as a dictionary, call `report()` on the Compare object; to simultaneously print the information to the console, set `show=True`.
+A report on the details of each Compare object is available. To return the report as a dictionary, call `report()` on the Compare object; to simultaneously print the information to the console, set `show=True`.
 
 `Compare.report(show=False)`
 
-- `show`: *bool*, whether to pretty print the report to the console
+- `show`: *bool*, whether to print the report to the console
   - The default value is False
 
 The keys of the report take the following form:
 
 - `name`: *str*, the name of the Compare object
-- `weight`: *float*, the global weight of the Compare object within the hierarchy
-- `target`: the final weights of the Compare hierarchy's lowest level elements
-  - This is only returned by the highest level Compare object in the hierarchy
-- `weights`: *dict*, the weights of the Compare object
-  - `local`: *dict*, the local weights of the Compare object's elements
-    - `'element': weight`
-  - `global`: the global weights of the Compare object's elements
-  
-- `consistency_ratio`: the consistency ratio of the Compare object
-- `random_index`: the random index used to compute the consistency ratio
-- `elements`: a dictionary with the following keys:
-  - `count`: the number of elements used to build the Compare object
-  - `names`: the names of the elements used to build the Compare object
-- `children`: a dictionary with the following keys:
-  - `count`: the number of the Compare object's children
-  - `names`: the names of the Compare object's children
-- `comparisons`: a dictionary with the following keys:
-  - `count`: the number of comparisons made within the Compare object, not counting their reciprocals
-  - `input`: the input comparisons of the Compare object
-  - `computed`: the number of comparisons computed by the Compare object
-
-If the Compare object has no children, the value of 'children' will be `None`.
+- `weight`: *float*, the global weight of the Compare object in the hierarchy
+- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy, where each key is a single element and each value is that element's computed target weight; **this output is only available for Compare objects with a global weight of 1.0**
+    - `{'a': 0.5, 'b': 0.5}`
+- `weights`: *dict*, the weights of the Compare object's elements
+  - `local`: *dict*, the local weights of the Compare object's elements; each key is a single element and each value is that element's computed local weight
+    - `{'a': 0.5, 'b': 0.5}`
+  - `global`: *dict*, the global weights of the Compare object's elements; each key is a single element and each value is that element's computed global weight
+    - `{'a': 0.25, 'b': 0.25}`
+- `consistency_ratio`: *float*, the consistency ratio of the Compare object
+- `random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
+- `elements`: *dict*, the elements of the Compare object
+  - `count`: *int*, the number of elements within the Compare object
+  - `names`: *list*, the names of the elements within the Compare object
+- `children`: *dict*, the children of the Compare object; if the Compare object has no children, this value will be `None`
+  - `count`: *int*, the number of the Compare object's children
+  - `names`: *list*, the names of the Compare object's children
+- `comparisons`: *dict*, the comparisons of the Compare object
+  - `count`: *int*, the number of comparisons made within the Compare object, not counting reciprocals
+  - `input`: *list*, the comparisons input to the Compare object, containing each input comparison as a dictionary in which each key is a tuple of two elements and each value is their input pairwise comparison value
+    - `[{('a', 'b'): 3}, ...]`
+  - `computed`: *list*, the comparisons computed by the Compare object, containing each computed comparison as a dictionary in which each key is a tuple of two elements and each value is their computed pairwise comparison value
+    - `[{('c', 'd'): 0.7303}, ...]`
 
 ### Compare.add_children()
 
@@ -170,24 +185,3 @@ The following example demonstrates this functionality using the matrix below. We
 >>> print(missing_cd.consistency_ratio)
 0.0372
 ```
-
-## Examples
-
-### Relative consumption of drinks in the United States
-
-```python
-drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1, ('coffee', 'milk'): 1, ('coffee', 'water'): 1/2,
-('wine', 'tea'): 1/3, ('wine', 'beer'): 1/9, ('wine', 'soda'): 1/9, ('wine', 'milk'): 1/9, ('wine', 'water'): 1/9,
-('tea', 'beer'): 1/3, ('tea', 'soda'): 1/4, ('tea', 'milk'): 1/3, ('tea', 'water'): 1/9,
-('beer', 'soda'): 1/2, ('beer', 'milk'): 1, ('beer', 'water'): 1/3,
-('soda', 'milk'): 2, ('soda', 'water'): 1/2,
-('milk', 'water'): 1/3}
-c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
-c['target_weights']
-```
-
-
-
-
-
-
