@@ -371,15 +371,15 @@ class Compare:
         :param show: bool, whether to print the report to the console; default is False
         """
 
-        def convert_to_json_format(input_dict):
+        def convert_to_json_format(input_dict, precision):
             """
             Returns a dictionary as a list of JSON compatible objects.
             :param input_dict: dictionary, the dictionary to be converted
             """
             if self._normalize:
-                return list({key: value} for key, value in input_dict.items())
+                return list({key: round(value, precision)} for key, value in input_dict.items())
             else:
-                return list({', '.join(key): value} for key, value in input_dict.items())
+                return list({', '.join(key): round(value, precision)} for key, value in input_dict.items())
 
         def set_random_index():
             """
@@ -411,8 +411,8 @@ class Compare:
                   } if self._node_children else None,
                   'comparisons': {
                       'count': len(self._comparisons) + len(self._missing_comparisons),
-                      'input': convert_to_json_format(self._comparisons),
-                      'computed': convert_to_json_format(self._missing_comparisons)
+                      'input': convert_to_json_format(self._comparisons, self._precision),
+                      'computed': convert_to_json_format(self._missing_comparisons, self._precision)
                       if self._missing_comparisons else None}
                   }
         if show:

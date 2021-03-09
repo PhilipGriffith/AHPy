@@ -37,31 +37,6 @@ from ahpy import ahpy
 # c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
 
 # ----------------------------------------------------------------------------------
-# Example from  Triantaphyllou, E. and Mann, S., 'Using the Analytic Hierarchy Process
-# for Decision Making in Engineering Applications: Some Challenges,' Int. J. of Industrial
-# Engineering: Applications and Practice, 2:1, 1995, pp.35-44.
-
-# alt = ('a', 'b', 'c')
-#
-# expand_m = '1 6 8; 1/6 1 4; 1/8 1/4 1'
-# expand = Compare('expand', expand_m, alt, random_index='saaty')
-#
-# maintain_m = '1 7 1/5; 1/7 1 1/8; 5 8 1'
-# maintain = Compare('maintain', maintain_m, alt, random_index='saaty')
-#
-# finance_m = '1 8 6; 1/8 1 1/4; 1/6 4 1'
-# finance = Compare('finance', finance_m, alt, random_index='saaty')
-#
-# user_m = '1 5 4; 1/5 1 1/3; 1/4 3 1'
-# user = Compare('user', user_m, alt, random_index='saaty')
-#
-# cri_n = ('expand', 'maintain', 'finance', 'user')
-# cri_m = '1 5 3 7; 1/5 1 1/3 5; 1/3 3 1 6; 1/7 1/5 1/6 1'
-# cri = Compare('goal', cri_m, cri_n, random_index='saaty')
-#
-# Compose('goal', cri, [maintain, user, finance, expand]).report()
-
-# ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
 
 # cars = ('civic', 'saturn', 'escort', 'clio')
@@ -117,14 +92,15 @@ from ahpy import ahpy
 #                   ('Pittsburgh', 'Boston'): 3.5,
 #                   ('Pittsburgh', 'Santa Fe'): 9}
 #
-# cu = Compare('Culture', culture, precision=3, random_index='Saaty')
-# f = Compare('Family', family, precision=3, random_index='Saaty')
-# h = Compare('Housing', housing, precision=3, random_index='Saaty')
-# j = Compare('Jobs', jobs, precision=3, random_index='Saaty')
-# t = Compare('Transportation', transportation, precision=3, random_index='Saaty')
+# cu = ahpy.Compare('Culture', culture, precision=3, random_index='Saaty')
+# f = ahpy.Compare('Family', family, precision=3, random_index='Saaty')
+# h = ahpy.Compare('Housing', housing, precision=3, random_index='Saaty')
+# j = ahpy.Compare('Jobs', jobs, precision=3, random_index='Saaty')
+# t = ahpy.Compare('Transportation', transportation, precision=3, random_index='Saaty')
 #
-# cr = Compare('Goal', criteria, precision=3, random_index='Saaty')
-# cr.children([cu, f, h, j, t])
+# cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
+# cr.add_children([cu, f, h, j, t])
+# cr.report(True)
 
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
@@ -201,8 +177,7 @@ u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
 cu = ahpy.Compare('Incomplete Test', u, cr=False)
 print(cu.target_weights)
 print(cu.consistency_ratio)
-r = cu.report()
-print(r)
+cu.report(True)
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
 #      ('c', 'e'): 3, ('c', 'g'): 6,
