@@ -66,9 +66,9 @@ class Compare:
             self._check_size()
             self._insert_comparisons()
             self._build_matrix()
-            self._get_missing_comparisons()
-            if self._missing_comparisons:
-                self._complete_matrix()
+        self._get_missing_comparisons()
+        if self._missing_comparisons:
+            self._complete_matrix()
         self._compute()
 
     def _check_input(self):
@@ -115,6 +115,7 @@ class Compare:
         Creates a list of those elements found within the keys of the input 'comparisons' dictionary.
         """
         self._elements = list(self._comparisons)
+        self._pairs = {}
         self._size = len(self._elements)
 
     def _insert_comparisons(self):

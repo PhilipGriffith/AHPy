@@ -188,9 +188,9 @@ cu.report(True)
 # cm = Compare('Incomplete Housing', m)
 # cm.report()
 #
-# f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
-# cf = Compare('Fuel Economy', f)
-# cf.report()
+f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
+cf = ahpy.Compare('Fuel Economy', f)
+cf.report(True)
 #
 # books = {('Jane Eyre', 'Moby Dick'): 5,
 #          ('Jane Eyre', 'Pride & Prejudice'): 3,
