@@ -134,10 +134,9 @@ The keys of the report take the following form:
   - `names`: *list*, the names of the Compare object's children
 - `comparisons`: *dict*, the comparisons of the Compare object
   - `count`: *int*, the number of comparisons made by the Compare object, not counting reciprocal comparisons
-  - `input`: *list*, the comparisons input to the Compare object; each input comparison is a dictionary in which each key is a tuple of two elements and each value is their input pairwise comparison value
-    - `[{('a', 'b'): 3}, ...]`
-  - `computed`: *list*, the comparisons computed by the Compare object; each computed comparison is a dictionary in which each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, this value will be `None`
-    - `[{('c', 'd'): 0.7303}, ...]`
+  - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
+  - `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, this value will be `None`
+    - `{('c', 'd'): 0.730297106886979}, ...}`
 
 ### Compare.add_children()
 
