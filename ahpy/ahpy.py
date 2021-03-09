@@ -1,5 +1,6 @@
 import bisect
 import itertools
+import copy
 import warnings
 import json
 
@@ -376,11 +377,9 @@ class Compare:
             """
             Returns a dictionary as a list of JSON compatible objects.
             :param input_dict: dictionary, the dictionary to be converted
+            :param precision: int, the precision of the Compare object
             """
-            if self._normalize:
-                return list({key: round(value, precision)} for key, value in input_dict.items())
-            else:
-                return list({', '.join(key): round(value, precision)} for key, value in input_dict.items())
+            return list({(', '.join(key)): round(value, precision)} for key, value in input_dict.items())
 
         def set_random_index():
             """
@@ -412,10 +411,17 @@ class Compare:
                   } if self._node_children else None,
                   'comparisons': {
                       'count': len(self._comparisons) + len(self._missing_comparisons),
-                      'input': convert_to_json_format(self._comparisons, self._precision),
-                      'computed': convert_to_json_format(self._missing_comparisons, self._precision)
-                      if self._missing_comparisons else None}
+                      'input': self._comparisons,
+                      'computed': self._missing_comparisons if self._missing_comparisons else None
                   }
+                  }
+
         if show:
-            print(json.dumps(report, indent=4))
+            json_report = copy.deepcopy(report)
+            if not self._normalize:
+                json_report['comparisons']['input'] = convert_to_json_format(self._comparisons, self._precision)
+            if self._missing_comparisons:
+                json_report['comparisons']['computed'] = convert_to_json_format(self._missing_comparisons,
+                                                                                self._precision)
+            print(json.dumps(json_report, indent=4))
         return report

@@ -177,7 +177,9 @@ u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
 cu = ahpy.Compare('Incomplete Test', u, cr=False)
 print(cu.target_weights)
 print(cu.consistency_ratio)
-cu.report(True)
+r = cu.report(True)
+print(r)
+
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
 #      ('c', 'e'): 3, ('c', 'g'): 6,
@@ -190,7 +192,9 @@ cu.report(True)
 #
 f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
 cf = ahpy.Compare('Fuel Economy', f)
-cf.report(True)
+r = cf.report(True)
+print(r)
+
 #
 # books = {('Jane Eyre', 'Moby Dick'): 5,
 #          ('Jane Eyre', 'Pride & Prejudice'): 3,
