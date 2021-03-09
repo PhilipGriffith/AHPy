@@ -63,7 +63,7 @@ c['target_weights']
 
 ### Terminology
 
-describe "target"
+describe "target", 'element', 'value'
 
 ### Compare()
 
@@ -117,7 +117,7 @@ The keys of the report take the following form:
 
 - `name`: *str*, the name of the Compare object
 - `weight`: *float*, the global weight of the Compare object in the hierarchy
-- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy, where each key is a single element and each value is that element's computed target weight; **this output is only available for Compare objects with a global weight of 1.0**
+- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is a single element and each value is that element's computed target weight; **if the global weight of the Compare object is less than 1.0, this value will be `None`**
     - `{'a': 0.5, 'b': 0.5}`
 - `weights`: *dict*, the weights of the Compare object's elements
   - `local`: *dict*, the local weights of the Compare object's elements; each key is a single element and each value is that element's computed local weight
@@ -126,28 +126,26 @@ The keys of the report take the following form:
     - `{'a': 0.25, 'b': 0.25}`
 - `consistency_ratio`: *float*, the consistency ratio of the Compare object
 - `random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
-- `elements`: *dict*, the elements of the Compare object
-  - `count`: *int*, the number of elements within the Compare object
-  - `names`: *list*, the names of the elements within the Compare object
+- `elements`: *dict*, the elements compared by the Compare object
+  - `count`: *int*, the number of elements compared by the Compare object
+  - `names`: *list*, the names of the elements compared by the Compare object
 - `children`: *dict*, the children of the Compare object; if the Compare object has no children, this value will be `None`
   - `count`: *int*, the number of the Compare object's children
   - `names`: *list*, the names of the Compare object's children
 - `comparisons`: *dict*, the comparisons of the Compare object
-  - `count`: *int*, the number of comparisons made within the Compare object, not counting reciprocals
-  - `input`: *list*, the comparisons input to the Compare object, containing each input comparison as a dictionary in which each key is a tuple of two elements and each value is their input pairwise comparison value
+  - `count`: *int*, the number of comparisons made by the Compare object, not counting reciprocal comparisons
+  - `input`: *list*, the comparisons input to the Compare object; each input comparison is a dictionary in which each key is a tuple of two elements and each value is their input pairwise comparison value
     - `[{('a', 'b'): 3}, ...]`
-  - `computed`: *list*, the comparisons computed by the Compare object, containing each computed comparison as a dictionary in which each key is a tuple of two elements and each value is their computed pairwise comparison value
+  - `computed`: *list*, the comparisons computed by the Compare object; each computed comparison is a dictionary in which each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, this value will be `None`
     - `[{('c', 'd'): 0.7303}, ...]`
 
 ### Compare.add_children()
 
-Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its lower level (the *children*).
+Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the upper level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its lower level (the *children*). **In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary.**
 
 `Compare.add_children(children)`
 
 - `children`: *list* or *tuple (required)*, the Compare objects that form the lower level of the current Compare object
-
-**In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary**:
 
 ```python
 >>> child1 = ahpy.Compare(name='child1', ...)
@@ -159,11 +157,11 @@ Compare objects can be linked together to form a hierarchy representing the deci
 
 The global and target weights of the Compare objects in a hierarchy are updated as the hierarchy is constructed: each time `add_children()` is called, the parent object's global weight is set to 1.0 and all of its descendants' global weights are updated accordingly. For this reason, the order in which the hierarchy is constructed is important. While it is possible to construct the hierarchy in any order, **it is best practice to construct the hierarchy beginning with the Compare objects on the lowest level and working up**. This will insure that the global weights of each lower level are always properly computed as the hierarchy is built.
 
-The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the parent object's target weights is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the final target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
+The precision of the target weights are also updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the parent object's target weights is set to equal the lowest precision of its child objects. Because low precision propagates up through the hierarchy, this means that the final target weights will always have the same level of precision as the hierachy's least precise Compare object. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
 
 ### Compare.complete()
 
-**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step MUST be to call `complete()` on the Compare object at the hierarchy's highest level**. This will insure that both the target weights and the global weights of each Compare object in the hierarchy are correctly computed.
+**If the hierarchy is *not* constructed beginning with the Compare objects on the lowest level and working up, the final step of construction MUST be to call `complete()` on the Compare object at the hierarchy's highest level**. This will insure that both the target weights and the global weights of each Compare object in the hierarchy are correctly computed.
 
 ### Missing Pairwise Comparisons
 
@@ -171,7 +169,7 @@ When a Compare object is initialized, the elements forming the keys of the input
 
 Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
-The following example demonstrates this functionality using the matrix below. We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the (c, d) entry marked in bold.
+The following example demonstrates this functionality using the matrix below. We first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the **(c, d)** entry marked in bold.
 
 ||a|b|c|d|
 |-|:-:|:-:|:-:|:-:|
