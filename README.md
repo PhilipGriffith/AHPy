@@ -70,14 +70,14 @@ The table below shows the relative consumption of drinks as computed using the A
 We can recreate this analysis with AHPy using the following code:
 
 ```python
->>> drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1, ('coffee', 'milk'): 1, ('coffee', 'water'): 1/2,
+>>> drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1, ('coffee', 'milk'): 1, ('coffee', 'water'): 1/2,
 ('wine', 'tea'): 1/3, ('wine', 'beer'): 1/9, ('wine', 'soda'): 1/9, ('wine', 'milk'): 1/9, ('wine', 'water'): 1/9,
 ('tea', 'beer'): 1/3, ('tea', 'soda'): 1/4, ('tea', 'milk'): 1/3, ('tea', 'water'): 1/9,
 ('beer', 'soda'): 1/2, ('beer', 'milk'): 1, ('beer', 'water'): 1/3,
 ('soda', 'milk'): 2, ('soda', 'water'): 1/2,
 ('milk', 'water'): 1/3}
 
->>> c = ahpy.Compare(name='Drinks', comparisons=drinks, precision=3, random_index='saaty')
+>>> c = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
 
 >>> print(c.target_weights)
 {'water': 0.327, 'soda': 0.19, 'coffee': 0.177, 'milk': 0.129, 'beer': 0.116, 'tea': 0.042, 'wine': 0.019}
@@ -86,11 +86,11 @@ We can recreate this analysis with AHPy using the following code:
 0.022
 ```
 
-First, we create a dictionary of pairwise comparisons using the values from the matrix. We then create a Compare object, giving it a unique name and the dictionary we just made (we also change the precision and random index so that the results match those given by Saaty). Finally, we print the Compare object's target weights and consistency ratio to see the results of our analysis. Brilliant!
+First, we create a dictionary of pairwise comparisons using the values from the matrix above. We then create a Compare object, giving it a unique name and the dictionary we just made (we also change the precision and random index so that the results match those given by Saaty). Finally, we print the Compare object's target weights and consistency ratio to see the results of our analysis. Brilliant!
 
 ### Choosing a leader
 
-This example can be found [as an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example). The names have been changed both to freshen things up as well as to reference [a blast from the past](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), though the input comparison values remain the same. In some cases, AHPy's results will not match those on the Wikipedia page: this is due to the imprecision of the method used to compute the values shown in the Wikipedia example, not an error in AHPy.
+This example can be found [in an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same. In some cases, AHPy's results will not match those on the Wikipedia page: this is due to the imprecision of the method used to compute the values shown in the Wikipedia example, not an error in AHPy.
 
 We'll be judging candidates by their experience, education, charisma and age. Therefore, we need to compare each potential leader to the others, given each criteria:
 
@@ -139,10 +139,13 @@ If we wanted to, we could also print the weights and consistency ratio of any of
 ```python
 >>> print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
+
 >>> print(experience.consistency_ratio)
 0.035
+
 >>> print(education.local_weights)
 {'Sue': 0.731, 'Moll': 0.188, 'Nell': 0.081}
+
 >>> print(education.consistency_ratio)
 0.062
 ```
