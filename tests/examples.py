@@ -34,7 +34,7 @@ from ahpy import ahpy
 #           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
 #           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
 #           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-# c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
+# c = ahpy.Compare('Drinks', drinks, precision=4, random_index='dd')
 
 # ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
