@@ -76,9 +76,12 @@ We can recreate this analysis with AHPy using the following code:
 ('beer', 'soda'): 1/2, ('beer', 'milk'): 1, ('beer', 'water'): 1/3,
 ('soda', 'milk'): 2, ('soda', 'water'): 1/2,
 ('milk', 'water'): 1/3}
+
 >>> c = ahpy.Compare(name='Drinks', comparisons=drinks, precision=3, random_index='saaty')
+
 >>> print(c.target_weights)
 {'water': 0.327, 'soda': 0.19, 'coffee': 0.177, 'milk': 0.129, 'beer': 0.116, 'tea': 0.042, 'wine': 0.019}
+
 >>> print(c.consistency_ratio)
 0.022
 ```
