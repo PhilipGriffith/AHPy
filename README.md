@@ -139,18 +139,16 @@ If we wanted to, we could also print the weights and consistency ratio of any of
 ```python
 >>> print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
-
 >>> print(experience.consistency_ratio)
 0.035
 
 >>> print(education.local_weights)
 {'Sue': 0.731, 'Moll': 0.188, 'Nell': 0.081}
-
 >>> print(education.consistency_ratio)
 0.062
 ```
 
-We could also call `report()` on a Compare object to learn more detailed information:
+We could also call `report()` on a Compare object to learn more detailed information. In this case, `report` contains a Python dictionary, while `show=True` prints the same information to the console in JSON format:
 
 ```python
 >>> report = criteria.report(show=True)
@@ -222,8 +220,6 @@ We could also call `report()` on a Compare object to learn more detailed informa
     }
 }
 ```
-
-In this case, `report` contains a Python dictionary, while `show=True` prints the same information to the console in JSON format.
 
 ### Purchasing a vehicle
 
