@@ -48,10 +48,10 @@ class Compare:
         self._matrix = None
         self._missing_comparisons = None
 
-        self._node_weight = 1.0
         self._node_children = None
         self._node_precision = None
 
+        self.weight = 1.0
         self.consistency_ratio = None
         self.local_weights = None
         self.global_weights = None
@@ -345,7 +345,7 @@ class Compare:
             for parent_key, parent_value in self.local_weights.items():
                 for child in self._node_children:
                     if parent_key == child._name:
-                        child._node_weight = np.round(self._node_weight * parent_value, self._precision)
+                        child.weight = np.round(self.weight * parent_value, self._precision)
                         child._apply_weight()
                         child._compute_global_weights()
                         break
@@ -355,7 +355,7 @@ class Compare:
         Updates the 'global_weights' dictionary of the Compare object given the global weight of the node.
         """
         for key in self.global_weights:
-            self.global_weights[key] = np.round(self._node_weight * self.local_weights[key], self._precision)
+            self.global_weights[key] = np.round(self.weight * self.local_weights[key], self._precision)
 
     def complete(self):
         """
@@ -373,13 +373,12 @@ class Compare:
         :param show: bool, whether to print the report to the console; default is False
         """
 
-        def convert_to_json_format(input_dict, precision):
+        def convert_to_json_format(input_dict):
             """
             Returns a dictionary as a list of JSON compatible objects.
             :param input_dict: dictionary, the dictionary to be converted
-            :param precision: int, the precision of the Compare object
             """
-            return list({(', '.join(key)): round(value, precision)} for key, value in input_dict.items())
+            return list({(', '.join(key)): value} for key, value in input_dict.items())
 
         def set_random_index():
             """
@@ -393,8 +392,8 @@ class Compare:
             return random_index
 
         report = {'name': self._name,
-                  'weight': self._node_weight,
-                  'target': self.target_weights if self._node_weight == 1.0 else None,
+                  'weight': self.weight,
+                  'target': self.target_weights if self.weight == 1.0 else None,
                   'weights': {
                       'local': self.local_weights,
                       'global': self.global_weights,
@@ -419,9 +418,8 @@ class Compare:
         if show:
             json_report = copy.deepcopy(report)
             if not self._normalize:
-                json_report['comparisons']['input'] = convert_to_json_format(self._comparisons, self._precision)
+                json_report['comparisons']['input'] = convert_to_json_format(self._comparisons)
             if self._missing_comparisons:
-                json_report['comparisons']['computed'] = convert_to_json_format(self._missing_comparisons,
-                                                                                self._precision)
+                json_report['comparisons']['computed'] = convert_to_json_format(self._missing_comparisons)
             print(json.dumps(json_report, indent=4))
         return report

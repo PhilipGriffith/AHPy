@@ -48,21 +48,21 @@ The easiest way to learn how to use AHPy is to *see* it used, so this README beg
 
 ### Relative consumption of drinks in the United States
 
-This example is often used in Saaty's expositions of the AHP as a brief but clear demonstration of the method. I think it's what first opened my eyes to the broad usefulness of the AHP, as well as the wisdom of crowds. If you're unfamiliar with the example, 30 participants were asked to compare the relative consumption of drinks in the United States. The matrix derived from their answers was as follows:
+This example is often used in Saaty's expositions of the AHP as a brief but clear demonstration of the method. It's what first opened my eyes to the broad usefulness of the AHP (as well as the wisdom of crowds!). If you're unfamiliar with the example, 30 participants were asked to compare the relative consumption of drinks in the United States. For instance, they believed that coffee was consumed *much* more than wine, but at the same rate as milk. The matrix derived from their answers was as follows:
 
-||Coffee|Wine|Tea|Beer|Sodas|Milk|Water|
+||Coffee|Wine|Tea|Beer|Soda|Milk|Water|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |Coffee|1|9|5|2|1|1|1/2|
 |Wine|1/9|1|1/3|1/9|1/9|1/9|1/9|
 |Tea|1/5|2|1|1/3|1/4|1/3|1/9|
 |Beer|1/2|9|3|1|1/2|1|1/3|
-|Sodas|1|9|4|2|1|2|1/2|
+|Soda|1|9|4|2|1|2|1/2|
 |Milk|1|9|3|1|1/2|1|1/3|
 |Water|2|9|9|3|2|3|1|
 
 The table below shows the relative consumption of drinks as computed using the AHP, given this matrix, together with the *actual* relative consumption of drinks as obtained from U.S. Statistical Abstracts:
 
-||Coffee|Wine|Tea|Beer|Sodas|Milk|Water|
+||Coffee|Wine|Tea|Beer|Soda|Milk|Water|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |AHP|0.177|0.019|0.042|0.116|0.190|0.129|0.327|
 |Actual|0.180|0.010|0.040|0.120|0.180|0.140|0.330|
@@ -90,9 +90,15 @@ First, we create a dictionary of pairwise comparisons using the values from the 
 
 ### Choosing a leader
 
-This example can be found [in an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same. In some cases, AHPy's results will not match those on the Wikipedia page: this is due to the imprecision of the method used to compute the values shown in the Wikipedia example, not an error in AHPy.
+This example can be found [in an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_-_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same.
 
-We'll be judging candidates by their experience, education, charisma and age. Therefore, we need to compare each potential leader to the others, given each criteria:
+#### N.B.
+
+You may notice that in some cases AHPy's results will not match those on the Wikipedia page. This is not an error in AHPy's calculations, but rather a result of [the method used to compute the values shown in the Wikipedia examples](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example#Pairwise_comparing_the_criteria_with_respect_to_the_goal):
+
+> You can duplicate this analysis at this online demonstration site...**IMPORTANT: The demo site is designed for convenience, not accuracy. The priorities it returns may differ somewhat from those returned by rigorous AHP calculations.**
+
+In this example, we'll be judging candidates by their experience, education, charisma and age. Therefore, we need to compare each potential leader to the others, given each criterion:
 
 ```python
 >>> experience_comparisons = {('Moll', 'Nell'): 1/4, ('Moll', 'Sue'): 4, ('Nell', 'Sue'): 9}
@@ -101,7 +107,7 @@ We'll be judging candidates by their experience, education, charisma and age. Th
 >>> age_comparisons = {('Moll', 'Nell'): 1/3, ('Moll', 'Sue'): 5, ('Nell', 'Sue'): 9}
 ```
 
-After that, we'll need to compare the importance of each criteria to the others:
+After that, we'll need to compare the importance of each criterion to the others:
 
 ```python
 >>> criteria_comparisons = {('Experience', 'Education'): 4, ('Experience', 'Charisma'): 3, ('Experience', 'Age'): 7,
@@ -121,31 +127,35 @@ Now that we've created all of the necessary pairwise comparison dictionaries, we
 
 Notice that the names of the `experience`, `education`, `charisma` and `age` Compare objects are repeated in the `criteria_comparisons` dictionary above. This is necessary in order to properly link the Compare objects together into a hierarchy, as shown next.
 
-In the final step, we need to link the Compare objects together into a hierarchy, such that `criteria` is the parent object and the other objects are its children:
+In the final step, we need to link the Compare objects together into a hierarchy, such that `criteria` is the parent object and the other objects form its children:
 
 ```python
 >>> criteria.add_children([experience, education, charisma, age])
 ```
 
-Now that the hierarchy represents the decision problem, we can print the target weights of the `criteria` object to see the results of the analysis:
+Now that the hierarchy represents the decision problem, we can print the target weights of the parent `criteria` object to see the results of the analysis:
 
 ```python
 >>> print(criteria.target_weights)
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
-If we wanted to, we could also print the weights and consistency ratio of any of the other Compare objects:
+We can also print the weights and consistency ratio of any of the other Compare objects, as well as their overall weight in the hierarchy:
 
 ```python
 >>> print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
 >>> print(experience.consistency_ratio)
 0.035
+>>> print(experience.weight)
+0.548
 
 >>> print(education.local_weights)
 {'Sue': 0.731, 'Moll': 0.188, 'Nell': 0.081}
 >>> print(education.consistency_ratio)
 0.062
+>>> print(education.weight)
+0.127
 ```
 
 We could also call `report()` on a Compare object to learn more detailed information. In this case, `report` contains a Python dictionary, while `show=True` prints the same information to the console in JSON format:
@@ -207,7 +217,7 @@ We could also call `report()` on a Compare object to learn more detailed informa
                 "Experience, Age": 7
             },
             {
-                "Education, Charisma": 0.333
+                "Education, Charisma": 0.3333333333333333
             },
             {
                 "Education, Age": 3
@@ -223,11 +233,421 @@ We could also call `report()` on a Compare object to learn more detailed informa
 
 ### Purchasing a vehicle
 
+This example can also be found [in an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example). Like before, in some cases AHPy's results will not match those on the Wikipedia page, even though the input comparison values are identical. Again, this is due to the method used to compute the values shown in the Wikipedia examples, not an error in AHPy.
+
+In this example, we'll be choosing a vehicle to purchase based on cost, safety, style and capacity. Cost will further depend on a combination of the vehicle's purchase price, fuel costs, maintenance costs and resale value; capacity will depend on a combination of the vehicle's cargo and passenger capacity.
+
+First, we compare the high-level criteria to one another:
+
+```python
+>>> criteria_comparisons = {('Cost', 'Safety'): 3, ('Cost', 'Style'): 7, ('Cost', 'Capacity'): 3,
+('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
+('Style', 'Capacity'): 1/7}
+```
+
+If we create a Compare object for the criteria, we can view its report:
+
+```python
+>>> criteria = ahpy.Compare('Criteria', criteria_comparisons, precision=3)
+>>> report = criteria.report(show=True)
+{
+    "name": "Criteria",
+    "weight": 1.0,
+    "target": {
+        "Cost": 0.51,
+        "Safety": 0.234,
+        "Capacity": 0.215,
+        "Style": 0.041
+    },
+    "weights": {
+        "local": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        },
+        "global": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        }
+    },
+    "consistency_ratio": 0.08,
+    "random_index": "Donegan & Dodd",
+    "elements": {
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "children": null,
+    "comparisons": {
+        "count": 6,
+        "input": [
+            {
+                "Cost, Safety": 3
+            },
+            {
+                "Cost, Style": 7
+            },
+            {
+                "Cost, Capacity": 3
+            },
+            {
+                "Safety, Style": 9
+            },
+            {
+                "Safety, Capacity": 1
+            },
+            {
+                "Style, Capacity": 0.14285714285714285
+            }
+        ],
+        "computed": null
+    }
+}
+```
+
+Next, we compare the *sub*criteria of cost to one another...
+
+```python
+>>> cost_comparisons = {('Price', 'Fuel'): 2, ('Price', 'Maintenance'): 5, ('Price', 'Resale'): 3,
+('Fuel', 'Maintenance'): 2, ('Fuel', 'Resale'): 2,
+('Maintenance', 'Resale'): 1/2}
+```
+
+...as well as the *sub*criteria of capacity:
+
+```python
+>>> capacity_comparisons = {('Cargo', 'Passenger'): 1/5}
+```
+
+We also need to compare each of the potential vehicles to the others, given each criterion. We'll begin by building a list of all possible two-vehicle combinations:
+
+```python
+>>> import itertools
+>>> vehicles = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+>>> vehicle_pairs = list(itertools.combinations(vehicles, 2))
+>>> print(vehicle_pairs)
+[('Accord Sedan', 'Accord Hybrid'), ('Accord Sedan', 'Pilot'), ('Accord Sedan', 'CR-V'), ('Accord Sedan', 'Element'), ('Accord Sedan', 'Odyssey'), ('Accord Hybrid', 'Pilot'), ('Accord Hybrid', 'CR-V'), ('Accord Hybrid', 'Element'), ('Accord Hybrid', 'Odyssey'), ('Pilot', 'CR-V'), ('Pilot', 'Element'), ('Pilot', 'Odyssey'), ('CR-V', 'Element'), ('CR-V', 'Odyssey'), ('Element', 'Odyssey')]
+```
+
+Then we can simply zip together the vehicle pairs and the pairwise comparison values for each criterion:
+
+```python
+>>> price_values = (9, 9, 1, 1/2, 5, 1, 1/9, 1/9, 1/7, 1/9, 1/9, 1/7, 1/2, 5, 6)
+>>> price_comparisons = dict(zip(vehicle_pairs, price_values))
+>>> print(price_comparisons)
+{('Accord Sedan', 'Accord Hybrid'): 9, ('Accord Sedan', 'Pilot'): 9, ('Accord Sedan', 'CR-V'): 1, ('Accord Sedan', 'Element'): 0.5, ('Accord Sedan', 'Odyssey'): 5, ('Accord Hybrid', 'Pilot'): 1, ('Accord Hybrid', 'CR-V'): 0.1111111111111111, ('Accord Hybrid', 'Element'): 0.1111111111111111, ('Accord Hybrid', 'Odyssey'): 0.14285714285714285, ('Pilot', 'CR-V'): 0.1111111111111111, ('Pilot', 'Element'): 0.1111111111111111, ('Pilot', 'Odyssey'): 0.14285714285714285, ('CR-V', 'Element'): 0.5, ('CR-V', 'Odyssey'): 5, ('Element', 'Odyssey'): 6}
+
+>>> safety_values = (1, 5, 7, 9, 1/3, 5, 7, 9, 1/3, 2, 9, 1/8, 2, 1/8, 1/9)
+>>> safety_comparisons = dict(zip(vehicle_pairs, safety_values))
+
+>>> passenger_values = (1, 1/2, 1, 3, 1/2, 1/2, 1, 3, 1/2, 2, 6, 1, 3, 1/2, 1/6)
+>>> passenger_comparisons = dict(zip(vehicle_pairs, passenger_values))
+
+>>> fuel_values = (1/1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1/1.23, 1/1.14, 1/1.18, 1.08, 1.04, 1/1.04)
+>>> fuel_comparisons = dict(zip(vehicle_pairs, fuel_values))
+
+>>> resale_values = (3, 4, 1/2, 2, 2, 2, 1/5, 1, 1, 1/6, 1/2, 1/2, 4, 4, 1)
+>>> resale_comparisons = dict(zip(vehicle_pairs, resale_values))
+
+>>> maintenance_values = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+>>> maintenance_comparisons = dict(zip(vehicle_pairs, maintenance_values))
+
+>>> style_values = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1/6, 3, 1/3, 7, 5, 1/5)
+>>> style_comparisons = dict(zip(vehicle_pairs, style_values))
+
+>>> cargo_values = (1, 1/2, 1/2, 1/2, 1/3, 1/2, 1/2, 1/2, 1/3, 1, 1, 1/2, 1, 1/2, 1/2)
+>>> cargo_comparisons = dict(zip(vehicle_pairs, cargo_values))
+```
+
+Now that we've created all of the necessary pairwise comparison dictionaries, we can create their corresponding Compare objects:
+
+```python
+>>> cost = ahpy.Compare('Cost', cost_comparisons, precision=3)
+>>> capacity = ahpy.Compare('Capacity', capacity_comparisons, precision=3)
+>>> price = ahpy.Compare('Price', price_comparisons, precision=3)
+>>> safety = ahpy.Compare('Safety', safety_comparisons, precision=3)
+>>> passenger = ahpy.Compare('Passenger', passenger_comparisons, precision=3)
+>>> fuel = ahpy.Compare('Fuel', fuel_comparisons, precision=3)
+>>> resale = ahpy.Compare('Resale', resale_comparisons, precision=3)
+>>> maintenance = ahpy.Compare('Maintenance', maintenance_comparisons, precision=3)
+>>> style = ahpy.Compare('Style', style_comparisons, precision=3)
+>>> cargo = ahpy.Compare('Cargo', cargo_comparisons, precision=3)
+```
+
+The final step is to link all of the Compare objects into a hierarchy, starting at the lowest level and working up. First, we'll make the Price, Fuel, Maintenance and Resale objects the children of the Cost object...
+
+```python
+>>> cost.add_children([price, fuel, maintenance, resale])
+```
+
+...and do the same to link the Cargo and Passenger objects to the Capacity object:
+
+```python
+>>> capacity.add_children([cargo, passenger])
+```
+
+Moving up the hierarchy, we can now make the Cost, Safety, Style and Capacity objects the children of the Criteria object...
+
+```python
+>>> criteria.add_children([cost, safety, style, capacity])
+```
+
+...and we're done!
+
+Now that the hierarchy represents the decision problem, we can print the target weights of the parent `criteria` object to see the results of the analysis:
+
+```python
+>>> print(criteria.target_weights)
+{'Element': 0.144, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Odyssey': 0.219, 'Accord Hybrid': 0.15, 'Pilot': 0.106}
+```
+
+For more detailed information on any of the Compare objects in the hierarchy, we can call `report()`. Because the `criteria` object now has children, we see that the `children` key has been updated; its target weights have also been updated to reflect the change:
+
+```python
+>>> report = criteria.report(show=True)
+{
+    "name": "Criteria",
+    "weight": 1.0,
+    "target": {
+        "Element": 0.144,
+        "Accord Sedan": 0.215,
+        "CR-V": 0.167,
+        "Odyssey": 0.219,
+        "Accord Hybrid": 0.15,
+        "Pilot": 0.106
+    },
+    "weights": {
+        "local": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        },
+        "global": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        }
+    },
+    "consistency_ratio": 0.08,
+    "random_index": "Donegan & Dodd",
+    "elements": {
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "children": {
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "comparisons": {
+        "count": 6,
+        "input": [
+            {
+                "Cost, Safety": 3
+            },
+            {
+                "Cost, Style": 7
+            },
+            {
+                "Cost, Capacity": 3
+            },
+            {
+                "Safety, Style": 9
+            },
+            {
+                "Safety, Capacity": 1
+            },
+            {
+                "Style, Capacity": 0.14285714285714285
+            }
+        ],
+        "computed": null
+    }
+}
+```
+
+Calling `report()` on Compare objects at lower levels of the hierarchy will provide different information, depending on the level in which it's in:
+
+```python
+>>> report = cost.report(show=True)
+{
+    "name": "Cost",
+    "weight": 0.51,
+    "target": null,
+    "weights": {
+        "local": {
+            "Price": 0.488,
+            "Fuel": 0.252,
+            "Resale": 0.161,
+            "Maintenance": 0.1
+        },
+        "global": {
+            "Price": 0.249,
+            "Fuel": 0.129,
+            "Resale": 0.082,
+            "Maintenance": 0.051
+        }
+    },
+    "consistency_ratio": 0.016,
+    "random_index": "Donegan & Dodd",
+    "elements": {
+        "count": 4,
+        "names": [
+            "Price",
+            "Fuel",
+            "Maintenance",
+            "Resale"
+        ]
+    },
+    "children": {
+        "count": 4,
+        "names": [
+            "Price",
+            "Fuel",
+            "Resale",
+            "Maintenance"
+        ]
+    },
+    "comparisons": {
+        "count": 6,
+        "input": [
+            {
+                "Price, Fuel": 2
+            },
+            {
+                "Price, Maintenance": 5
+            },
+            {
+                "Price, Resale": 3
+            },
+            {
+                "Fuel, Maintenance": 2
+            },
+            {
+                "Fuel, Resale": 2
+            },
+            {
+                "Maintenance, Resale": 0.5
+            }
+        ],
+        "computed": null
+    }
+}
+
+>>> report = price.report(show=True)
+{
+    "name": "Price",
+    "weight": 0.249,
+    "target": null,
+    "weights": {
+        "local": {
+            "Element": 0.366,
+            "Accord Sedan": 0.246,
+            "CR-V": 0.246,
+            "Odyssey": 0.093,
+            "Accord Hybrid": 0.025,
+            "Pilot": 0.025
+        },
+        "global": {
+            "Element": 0.091,
+            "Accord Sedan": 0.061,
+            "CR-V": 0.061,
+            "Odyssey": 0.023,
+            "Accord Hybrid": 0.006,
+            "Pilot": 0.006
+        }
+    },
+    "consistency_ratio": 0.072,
+    "random_index": "Donegan & Dodd",
+    "elements": {
+        "count": 6,
+        "names": [
+            "Accord Sedan",
+            "Accord Hybrid",
+            "Pilot",
+            "CR-V",
+            "Element",
+            "Odyssey"
+        ]
+    },
+    "children": null,
+    "comparisons": {
+        "count": 15,
+        "input": [
+            {
+                "Accord Sedan, Accord Hybrid": 9
+            },
+            {
+                "Accord Sedan, Pilot": 9
+            },
+            {
+                "Accord Sedan, CR-V": 1
+            },
+            {
+                "Accord Sedan, Element": 0.5
+            },
+            {
+                "Accord Sedan, Odyssey": 5
+            },
+            {
+                "Accord Hybrid, Pilot": 1
+            },
+            {
+                "Accord Hybrid, CR-V": 0.1111111111111111
+            },
+            {
+                "Accord Hybrid, Element": 0.1111111111111111
+            },
+            {
+                "Accord Hybrid, Odyssey": 0.14285714285714285
+            },
+            {
+                "Pilot, CR-V": 0.1111111111111111
+            },
+            {
+                "Pilot, Element": 0.1111111111111111
+            },
+            {
+                "Pilot, Odyssey": 0.14285714285714285
+            },
+            {
+                "CR-V, Element": 0.5
+            },
+            {
+                "CR-V, Odyssey": 5
+            },
+            {
+                "Element, Odyssey": 6
+            }
+        ],
+        "computed": null
+    }
+}
+```
+
 ## Using AHPy
 
 ### Terminology
 
-describe "target", 'element', 'value'
+describe "target", 'element', 'value' 'weight'
 
 https://www.edx.org/course/valoracion-de-futbolistas-con-el-metodo-ahp
 

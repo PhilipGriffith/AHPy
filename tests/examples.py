@@ -4,26 +4,25 @@ import numpy as np
 
 from ahpy import ahpy
 
-
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
 
-# experience = {('Tom', 'Dick'): 0.25, ('Tom', 'Harry'): 4, ('Dick', 'Harry'): 9}
-# education = {('Tom', 'Dick'): 3, ('Tom', 'Harry'): 0.2, ('Harry', 'Dick'): 7}
-# charisma = {('Tom', 'Dick'): 5, ('Tom', 'Harry'): 9, ('Dick', 'Harry'): 4}
-# age = {('Dick', 'Tom'): 3, ('Tom', 'Harry'): 5, ('Dick', 'Harry'): 9}
-# criteria = {('exp', 'edu'): 4, ('exp', 'cha'): 3, ('exp', 'age'): 7,
-#             ('edu', 'age'): 3,
-#             ('cha', 'edu'): 3, ('cha', 'age'): 5}
-#
-# exp = ahpy.Compare('exp', experience, precision=3, random_index='saaty')
-# edu = ahpy.Compare('edu', education, precision=3, random_index='saaty')
-# cha = ahpy.Compare('cha', charisma, precision=3, random_index='saaty')
-# age = ahpy.Compare('age', age, precision=3, random_index='saaty')
-#
-# children = [exp, edu, cha, age]
-#
-# parent = ahpy.Compare('goal', criteria, precision=3, random_index='saaty')
-# c = ahpy.Compose('goal', parent, children)
+experience_comparisons = {('Moll', 'Nell'): 1 / 4, ('Moll', 'Sue'): 4, ('Nell', 'Sue'): 9}
+education_comparisons = {('Moll', 'Nell'): 3, ('Moll', 'Sue'): 1 / 5, ('Nell', 'Sue'): 1 / 7}
+charisma_comparisons = {('Moll', 'Nell'): 5, ('Moll', 'Sue'): 9, ('Nell', 'Sue'): 4}
+age_comparisons = {('Moll', 'Nell'): 1 / 3, ('Moll', 'Sue'): 5, ('Nell', 'Sue'): 9}
+criteria_comparisons = {('Experience', 'Education'): 4, ('Experience', 'Charisma'): 3, ('Experience', 'Age'): 7,
+                        ('Education', 'Charisma'): 1 / 3, ('Education', 'Age'): 3,
+                        ('Charisma', 'Age'): 5}
+
+experience = ahpy.Compare('Experience', experience_comparisons, precision=3, random_index='saaty')
+education = ahpy.Compare('Education', education_comparisons, precision=3, random_index='saaty')
+charisma = ahpy.Compare('Charisma', charisma_comparisons, precision=3, random_index='saaty')
+age = ahpy.Compare('Age', age_comparisons, precision=3, random_index='saaty')
+criteria = ahpy.Compare('Criteria', criteria_comparisons, precision=3, random_index='saaty')
+
+criteria.add_children([experience, education, charisma, age])
+
+criteria.report(show=True)
 
 # ----------------------------------------------------------------------------------
 # Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
@@ -114,71 +113,68 @@ def m(elements, judgments):
     return dict(zip(elements, judgments))
 
 
-cri = ('cost', 'safety', 'style', 'capacity')
+cri = ('Cost', 'Safety', 'Style', 'Capacity')
 c_cri = list(itertools.combinations(cri, 2))
-criteria = ahpy.Compare('goal', m(c_cri, (3, 7, 3, 9, 1, 1/7)))
+criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
 
 alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
 pairs = list(itertools.combinations(alt, 2))
 
-costs = ('cost price', 'cost fuel', 'cost maintenance', 'cost resale')
+costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
 c_pairs = list(itertools.combinations(costs, 2))
-cost = ahpy.Compare('cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
+cost = ahpy.Compare('Cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
 
-cost_price_m = (9, 9, 1, 0.5, 5, 1, 1/9, 1/9, 1/7, 1/9, 1/9, 1/7, 1/2, 5, 6)
-cost_price = ahpy.Compare('cost price', m(pairs, cost_price_m))
+cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
+cost_price = ahpy.Compare('Price', m(pairs, cost_price_m), 3)
 
 cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
-cost_fuel = ahpy.Compare('cost fuel', m(pairs, cost_fuel_m))
+cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
 
-cost_resale_m = (3, 4, 1/2, 2, 2, 2, 1/5, 1, 1, 1/6, 1/2, 1/2, 4, 4, 1)
-cost_resale = ahpy.Compare('cost resale', m(pairs, cost_resale_m))
+cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
+cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
 
 cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
-cost_maint = ahpy.Compare('cost maintenance', m(pairs, cost_maint_m))
+cost_maint = ahpy.Compare('Maintenance', m(pairs, cost_maint_m), 3)
 
-safety_m = (1, 5, 7, 9, 1/3, 5, 7, 9, 1/3, 2, 9, 1/8, 2, 1/8, 1/9)
-safety = ahpy.Compare('safety', m(pairs, safety_m))
+safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
+safety = ahpy.Compare('Safety', m(pairs, safety_m), 3)
 
-style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1/6, 3, 1/3, 7, 5, 1/5)
-style = ahpy.Compare('style', m(pairs, style_m))
+style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
+style = ahpy.Compare('Style', m(pairs, style_m), 3)
 
-capacity = ahpy.Compare('capacity', {('capacity cargo', 'capacity passenger'): 0.2})
+capacity = ahpy.Compare('Capacity', {('capacity cargo', 'capacity passenger'): 0.2})
 
-capacity_pass_m = (1, 1/2, 1, 3, 1/2, 1/2, 1, 3, 1/2, 2, 6, 1, 3, 1/2, 1/6)
-capacity_pass = ahpy.Compare('capacity passenger', m(pairs, capacity_pass_m))
+capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
+capacity_pass = ahpy.Compare('capacity passenger', m(pairs, capacity_pass_m), 3)
 
-capacity_cargo_m = (1, 1/2, 1/2, 1/2, 1/3, 1/2, 1/2, 1/2, 1/3, 1, 1, 1/2, 1, 1/2, 1/2)
+capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
 capacity_cargo = ahpy.Compare('capacity cargo', m(pairs, capacity_cargo_m), precision=3)
 
-capacity_pass = ahpy.Compare('capacity passenger', {('leg room', 'seats'): 0.2})
-leg_room = ahpy.Compare('leg room', m(pairs, capacity_cargo_m))
-seats = ahpy.Compare('seats', {('top', 'bottom'): 0.2})
-top = ahpy.Compare('top', m(pairs, capacity_cargo_m))
-bottom = ahpy.Compare('bottom', m(pairs, capacity_pass_m))
-seats.add_children([top, bottom])
+# capacity_pass = ahpy.Compare('capacity passenger', {('leg room', 'seats'): 0.2})
+# leg_room = ahpy.Compare('leg room', m(pairs, capacity_cargo_m))
+# seats = ahpy.Compare('seats', {('top', 'bottom'): 0.2})
+# top = ahpy.Compare('top', m(pairs, capacity_cargo_m))
+# bottom = ahpy.Compare('bottom', m(pairs, capacity_pass_m))
+# seats.add_children([top, bottom])
 
-capacity_pass.add_children([leg_room, seats])
+# capacity_pass.add_children([leg_room, seats])
 cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
 capacity.add_children([capacity_pass, capacity_cargo])
 criteria.add_children([cost, safety, style, capacity])
 
-cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
-capacity.add_children([capacity_pass, capacity_cargo])
-capacity_pass.report(1)
-criteria.report()
 criteria.complete()
 criteria.report(1)
+print(criteria.target_weights)
 
 # ----------------------------------------------------------------------------------
 
-u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
-     ('beta', 'chi'): 3, ('beta', 'delta'): 4}#, ('chi', 'delta'): 3/4}
-cu = ahpy.Compare('Incomplete Test', u, cr=False)
-print(cu.target_weights)
-print(cu.consistency_ratio)
-r = cu.report(True)
-print(r)
+# u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
+#      ('beta', 'chi'): 3, ('beta', 'delta'): 4}#, ('chi', 'delta'): 3/4}
+# cu = ahpy.Compare('Incomplete Test', u, cr=False)
+# print(cu.target_weights)
+# print(cu.consistency_ratio)
+# r = cu.report(True)
+# print(r)
 
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
@@ -190,10 +186,10 @@ print(r)
 # cm = Compare('Incomplete Housing', m)
 # cm.report()
 #
-f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
-cf = ahpy.Compare('Fuel Economy', f)
-r = cf.report(True)
-print(r)
+# f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
+# cf = ahpy.Compare('Fuel Economy', f)
+# r = cf.report(True)
+# print(r)
 
 #
 # books = {('Jane Eyre', 'Moby Dick'): 5,
