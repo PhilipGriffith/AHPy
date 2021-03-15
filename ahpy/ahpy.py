@@ -303,12 +303,12 @@ class Compare:
 
     def add_children(self, children):
         """
-        Sets the input Compare objects as children of the current Compare object, then calls the 'complete' function.
+        Sets the input Compare objects as children of the current Compare object, then calls 'recompute()'.
         NB: A child Compare object's name MUST be included as an element of the current Compare object.
         :param children: list or tuple, Compare objects to form the children of the current Compare object
         """
         self._node_children = children
-        self.complete()
+        self.recompute()
 
     def _set_node_precision(self):
         """
@@ -335,6 +335,7 @@ class Compare:
                         except KeyError:
                             self.target_weights[child_key] = value
                     break
+        self.target_weights = dict(sorted(self.target_weights.items(), key=lambda item: item[1], reverse=True))
         self.target_weights = {key: value.round(self._node_precision) for key, value in self.target_weights.items()}
 
     def _compute_global_weights(self):
@@ -357,7 +358,7 @@ class Compare:
         for key in self.global_weights:
             self.global_weights[key] = np.round(self.weight * self.local_weights[key], self._precision)
 
-    def complete(self):
+    def recompute(self):
         """
         Calls all functions necessary for building the node weights of the Compare object, given its children,
         as well as updating the global weights of the Compare object's descendants.
