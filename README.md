@@ -94,7 +94,7 @@ Finally, we can print the Compare object's target weights and consistency ratio 
 
 ### Choosing a leader
 
-This example can be found [in an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_-_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same.
+This example can be found [in an appendix to the Wikipedia entry for AHP](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_-_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same.
 
 #### N.B.
 
@@ -239,7 +239,7 @@ Calling `report()` on a Compare object provides a standard way to learn detailed
 
 ### Purchasing a vehicle
 
-This example can also be found [in an appendix to the Wikipedia entry for AHPy](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example). Like before, in some cases AHPy's results will not match those on the Wikipedia page, even though the input comparison values are identical. To reiterate, this is due to a difference in methods, not an error in AHPy.
+This example can also be found [in an appendix to the Wikipedia entry for AHP](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example). Like before, in some cases AHPy's results will not match those on the Wikipedia page, even though the input comparison values are identical. To reiterate, this is due to a difference in methods, not an error in AHPy.
 
 In this example, we'll be choosing a vehicle to purchase based on its cost, safety, style and capacity. Cost will further depend on a combination of the vehicle's purchase price, fuel costs, maintenance costs and resale value; capacity will depend on a combination of the vehicle's cargo and passenger capacity.
 
@@ -702,7 +702,7 @@ Then we'll make the Price, Fuel, Maintenance and Resale objects the children of 
 >>> capacity.add_children([cargo, passenger])
 ```
 
-Though the hierarchy now represents the decision problem, the target and global weights of the hierarchy have not been properly updated with their children's information *due to the fact that we started with the highest level in the hierarchy and worked downward*. We can see an example of this discrepancy by viewing the `criteria` object's report:
+Though the hierarchy now represents the decision problem, the target and global weights of the hierarchy have not been properly updated with their children's information *due to the fact that we started with the highest level in the hierarchy and worked downward*. We can see an example of this discrepancy by viewing the Criteria object's report:
 
 ```python
 >>> report = criteria.report(show=True)
