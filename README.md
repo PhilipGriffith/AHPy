@@ -722,65 +722,7 @@ Though the hierarchy now represents the decision problem, the target and global 
         "Pilot": 0.019,
         "CR-V": 0.015,
         "Element": 0.006
-    },
-    "weights": {
-        "local": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "global": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        }
-    },
-    "consistency_ratio": 0.08,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "children": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Cost, Safety": 3
-            },
-            {
-                "Cost, Style": 7
-            },
-            {
-                "Cost, Capacity": 3
-            },
-            {
-                "Safety, Style": 9
-            },
-            {
-                "Safety, Capacity": 1
-            },
-            {
-                "Style, Capacity": 0.14285714285714285
-            }
-        ],
-        "computed": null
-    }
+    }, ...
 }
 ```
 
@@ -799,71 +741,13 @@ The problem is that the Criteria object has incorrectly interpreted the elements
         "Element": 0.156,
         "Accord Hybrid": 0.151,
         "Pilot": 0.098
-    },
-    "weights": {
-        "local": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "global": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        }
-    },
-    "consistency_ratio": 0.08,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "children": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Cost, Safety": 3
-            },
-            {
-                "Cost, Style": 7
-            },
-            {
-                "Cost, Capacity": 3
-            },
-            {
-                "Safety, Style": 9
-            },
-            {
-                "Safety, Capacity": 1
-            },
-            {
-                "Style, Capacity": 0.14285714285714285
-            }
-        ],
-        "computed": null
-    }
+    }, ...
 }
 ```
 
 ## Details
 
-Keep reading to learn the details of the AHPy library's <abbr title="Application Programming Interface">API</abbr>.
+Keep reading to learn the details of the AHPy library's API.
 
 ### The Compare Class
 
