@@ -22,26 +22,26 @@ class Compare:
     :param precision: integer, number of decimal places of precision used when computing both the priority
         vector and the consistency ratio; default is 4
     :param random_index: string, the random index estimates used to compute the consistency ratio;
-        see the compute_consistency_ratio function for more information regarding the different estimates;
+        see 'compute_consistency_ratio()' for more information regarding the different estimates;
         valid input: 'dd', 'saaty'; default is 'dd'
-    :param iterations: integer, number of iterations before the 'compute_priority_vector' function stops;
+    :param iterations: integer, number of iterations before 'compute_priority_vector()' stops;
         default is 100
-    :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by the
-        'complete_matrix' function; the algorithm stops when the difference between the norms of two cycles
+    :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by
+        'complete_matrix()'; the algorithm stops when the difference between the norms of two cycles
          of coordinates is less than this value; default is 0.0001
     :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
     """
 
     def __init__(self, name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
-        self._name = name
-        self._comparisons = comparisons
-        self._precision = precision
-        self._random_index = random_index.lower() if cr else None
-        self._iterations = iterations
-        self._tolerance = tolerance
-        self._cr = cr
+        self.name = name
+        self.comparisons = comparisons
+        self.precision = precision
+        self.random_index = random_index.lower() if cr else None
+        self.iterations = iterations
+        self.tolerance = tolerance
+        self.cr = cr
 
-        self._normalize = not isinstance(next(iter(self._comparisons)), tuple)
+        self._normalize = not isinstance(next(iter(self.comparisons)), tuple)
         self._elements = []
         self._pairs = []
         self._size = None
@@ -77,7 +77,7 @@ class Compare:
         Raises a ValueError if an input value is not greater than zero;
         raises a TypeError if an input value cannot be cast to a float.
         """
-        for key, value in self._comparisons.items():
+        for key, value in self.comparisons.items():
             try:
                 if not float(value) > 0:
                     msg = f'{key}: {value} is an invalid input. All input values must be greater than zero.'
@@ -91,8 +91,8 @@ class Compare:
         Raises a ValueError if a consistency ratio is requested and
         the chosen random index does not support the size of the matrix.
         """
-        if not self._normalize and self._cr and \
-                ((self._random_index == 'saaty' and self._size > 15) or self._size > 100):
+        if not self._normalize and self.cr and \
+                ((self.random_index == 'saaty' and self._size > 15) or self._size > 100):
             msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
                   "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
                   "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
@@ -104,7 +104,7 @@ class Compare:
         Creates an empty 'pairs' dictionary that contains all possible permutations
         of those elements found within the keys of the input 'comparisons' dictionary.
         """
-        for key in self._comparisons:
+        for key in self.comparisons:
             for element in key:
                 if element not in self._elements:
                     self._elements.append(element)
@@ -115,7 +115,7 @@ class Compare:
         """
         Creates a list of those elements found within the keys of the input 'comparisons' dictionary.
         """
-        self._elements = list(self._comparisons)
+        self._elements = list(self.comparisons)
         self._pairs = {}
         self._size = len(self._elements)
 
@@ -124,7 +124,7 @@ class Compare:
         Fills the entries of the 'pairs' dictionary with the corresponding comparison values
         of the input 'comparisons' dictionary or their computed reciprocals.
         """
-        for key, value in self._comparisons.items():
+        for key, value in self.comparisons.items():
             inverse_key = key[::-1]
             self._pairs[key] = value
             self._pairs[inverse_key] = np.reciprocal(float(value))
@@ -142,7 +142,7 @@ class Compare:
         """
         Creates a numpy matrix of values from the input 'comparisons' dictionary.
         """
-        self._matrix = np.array(tuple(value for value in self._comparisons.values()), float)
+        self._matrix = np.array(tuple(value for value in self.comparisons.values()), float)
 
     def _get_missing_comparisons(self):
         """
@@ -162,7 +162,7 @@ class Compare:
         """
         last_iteration = np.array(tuple(self._missing_comparisons.values()))
         difference = np.inf
-        while difference > self._tolerance:
+        while difference > self.tolerance:
             self._minimize_coordinate_values()
             current_iteration = np.array(tuple(self._missing_comparisons.values()))
             difference = np.linalg.norm(last_iteration - current_iteration)
@@ -215,11 +215,11 @@ class Compare:
         Runs all functions necessary for building the local weights and consistency ratio of the Compare object.
         """
         if not self._normalize:
-            priority_vector = self._compute_priority_vector(self._matrix, self._iterations)
-            if self._cr:
+            priority_vector = self._compute_priority_vector(self._matrix, self.iterations)
+            if self.cr:
                 self._compute_consistency_ratio()
         else:
-            priority_vector = np.divide(self._matrix, np.sum(self._matrix, keepdims=True)).round(self._precision)
+            priority_vector = np.divide(self._matrix, np.sum(self._matrix, keepdims=True)).round(self.precision)
             self.consistency_ratio = 0.0
         weights = dict(zip(self._elements, priority_vector))
         self.local_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
@@ -244,12 +244,12 @@ class Compare:
             comp_eigenvector = np.zeros(self._size)
 
         # Compute the difference between the principal and comparison eigenvectors
-        remainder = np.subtract(principal_eigenvector, comp_eigenvector).round(self._precision)
+        remainder = np.subtract(principal_eigenvector, comp_eigenvector).round(self.precision)
 
         # If the difference between the two eigenvectors is zero (after rounding to the specified precision),
         # set the current principal eigenvector as the priority vector for the matrix...
         if not np.any(remainder):
-            return principal_eigenvector.round(self._precision)
+            return principal_eigenvector.round(self.precision)
 
         # ...else recursively run the function until either there is no difference between the rounded
         # principal and comparison eigenvectors, or until the predefined number of iterations has been met,
@@ -258,24 +258,24 @@ class Compare:
         if iterations > 0:
             return self._compute_priority_vector(sq_matrix, iterations, principal_eigenvector)
         else:
-            return principal_eigenvector.round(self._precision)
+            return principal_eigenvector.round(self.precision)
 
     def _compute_consistency_ratio(self):
         """
         Sets the 'consistency_ratio' property of the Compare object, using random index estimates from
         Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' Mathematical and Computer Modelling,
         15:10, 1991, pp. 135-137 (DOI: 10.1016/0895-7177(91)90098-R) by default (random_index='dd').
-        If the random index of the object equals 'saaty', uses the estimates from
+        If the random index of the object is 'saaty', uses the estimates from
         Saaty's Theory And Applications Of The Analytic Network Process, Pittsburgh: RWS Publications, 2005, p. 31.
         """
         # A valid, square, reciprocal matrix with only one or two rows must be consistent
         if self._size < 3:
             self.consistency_ratio = 0.0
             return
-        if self._random_index == 'saaty':
+        if self.random_index == 'saaty':
             ri_dict = {3: 0.52, 4: 0.89, 5: 1.11, 6: 1.25, 7: 1.35, 8: 1.40, 9: 1.45,
                        10: 1.49, 11: 1.52, 12: 1.54, 13: 1.56, 14: 1.58, 15: 1.59}
-        elif self._random_index == 'dd':
+        elif self.random_index == 'dd':
             ri_dict = {3: 0.4914, 4: 0.8286, 5: 1.0591, 6: 1.1797, 7: 1.2519,
                        8: 1.3171, 9: 1.3733, 10: 1.4055, 11: 1.4213, 12: 1.4497,
                        13: 1.4643, 14: 1.4822, 15: 1.4969, 16: 1.5078, 17: 1.5153,
@@ -299,7 +299,7 @@ class Compare:
         lambda_max = np.max(np.linalg.eigvals(self._matrix))
         consistency_index = (lambda_max - self._size) / (self._size - 1)
         # The absolute value avoids confusion in those rare cases where a small negative float is rounded to -0.0
-        self.consistency_ratio = np.abs(np.real(consistency_index / random_index).round(self._precision))
+        self.consistency_ratio = np.abs(np.real(consistency_index / random_index).round(self.precision))
 
     def add_children(self, children):
         """
@@ -314,20 +314,20 @@ class Compare:
         """
         Sets the 'node_precision' property of the Compare object by selecting the lowest precision of its children.
         """
-        lowest_precision = np.min([child._precision for child in self._node_children])
-        if lowest_precision < self._precision:
+        lowest_precision = np.min([child.precision for child in self._node_children])
+        if lowest_precision < self.precision:
             self._node_precision = lowest_precision
         else:
-            self._node_precision = self._precision
+            self._node_precision = self.precision
 
     def _compute_target_weights(self):
         """
-        Builds the 'target_weights' dictionary of the Compare object given the target weights of its children.
+        Builds the 'target_weights' dictionary of the Compare object, given the target weights of its children.
         """
         self.target_weights = dict()
         for parent_key, parent_value in self.local_weights.items():
             for child in self._node_children:
-                if parent_key == child._name:
+                if parent_key == child.name:
                     for child_key, child_value in child.target_weights.items():
                         value = parent_value * child_value
                         try:
@@ -345,18 +345,18 @@ class Compare:
         if self._node_children:
             for parent_key, parent_value in self.local_weights.items():
                 for child in self._node_children:
-                    if parent_key == child._name:
-                        child.weight = np.round(self.weight * parent_value, self._precision)
+                    if parent_key == child.name:
+                        child.weight = np.round(self.weight * parent_value, self.precision)
                         child._apply_weight()
                         child._compute_global_weights()
                         break
 
     def _apply_weight(self):
         """
-        Updates the 'global_weights' dictionary of the Compare object given the global weight of the node.
+        Updates the 'global_weights' dictionary of the Compare object, given the global weight of the node.
         """
         for key in self.global_weights:
-            self.global_weights[key] = np.round(self.weight * self.local_weights[key], self._precision)
+            self.global_weights[key] = np.round(self.weight * self.local_weights[key], self.precision)
 
     def recompute(self):
         """
@@ -386,13 +386,13 @@ class Compare:
             Returns the full name of a valid random index as a string, else None.
             """
             random_index = None
-            if self._random_index == 'dd':
+            if self.random_index == 'dd':
                 random_index = 'Donegan & Dodd'
-            elif self._random_index == 'saaty':
+            elif self.random_index == 'saaty':
                 random_index = 'Saaty'
             return random_index
 
-        report = {'name': self._name,
+        report = {'name': self.name,
                   'weight': self.weight,
                   'target': self.target_weights if self.weight == 1.0 else None,
                   'weights': {
@@ -407,11 +407,11 @@ class Compare:
                   },
                   'children': {
                       'count': len(self._node_children),
-                      'names': [child._name for child in self._node_children]
+                      'names': [child.name for child in self._node_children]
                   } if self._node_children else None,
                   'comparisons': {
-                      'count': len(self._comparisons) + len(self._missing_comparisons),
-                      'input': self._comparisons,
+                      'count': len(self.comparisons) + len(self._missing_comparisons),
+                      'input': self.comparisons,
                       'computed': self._missing_comparisons if self._missing_comparisons else None
                   }
                   }
@@ -419,7 +419,7 @@ class Compare:
         if show:
             json_report = copy.deepcopy(report)
             if not self._normalize:
-                json_report['comparisons']['input'] = convert_to_json_format(self._comparisons)
+                json_report['comparisons']['input'] = convert_to_json_format(self.comparisons)
             if self._missing_comparisons:
                 json_report['comparisons']['computed'] = convert_to_json_format(self._missing_comparisons)
             print(json.dumps(json_report, indent=4))

@@ -170,7 +170,6 @@ cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
 capacity.add_children([capacity_pass, capacity_cargo])
 criteria.recompute()
 criteria.report(1)
-print(criteria.target_weights)
 
 # ----------------------------------------------------------------------------------
 
