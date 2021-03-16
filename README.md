@@ -32,8 +32,6 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [The Compare Class](#the-compare-class)
 
-{A Note on Weights](#a-note-on-weights)
-
 [Compare.add_children()](#compareadd_children)
 
 [Compare.recompute()](#comparerecompute)
@@ -41,6 +39,8 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 [Compare.report()](#comparereport)
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
+
+[A Note on Weights](#a-note-on-weights)
 
 ---
 
@@ -904,10 +904,6 @@ The Compare class computes the priority vector and consistency ratio of a positi
   - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined due to the size of the matrix
   - The default value is True
 
-### A Note on Weights
-
-In many instances, it will be observed that the sum of the local or target weights of a Compare object does not equal 1.0 exactly. This is due to rounding errors. If it is critical that the sum of the weights equal 1.0 exactly, it is recommended to divide the weights by their cumulative sum.
-
 ### Compare.add_children()
 
 Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the *upper* level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its *lower* level (the *children*). **In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary.**
@@ -1000,3 +996,7 @@ We'll first compute the target weights and consistency ratio for the complete ma
 >>> print(missing_cd.consistency_ratio)
 0.0372
 ```
+
+### A Note on Weights
+
+In many instances, it will be observed that the sum of the local or target weights of a Compare object does not equal 1.0 exactly. This is due to rounding errors. If it is critical that the sum of the weights equal 1.0 exactly, it is recommended to divide the weights by their cumulative sum.
