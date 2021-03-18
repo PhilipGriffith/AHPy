@@ -2,7 +2,7 @@
 
 **AHPy** is an implementation of the Analytic Hierarchy Process ([AHP](https://en.wikipedia.org/wiki/Analytic_hierarchy_process)), a method used to structure, synthesize and evaluate the elements of a decision problem. Developed by [Thomas Saaty](http://www.creativedecisions.org/about/ThomasLSaaty.php) in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
 
- AHPy attempts to provide a programming interface that is not only simple to use, but also capable of intuitively working within the numerous conceptual frameworks to which the AHP can be applied. For this reason, general terms are always preferred to more specific ones within the library.
+ AHPy attempts to provide a programming interface that is not only simple to use, but also capable of intuitively working within the numerous conceptual frameworks to which the AHP can be applied. For this reason, general terms have been preferred to more specific ones within the library. 
 
 #### Installing AHPy
 
@@ -819,6 +819,15 @@ The Compare class computes the priority vector and consistency ratio of a positi
   - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined due to the size of the matrix
   - The default value is True
 
+The properties used to initialize the Compare class are intended to be accessed directly, along with a few others:
+
+`Compare.weight` = 1.0
+        self.consistency_ratio = None
+        self.local_weights = None
+        self.global_weights = None
+        self.target_weights = None
+
+
 ### Compare.add_children()
 
 Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the *upper* level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its *lower* level (the *children*).
@@ -850,28 +859,28 @@ A report on the details of a Compare object is available. To return the report a
 
 The keys of the report take the following form:
 
-- `name`: *str*, the name of the Compare object
-- `weight`: *float*, the global weight of the Compare object within the hierarchy
-- `weights`: *dict*, the weights of the Compare object's elements
-  - `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
-    - `{'a': 0.5, 'b': 0.5}`
-  - `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
-    - `{'a': 0.25, 'b': 0.25}`
-  - `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, this value will be `None`*
-    - `{'a': 0.5, 'b': 0.5}`
-- `consistency_ratio`: *float*, the consistency ratio of the Compare object
-- `random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
-- `elements`: *dict*, the elements compared by the Compare object
-  - `count`: *int*, the number of elements compared by the Compare object
-  - `names`: *list*, the names of the elements compared by the Compare object
-- `children`: *dict*, the children of the Compare object; if the Compare object has no children, this value will be `None`
-  - `count`: *int*, the number of the Compare object's children
-  - `names`: *list*, the names of the Compare object's children
-- `comparisons`: *dict*, the comparisons of the Compare object
-  - `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
-  - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
-  - `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, this value will be `None`
-    - `{('c', 'd'): 0.730297106886979}, ...}`
+`name`: *str*, the name of the Compare object
+`weight`: *float*, the global weight of the Compare object within the hierarchy
+`weights`: *dict*, the weights of the Compare object's elements
+- `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
+  - `{'a': 0.5, 'b': 0.5}`
+- `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
+  - `{'a': 0.25, 'b': 0.25}`
+- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, this value will be `None`*
+  - `{'a': 0.5, 'b': 0.5}`
+`consistency_ratio`: *float*, the consistency ratio of the Compare object
+`random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
+`elements`: *dict*, the elements compared by the Compare object
+- `count`: *int*, the number of elements compared by the Compare object
+- `names`: *list*, the names of the elements compared by the Compare object
+`children`: *dict*, the children of the Compare object; if the Compare object has no children, this value will be `None`
+- `count`: *int*, the number of the Compare object's children
+- `names`: *list*, the names of the Compare object's children
+`comparisons`: *dict*, the comparisons of the Compare object
+- `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
+- `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
+- `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, this value will be `None`
+  - `{('c', 'd'): 0.730297106886979}, ...}`
 
 ### Missing Pairwise Comparisons
 
