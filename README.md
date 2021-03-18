@@ -60,12 +60,10 @@ This example is often used in Saaty's expositions of the AHP as a brief but clea
 
 The table below shows the relative consumption of drinks as computed using the AHP, given this matrix, together with the *actual* relative consumption of drinks as obtained from U.S. Statistical Abstracts:
 
-||Coffee|Wine|Tea|Beer|Soda|Milk|Water|
+|:exploding_head:|Coffee|Wine|Tea|Beer|Soda|Milk|Water|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |AHP|0.177|0.019|0.042|0.116|0.190|0.129|0.327|
 |Actual|0.180|0.010|0.040|0.120|0.180|0.140|0.330|
-
-:exploding_head:
 
 We can recreate this analysis with AHPy using the following code:
 
@@ -82,7 +80,7 @@ We can recreate this analysis with AHPy using the following code:
 
 >> > drinks = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
 
->> > print(drinks._node_weights)
+>> > print(drinks.target_weights)
 {'water': 0.327, 'soda': 0.19, 'coffee': 0.177, 'milk': 0.129, 'beer': 0.116, 'tea': 0.042, 'wine': 0.019}
 
 >> > print(drinks.consistency_ratio)
@@ -143,7 +141,7 @@ In the final step, we need to link the Compare objects together into a hierarchy
 Now that the hierarchy represents the decision problem, we can print the target weights of the parent Criteria object to see the results of the analysis:
 
 ```python
->> > print(criteria._node_weights)
+>> > print(criteria.target_weights)
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
@@ -409,7 +407,7 @@ The final step is to link all of the Compare objects into a hierarchy. First, we
 Now that the hierarchy represents the decision problem, we can print the target weights of the *highest level* Criteria object to see the results of the analysis:
 
 ```python
->> > print(criteria._node_weights)
+>> > print(criteria.target_weights)
 {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
 
 ```
@@ -801,10 +799,10 @@ The Compare class computes the priority vector and consistency ratio of a positi
 - The default precision value is 4
 
 `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
-- 'dd' uses estimates from Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
-  - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size
-- 'saaty' uses estimates from Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
-  - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size
+- 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size and uses estimates from:
+  >Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
+- 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size and uses estimates from:
+  >Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
 - The default random index is 'dd'
 
 `iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector
