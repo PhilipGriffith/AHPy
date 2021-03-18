@@ -50,7 +50,7 @@ class Compare:
 
         self._node_parent = None
         self._node_children = None
-        self._node_precision = None
+        self._node_precision = self.precision
         self._node_weights = None
 
         self.weight = 1.0
@@ -347,7 +347,7 @@ class Compare:
         """
         Sets the '_node_precision' property of the Compare object by selecting the lowest precision of its children.
         """
-        lowest_precision = np.min([child.precision for child in self._node_children])
+        lowest_precision = np.min([child._node_precision for child in self._node_children])
         if lowest_precision < self.precision:
             self._node_precision = lowest_precision
         else:
@@ -372,6 +372,9 @@ class Compare:
         self._node_weights = {key: value.round(self._node_precision) for key, value in self._node_weights.items()}
 
     def _set_target_weights(self):
+        """
+        Removes the 'target_weights' property of all children, then resets the property of the current Compare object.
+        """
         for child in self._node_children:
             child.target_weights = None
         self.target_weights = self._node_weights
