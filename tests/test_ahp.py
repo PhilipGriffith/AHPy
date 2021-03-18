@@ -188,16 +188,8 @@ e = ahpy.Compare('e', e_m, precision=4)
 f = ahpy.Compare('f', f_m, precision=4)
 g = ahpy.Compare('g', g_m, precision=4)
 
-
-
-
-
-
-
 a.add_children([b, c])
-
 b.add_children([d, e])
-
 d.add_children([f, g])
 
 

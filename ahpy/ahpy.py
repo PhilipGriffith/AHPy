@@ -309,9 +309,16 @@ class Compare:
         :param children: list or tuple, Compare objects to form the children of the current Compare object
         """
         self._node_children = children
+        self._check_children()
         for child in self._node_children:
             child._node_parent = self
         self._recompute()
+
+    def _check_children(self):
+        for child in self._node_children:
+            if not isinstance(child, Compare):
+                msg = f'{child} is an invalid input. All children must be Compare objects.'
+                raise TypeError(msg)
 
     def _set_node_precision(self):
         """

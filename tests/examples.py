@@ -1,6 +1,4 @@
-import itertools
-
-import numpy as np
+import random
 
 from ahpy import ahpy
 
@@ -240,11 +238,31 @@ l = ahpy.Compare('l', l_m, precision=4)
 m = ahpy.Compare('m', m_m, precision=4)
 n = ahpy.Compare('n', n_m, precision=4)
 
-l.add_children([m, n])
-d.add_children([i, j])
-f.add_children([k, l])
-b.add_children([d, e])
-c.add_children([f, g, h])
-a.add_children([b, c])
+# l.add_children([m, n])
+# d.add_children([i, j])
+# f.add_children([k, l])
+# b.add_children([d, e])
+# c.add_children([f, g, h])
+# a.add_children([b, c])
 
-c.report(1)
+nodes = [(a, [b, c]), (b, [d, e]), (c, [f, g, h]), (d, [i, j]), (f, [k, l]), (l, [m, n])]
+
+for _ in range(100):
+    random.shuffle(nodes)
+    for node in nodes:
+        node[0].add_children(node[1])
+
+    assert a.report() == {'name': 'a', 'weight': 1.0, 'target': {'z': 0.4652, 'y': 0.3626, 'x': 0.1723}, 'weights': {'local': {'b': 0.5, 'c': 0.5}, 'global': {'b': 0.5, 'c': 0.5}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
+    assert b.report() == {'name': 'b', 'weight': 0.5, 'target': None, 'weights': {'local': {'d': 0.8, 'e': 0.2}, 'global': {'d': 0.4, 'e': 0.1}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
+    assert c.report() == {'name': 'c', 'weight': 0.5, 'target': None, 'weights': {'local': {'h': 0.5, 'f': 0.25, 'g': 0.25}, 'global': {'h': 0.25, 'f': 0.125, 'g': 0.125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['f', 'g', 'h']}, 'children': {'count': 3, 'names': ['f', 'g', 'h']}, 'comparisons': {'count': 3, 'input': {('f', 'g'): 1, ('g', 'h'): 0.5}, 'computed': {('f', 'h'): 0.5000007807004769}}}
+    assert d.report() == {'name': 'd', 'weight': 0.4, 'target': None, 'weights': {'local': {'i': 0.6667, 'j': 0.3333}, 'global': {'i': 0.2667, 'j': 0.1333}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['i', 'j']}, 'children': {'count': 2, 'names': ['i', 'j']}, 'comparisons': {'count': 1, 'input': {('i', 'j'): 2}, 'computed': None}}
+    assert e.report() == {'name': 'e', 'weight': 0.1, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert f.report() == {'name': 'f', 'weight': 0.125, 'target': None, 'weights': {'local': {'l': 0.9, 'k': 0.1}, 'global': {'l': 0.1125, 'k': 0.0125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['k', 'l']}, 'children': {'count': 2, 'names': ['k', 'l']}, 'comparisons': {'count': 1, 'input': {('k', 'l'): 0.1111111111111111}, 'computed': None}}
+    assert g.report() == {'name': 'g', 'weight': 0.125, 'target': None, 'weights': {'local': {'z': 0.6, 'y': 0.3, 'x': 0.1}, 'global': {'z': 0.075, 'y': 0.0375, 'x': 0.0125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 3, 'z': 6}, 'computed': None}}
+    assert h.report() == {'name': 'h', 'weight': 0.25, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1, 'z': 0.1, 'x': 0.05}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert i.report() == {'name': 'i', 'weight': 0.2667, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert j.report() == {'name': 'j', 'weight': 0.1333, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert k.report() == {'name': 'k', 'weight': 0.0125, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.005, 'z': 0.005, 'x': 0.0025}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert l.report() == {'name': 'l', 'weight': 0.1125, 'target': None, 'weights': {'local': {'m': 0.5, 'n': 0.5}, 'global': {'m': 0.0562, 'n': 0.0562}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['m', 'n']}, 'children': {'count': 2, 'names': ['m', 'n']}, 'comparisons': {'count': 1, 'input': {('m', 'n'): 1}, 'computed': None}}
+    assert m.report() == {'name': 'm', 'weight': 0.0562, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0281, 'y': 0.0187, 'x': 0.0094}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert n.report() == {'name': 'n', 'weight': 0.0562, 'target': None, 'weights': {'local': {'z': 0.6, 'y': 0.3, 'x': 0.1}, 'global': {'z': 0.0337, 'y': 0.0169, 'x': 0.0056}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 3, 'z': 6}, 'computed': None}}
