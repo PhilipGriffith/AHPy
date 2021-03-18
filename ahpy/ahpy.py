@@ -51,6 +51,7 @@ class Compare:
         self._node_parent = None
         self._node_children = None
         self._node_precision = None
+        self._node_weights = None
 
         self.weight = 1.0
         self.consistency_ratio = None
@@ -72,6 +73,8 @@ class Compare:
         if self._missing_comparisons:
             self._complete_matrix()
         self._compute()
+
+        self.target_weights = self._node_weights if self.weight == 1.0 else None
 
     def _check_input(self):
         """
@@ -227,7 +230,8 @@ class Compare:
         weights = dict(zip(self._elements, priority_vector))
         self.local_weights = dict(sorted(weights.items(), key=lambda item: item[1], reverse=True))
         self.global_weights = self.local_weights.copy()
-        self.target_weights = self.local_weights.copy()
+        self._node_weights = self.local_weights.copy()
+        self.target_weights = self._node_weights
 
     def _compute_priority_vector(self, matrix, iterations, comp_eigenvector=None):
         """
@@ -326,6 +330,19 @@ class Compare:
                 msg = f'{child} is an invalid input. All children must be Compare objects.'
                 raise TypeError(msg)
 
+    def _recompute(self):
+        """
+        Calls all functions necessary for building the target weights of the Compare object,
+        given its children, as well as updating the global weights of the Compare object's descendants.
+        Then calls the same function on the current Compare object's parent.
+        """
+        self._set_node_precision()
+        self._compute_node_weights()
+        self._set_target_weights()
+        self._compute_global_weights()
+        if self._node_parent:
+            self._node_parent._recompute()
+
     def _set_node_precision(self):
         """
         Sets the '_node_precision' property of the Compare object by selecting the lowest precision of its children.
@@ -336,23 +353,28 @@ class Compare:
         else:
             self._node_precision = self.precision
 
-    def _compute_target_weights(self):
+    def _compute_node_weights(self):
         """
-        Builds the 'target_weights' dictionary of the Compare object, given the target weights of its children.
+        Builds the '_node_weights' dictionary of the Compare object, given the target weights of its children.
         """
-        self.target_weights = dict()
+        self._node_weights = dict()
         for parent_key, parent_value in self.local_weights.items():
             for child in self._node_children:
                 if parent_key == child.name:
-                    for child_key, child_value in child.target_weights.items():
+                    for child_key, child_value in child._node_weights.items():
                         value = parent_value * child_value
                         try:
-                            self.target_weights[child_key] += value
+                            self._node_weights[child_key] += value
                         except KeyError:
-                            self.target_weights[child_key] = value
+                            self._node_weights[child_key] = value
                     break
-        self.target_weights = dict(sorted(self.target_weights.items(), key=lambda item: item[1], reverse=True))
-        self.target_weights = {key: value.round(self._node_precision) for key, value in self.target_weights.items()}
+        self._node_weights = dict(sorted(self._node_weights.items(), key=lambda item: item[1], reverse=True))
+        self._node_weights = {key: value.round(self._node_precision) for key, value in self._node_weights.items()}
+
+    def _set_target_weights(self):
+        for child in self._node_children:
+            child.target_weights = None
+        self.target_weights = self._node_weights
 
     def _compute_global_weights(self):
         """
@@ -373,18 +395,6 @@ class Compare:
         """
         for key in self.global_weights:
             self.global_weights[key] = np.round(self.weight * self.local_weights[key], self.precision)
-
-    def _recompute(self):
-        """
-        Calls all functions necessary for building the target weights of the Compare object,
-        given its children, as well as updating the global weights of the Compare object's descendants.
-        Then calls the same function on the current Compare object's parent.
-        """
-        self._set_node_precision()
-        self._compute_target_weights()
-        self._compute_global_weights()
-        if self._node_parent:
-            self._node_parent._recompute()
 
     def report(self, show=False):
         """
@@ -415,7 +425,7 @@ class Compare:
                   'weights': {
                       'local': self.local_weights,
                       'global': self.global_weights,
-                      'target': self.target_weights if self.weight == 1.0 else None
+                      'target': self._node_weights if self.weight == 1.0 else None
                   },
                   'consistency_ratio': self.consistency_ratio,
                   'random_index': set_random_index(),

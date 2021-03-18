@@ -92,7 +92,6 @@ from ahpy import ahpy
 # h = ahpy.Compare('Housing', housing, precision=3, random_index='Saaty')
 # j = ahpy.Compare('Jobs', jobs, precision=3, random_index='Saaty')
 # t = ahpy.Compare('Transportation', transportation, precision=3, random_index='Saaty')
-#
 # cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
 # cr.add_children([cu, f, h, j, t])
 
@@ -152,9 +151,6 @@ capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
 criteria.add_children([cost, safety, style, capacity])
 cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
 capacity.add_children([capacity_pass, capacity_cargo])
-
-print(cost.global_weights)
-print(cost.target_weights)
 
 # ----------------------------------------------------------------------------------
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'

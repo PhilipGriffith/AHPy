@@ -98,6 +98,18 @@ def test_cities_weights_dd_precision_4():
     assert cr.target_weights == {'Bethesda': 0.2291, 'Boston': 0.2748, 'Pittsburgh': 0.3852, 'Santa Fe': 0.1110}
 
 
+def test_cities_target_weights():
+    cu = ahpy.Compare('Culture', culture, precision=4)
+    f = ahpy.Compare('Family', family, precision=4)
+    h = ahpy.Compare('Housing', housing, precision=4)
+    j = ahpy.Compare('Jobs', jobs, precision=4)
+    t = ahpy.Compare('Transportation', transportation, precision=4)
+
+    cr = ahpy.Compare('Goal', criteria, precision=4)
+    cr.add_children([cu, f, h, j, t])
+
+    assert t.target_weights is None
+
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete
 # pairwise comparison matrices,' Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333.
 # https://doi.org/10.1016/j.mcm.2010.02.047

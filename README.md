@@ -84,7 +84,7 @@ We can recreate this analysis with AHPy using the following code:
 
 >> > drinks = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
 
->> > print(drinks.target_weights)
+>> > print(drinks._node_weights)
 {'water': 0.327, 'soda': 0.19, 'coffee': 0.177, 'milk': 0.129, 'beer': 0.116, 'tea': 0.042, 'wine': 0.019}
 
 >> > print(drinks.consistency_ratio)
@@ -145,7 +145,7 @@ In the final step, we need to link the Compare objects together into a hierarchy
 Now that the hierarchy represents the decision problem, we can print the target weights of the parent Criteria object to see the results of the analysis:
 
 ```python
->> > print(criteria.target_weights)
+>> > print(criteria._node_weights)
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
@@ -411,7 +411,7 @@ The final step is to link all of the Compare objects into a hierarchy. First, we
 Now that the hierarchy represents the decision problem, we can print the target weights of the *highest level* Criteria object to see the results of the analysis:
 
 ```python
->> > print(criteria.target_weights)
+>> > print(criteria._node_weights)
 {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
 
 ```
@@ -894,7 +894,7 @@ We'll first compute the target weights and consistency ratio for the complete ma
 >> > comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
 
 >> > complete = ahpy.Compare('_recompute', comparisons)
->> > print(complete.target_weights)
+>> > print(complete._node_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
 >> > print(complete.consistency_ratio)
 0.0372
@@ -902,7 +902,7 @@ We'll first compute the target weights and consistency ratio for the complete ma
 >> > del comparisons[('c', 'd')]
 
 >> > missing_cd = ahpy.Compare('missing_cd', comparisons)
->> > print(missing_cd.target_weights)
+>> > print(missing_cd._node_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
 >> > print(missing_cd.consistency_ratio)
 0.0372
