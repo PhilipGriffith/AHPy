@@ -48,6 +48,7 @@ class Compare:
         self._matrix = None
         self._missing_comparisons = None
 
+        self._node_parent = None
         self._node_children = None
         self._node_precision = None
 
@@ -303,12 +304,14 @@ class Compare:
 
     def add_children(self, children):
         """
-        Sets the input Compare objects as children of the current Compare object, then calls 'recompute()'.
+        Sets the input Compare objects as children of the current Compare object, then calls '_recompute()'.
         NB: A child Compare object's name MUST be included as an element of the current Compare object.
         :param children: list or tuple, Compare objects to form the children of the current Compare object
         """
         self._node_children = children
-        self.recompute()
+        for child in self._node_children:
+            child._node_parent = self
+        self._recompute()
 
     def _set_node_precision(self):
         """
@@ -358,15 +361,16 @@ class Compare:
         for key in self.global_weights:
             self.global_weights[key] = np.round(self.weight * self.local_weights[key], self.precision)
 
-    def recompute(self):
+    def _recompute(self):
         """
         Calls all functions necessary for building the node weights of the Compare object, given its children,
         as well as updating the global weights of the Compare object's descendants.
         """
-        if self._node_children:
-            self._set_node_precision()
-            self._compute_target_weights()
-            self._compute_global_weights()
+        self._set_node_precision()
+        self._compute_target_weights()
+        self._compute_global_weights()
+        if self._node_parent:
+            self._node_parent._recompute()
 
     def report(self, show=False):
         """

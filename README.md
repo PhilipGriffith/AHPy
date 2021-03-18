@@ -729,19 +729,19 @@ Though the hierarchy now represents the decision problem, the target and global 
 The problem is that the Criteria object has incorrectly interpreted the elements of the Cost and Capacity objects as vehicles, rather than as subcriteria of the decision problem. To fix this error, we need to call `recompute()` on the Criteria object, which forms highest level of the hierarchy. The target weights will then be correctly updated, though their values will be slightly different from those in the previous example, as we used the normalized weighting method in our current analysis:
 
 ```python
->>> criteria.recompute()
->>> report = criteria.report(show=True)
+>> > criteria._recompute()
+>> > report = criteria.report(show=True)
 {
-    "name": "Criteria",
-    "weight": 1.0,
-    "target": {
-        "Accord Sedan": 0.216,
-        "Odyssey": 0.212,
-        "CR-V": 0.168,
-        "Element": 0.156,
-        "Accord Hybrid": 0.151,
-        "Pilot": 0.098
-    }, ...
+  "name": "Criteria",
+  "weight": 1.0,
+  "target": {
+    "Accord Sedan": 0.216,
+    "Odyssey": 0.212,
+    "CR-V": 0.168,
+    "Element": 0.156,
+    "Accord Hybrid": 0.151,
+    "Pilot": 0.098
+  }, ...
 }
 ```
 
@@ -866,7 +866,7 @@ We'll first compute the target weights and consistency ratio for the complete ma
 ```python
 >>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3/4}
 
->>> complete = ahpy.Compare('recompute', comparisons)
+>>> complete = ahpy.Compare('_recompute', comparisons)
 >>> print(complete.target_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
 >>> print(complete.consistency_ratio)

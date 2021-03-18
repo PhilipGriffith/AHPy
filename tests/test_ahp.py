@@ -30,13 +30,13 @@ def test_drinks_cr_dd():
 def test_drinks_weights_precision_3_saaty():
     c = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
     assert c.local_weights == {'beer': 0.116, 'coffee': 0.177, 'milk': 0.129, 'soda': 0.190,
-                                    'tea': 0.042, 'water': 0.327, 'wine': 0.019}
+                               'tea': 0.042, 'water': 0.327, 'wine': 0.019}
 
 
 def test_drinks_weights_precision_4_dd():
     c = ahpy.Compare('Drinks', drinks, precision=4, random_index='dd')
     assert c.local_weights == {'beer': 0.1164, 'coffee': 0.1775, 'milk': 0.1288, 'soda': 0.1896,
-                                    'tea': 0.0418, 'water': 0.3268, 'wine': 0.0191}
+                               'tea': 0.0418, 'water': 0.3268, 'wine': 0.0191}
 
 
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005.
@@ -146,8 +146,8 @@ def test_normalized_weights():
     assert cf.local_weights == {'civic': 0.3009, 'saturn': 0.2389, 'escort': 0.2124, 'clio': 0.2478}
 
 
-a = 'abcdefghijklmnopqrstuvwxyz'
-b = {'a': 0.0385, 'b': 0.0385, 'c': 0.0385, 'd': 0.0385, 'e': 0.0385, 'f': 0.0385, 'g': 0.0385, 'h': 0.0385,
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+values = {'a': 0.0385, 'b': 0.0385, 'c': 0.0385, 'd': 0.0385, 'e': 0.0385, 'f': 0.0385, 'g': 0.0385, 'h': 0.0385,
      'i': 0.0385, 'j': 0.0385, 'k': 0.0385, 'l': 0.0385, 'm': 0.0385, 'n': 0.0385, 'o': 0.0385, 'p': 0.0385,
      'q': 0.0385, 'r': 0.0385, 's': 0.0385, 't': 0.0385, 'u': 0.0385, 'v': 0.0385, 'w': 0.0385, 'x': 0.0385,
      'y': 0.0385, 'z': 0.0385}
@@ -155,17 +155,79 @@ b = {'a': 0.0385, 'b': 0.0385, 'c': 0.0385, 'd': 0.0385, 'e': 0.0385, 'f': 0.038
 
 def test_size_limit_saaty():
     with pytest.raises(ValueError):
-        x = dict.fromkeys(itertools.permutations(a, 2), 1)
+        x = dict.fromkeys(itertools.permutations(alphabet, 2), 1)
         ahpy.Compare('CR Test', x, random_index='saaty')
 
 
 def test_size_limit_override_saaty():
-    x = dict.fromkeys(itertools.permutations(a, 2), 1)
+    x = dict.fromkeys(itertools.permutations(alphabet, 2), 1)
     cx = ahpy.Compare('CR Test', x, random_index='saaty', cr=False)
-    assert cx.local_weights == b
+    assert cx.local_weights == values
 
 
 def test_size_limit_normalize_saaty():
-    y = dict.fromkeys([i[0] for i in itertools.combinations(a, 1)], 1)
+    y = dict.fromkeys([i[0] for i in itertools.combinations(alphabet, 1)], 1)
     cy = ahpy.Compare('CR Test', y, random_index='saaty')
-    assert cy.local_weights == b
+    assert cy.local_weights == values
+
+
+a_m = {('b', 'c'): 1}
+b_m = {('d', 'e'): 4}
+d_m = {('f', 'g'): 2}
+
+c_m = {'x': 2, 'y': 4, 'z': 4}
+e_m = {'x': 1, 'y': 2, 'z': 3}
+f_m = {'x': 2, 'y': 4, 'z': 4}
+g_m = {'x': 1, 'y': 2, 'z': 3}
+
+a = ahpy.Compare('a', a_m, precision=4)
+b = ahpy.Compare('b', b_m, precision=4)
+c = ahpy.Compare('c', c_m, precision=4)
+d = ahpy.Compare('d', d_m, precision=4)
+e = ahpy.Compare('e', e_m, precision=4)
+f = ahpy.Compare('f', f_m, precision=4)
+g = ahpy.Compare('g', g_m, precision=4)
+
+
+
+
+
+
+
+a.add_children([b, c])
+
+b.add_children([d, e])
+
+d.add_children([f, g])
+
+
+def test_master_a():
+    assert a.report() == {'name': 'a', 'weight': 1.0, 'target': {'z': 0.4233, 'y': 0.3844, 'x': 0.1922},
+                          'weights': {'local': {'b': 0.5, 'c': 0.5}, 'global': {'b': 0.5, 'c': 0.5}},
+                          'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                          'elements': {'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']},
+                          'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
+
+
+def test_master_b():
+    assert b.report() == {'name': 'b', 'weight': 0.5, 'target': None, 'weights': {'local': {'d': 0.8, 'e': 0.2}, 'global': {'d': 0.4, 'e': 0.1}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
+
+
+def test_master_c():
+    assert c.report() == {'name': 'c', 'weight': 0.5, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.2, 'z': 0.2, 'x': 0.1}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+
+
+def test_master_d():
+    assert d.report() == {'name': 'd', 'weight': 0.4, 'target': None, 'weights': {'local': {'f': 0.6667, 'g': 0.3333}, 'global': {'f': 0.2667, 'g': 0.1333}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['f', 'g']}, 'children': {'count': 2, 'names': ['f', 'g']}, 'comparisons': {'count': 1, 'input': {('f', 'g'): 2}, 'computed': None}}
+
+
+def test_master_e():
+    assert e.report() == {'name': 'e', 'weight': 0.1, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+
+
+def test_master_f():
+    assert f.report() == {'name': 'f', 'weight': 0.2667, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+
+
+def test_master_g():
+    assert g.report() == {'name': 'g', 'weight': 0.1333, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
