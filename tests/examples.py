@@ -179,7 +179,6 @@ from ahpy import ahpy
 # ----------------------------------------------------------------------------------
 # Master Test
 
-
 # a_m = {('b', 'c'): 1}
 # b_m = {('d', 'e'): 4}
 # c_m = {('f', 'g'): 1, ('g', 'h'): 1/2}
@@ -208,14 +207,14 @@ from ahpy import ahpy
 # k = ahpy.Compare('k', k_m, precision=4)
 # l = ahpy.Compare('l', l_m, precision=4)
 # m = ahpy.Compare('m', m_m, precision=4)
-# n = ahpy.Compare('n', n_m, precision=4)
+# n = ahpy.Compare('n', n_m, precision=3)
 #
-# l.add_children([m, n])
-# d.add_children([i, j])
-# f.add_children([l, k])
-# b.add_children([d, e])
-# c.add_children([h, f, g])
-# a.add_children([b, c])
+# # l.add_children([m, n])
+# # d.add_children([i, j])
+# # f.add_children([l, k])
+# # b.add_children([d, e])
+# # c.add_children([h, f, g])
+# # a.add_children([b, c])
 #
 # nodes = [(a, [b, c]), (b, [d, e]), (c, [f, g, h]), (d, [i, j]), (f, [k, l]), (l, [m, n])]
 # permutations = itertools.permutations(nodes)
