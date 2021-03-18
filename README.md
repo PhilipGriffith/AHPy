@@ -786,47 +786,53 @@ The Compare class computes the priority vector and consistency ratio of a positi
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
-- `name`: *str (required)*, the name of the Compare object
-  - This property is used to link a child object to its parent and must be unique
+`name`: *str (required)*, the name of the Compare object
+- This property is used to link a child object to its parent and must be unique
 
-- `comparisons`: *dict (required)*, the elements and values to be compared, provided in one of two forms:
-  1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
-      - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
-      - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
-  2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
-      - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-      - Given this form, AHPy will automatically create a consistent priority vector of normalized values
+`comparisons`: *dict (required)*, the elements and values to be compared, provided in one of two forms:
+1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
+    - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
+    - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
+2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
+    - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+    - Given this form, AHPy will automatically create a consistent priority vector of normalized values
 
-- `precision`: *int*, the number of decimal places to take into account when computing both the priority vector and the consistency ratio of the Compare object
-  - The default precision value is 4
+`precision`: *int*, the number of decimal places to take into account when computing both the priority vector and the consistency ratio of the Compare object
+- The default precision value is 4
 
-- `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
-  - 'dd' uses estimates from Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
-    - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size
-  - 'saaty' uses estimates from Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
-    - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size
-  - The default random index is 'dd'
+`random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
+- 'dd' uses estimates from Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
+  - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size
+- 'saaty' uses estimates from Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
+  - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size
+- The default random index is 'dd'
 
-- `iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector
-  - If a priority vector has not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the priority vector
-  - The default number of iterations is 100
+`iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector
+- If a priority vector has not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the priority vector
+- The default number of iterations is 100
 
-- `tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons
-  - The algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
-  - The default tolerance value is 0.0001
+`tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons
+- The algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
+- The default tolerance value is 0.0001
 
-- `cr`: *bool*, whether to compute the priority vector's consistency ratio
-  - Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined due to the size of the matrix
-  - The default value is True
+`cr`: *bool*, whether to compute the priority vector's consistency ratio
+- Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined due to the size of the matrix
+- The default value is True
 
 The properties used to initialize the Compare class are intended to be accessed directly, along with a few others:
 
-`Compare.weight` = 1.0
-        self.consistency_ratio = None
-        self.local_weights = None
-        self.global_weights = None
-        self.target_weights = None
+`Compare.weight`: *float*, the global weight of the Compare object within the hierarchy
 
+`Compare.consistency_ratio`: *float*, the consistency ratio of the Compare object
+
+`Compare.local_weights`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
+- `{'a': 0.5, 'b': 0.5}`
+
+`Compare.global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
+- `{'a': 0.25, 'b': 0.25}`
+
+`Compare.target_weights`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, the value will be `None`*
+- `{'a': 0.5, 'b': 0.5}`
 
 ### Compare.add_children()
 
@@ -868,8 +874,7 @@ The keys of the report take the following form:
   - `{'a': 0.5, 'b': 0.5}`
 - `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
   - `{'a': 0.25, 'b': 0.25}`
-  
-- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, this value will be `None`*
+- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, the value will be `None`*
   - `{'a': 0.5, 'b': 0.5}`
   
 `consistency_ratio`: *float*, the consistency ratio of the Compare object
@@ -880,19 +885,23 @@ The keys of the report take the following form:
 - `count`: *int*, the number of elements compared by the Compare object
 - `names`: *list*, the names of the elements compared by the Compare object
 
-`children`: *dict*, the children of the Compare object; if the Compare object has no children, this value will be `None`
+`children`: *dict*, the children of the Compare object; if the Compare object has no children, the value will be `None`
 - `count`: *int*, the number of the Compare object's children
 - `names`: *list*, the names of the Compare object's children
 
 `comparisons`: *dict*, the comparisons of the Compare object
 - `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
 - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
-- `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, this value will be `None`
+- `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, the value will be `None`
   - `{('c', 'd'): 0.730297106886979}, ...}`
 
 ### Missing Pairwise Comparisons
 
-When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the input `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047)). As the paper notes, "The number of *necessary* pairwise comparisons ... depends on the characteristics of the real decision problem and provides an exciting topic of future research" (29). In other words, don't rely on the algorithm to fill in comparison dictionaries with large numbers of missing values: it very well might, but it also might not. **Caveat emptor!**
+When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the input `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in:
+
+>Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
+
+As the paper notes, "The number of *necessary* pairwise comparisons ... depends on the characteristics of the real decision problem and provides an exciting topic of future research" (29). In other words, don't rely on the algorithm to fill in comparison dictionaries with large numbers of missing values: it very well might, but it also might not. **Caveat emptor!**
 
 The example below demonstrates this functionality of AHPy using the following matrix:
 
