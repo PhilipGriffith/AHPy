@@ -860,22 +860,30 @@ A report on the details of a Compare object is available. To return the report a
 The keys of the report take the following form:
 
 `name`: *str*, the name of the Compare object
+
 `weight`: *float*, the global weight of the Compare object within the hierarchy
+
 `weights`: *dict*, the weights of the Compare object's elements
 - `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
   - `{'a': 0.5, 'b': 0.5}`
 - `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
   - `{'a': 0.25, 'b': 0.25}`
+  
 - `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, this value will be `None`*
   - `{'a': 0.5, 'b': 0.5}`
+  
 `consistency_ratio`: *float*, the consistency ratio of the Compare object
+
 `random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
+
 `elements`: *dict*, the elements compared by the Compare object
 - `count`: *int*, the number of elements compared by the Compare object
 - `names`: *list*, the names of the elements compared by the Compare object
+
 `children`: *dict*, the children of the Compare object; if the Compare object has no children, this value will be `None`
 - `count`: *int*, the number of the Compare object's children
 - `names`: *list*, the names of the Compare object's children
+
 `comparisons`: *dict*, the comparisons of the Compare object
 - `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
 - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
