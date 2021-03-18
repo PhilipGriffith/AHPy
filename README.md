@@ -26,15 +26,13 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Purchasing a vehicle](#purchasing-a-vehicle)
 
-[Purchasing a vehicle, Normalized Weights and Compare.recompute()](#purchasing-a-vehicle-normalized-weights-and-comparerecompute)
+[Purchasing a vehicle, Normalized Weights](#purchasing-a-vehicle-normalized-weights)
 
 #### Details
 
 [The Compare Class](#the-compare-class)
 
 [Compare.add_children()](#compareadd_children)
-
-[Compare.recompute()](#comparerecompute)
 
 [Compare.report()](#comparereport)
 
@@ -69,22 +67,27 @@ The table below shows the relative consumption of drinks as computed using the A
 |AHP|0.177|0.019|0.042|0.116|0.190|0.129|0.327|
 |Actual|0.180|0.010|0.040|0.120|0.180|0.140|0.330|
 
+:exploding_head:
+
 We can recreate this analysis with AHPy using the following code:
 
 ```python
->>> drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1, ('coffee', 'milk'): 1, ('coffee', 'water'): 1/2,
-('wine', 'tea'): 1/3, ('wine', 'beer'): 1/9, ('wine', 'soda'): 1/9, ('wine', 'milk'): 1/9, ('wine', 'water'): 1/9,
-('tea', 'beer'): 1/3, ('tea', 'soda'): 1/4, ('tea', 'milk'): 1/3, ('tea', 'water'): 1/9,
-('beer', 'soda'): 1/2, ('beer', 'milk'): 1, ('beer', 'water'): 1/3,
-('soda', 'milk'): 2, ('soda', 'water'): 1/2,
-('milk', 'water'): 1/3}
+>> > drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
+                          ('coffee', 'milk'): 1, ('coffee', 'water'): 1 / 2,
+                          ('wine', 'tea'): 1 / 3, ('wine', 'beer'): 1 / 9, ('wine', 'soda'): 1 / 9,
+                          ('wine', 'milk'): 1 / 9, ('wine', 'water'): 1 / 9,
+                          ('tea', 'beer'): 1 / 3, ('tea', 'soda'): 1 / 4, ('tea', 'milk'): 1 / 3,
+                          ('tea', 'water'): 1 / 9,
+                          ('beer', 'soda'): 1 / 2, ('beer', 'milk'): 1, ('beer', 'water'): 1 / 3,
+                          ('soda', 'milk'): 2, ('soda', 'water'): 1 / 2,
+                          ('milk', 'water'): 1 / 3}
 
->>> c = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
+>> > drinks = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
 
->>> print(c.target_weights)
+>> > print(drinks.target_weights)
 {'water': 0.327, 'soda': 0.19, 'coffee': 0.177, 'milk': 0.129, 'beer': 0.116, 'tea': 0.042, 'wine': 0.019}
 
->>> print(c.consistency_ratio)
+>> > print(drinks.consistency_ratio)
 0.022
 ```
 
@@ -119,7 +122,7 @@ In this example, we'll be judging candidates by their experience, education, cha
 ('Charisma', 'Age'): 5}
 ```
 
-Before moving on, it's important to note that the *order* of the elements that form the dictionaries' keys is meaningful. For example, using Saaty's scale, the comparison `('Experience', 'Education'): 4` means that "Experience is moderately+ more important than Education." 
+Before moving on, it's important to note that the *order* of the elements that form the dictionaries' keys is meaningful. For example, using Saaty's scale, the comparison `('Experience', 'Education'): 4` means that "Experience is *moderately+ more important than* Education." 
 
 Now that we've created all of the necessary pairwise comparison dictionaries, we'll create their corresponding Compare objects and use the dictionaries as input:
 
@@ -133,7 +136,7 @@ Now that we've created all of the necessary pairwise comparison dictionaries, we
 
 Notice that the names of the Experience, Education, Charisma and Age objects are repeated in the `criteria_comparisons` dictionary above. This is necessary in order to properly link the Compare objects together into a hierarchy, as shown next.
 
-In the final step, we need to link the Compare objects together into a hierarchy, such that `criteria` is the *parent* object and the other objects form its *children*:
+In the final step, we need to link the Compare objects together into a hierarchy, such that Criteria is the *parent* object and the other objects form its *children*:
 
 ```python
 >>> criteria.add_children([experience, education, charisma, age])
@@ -142,11 +145,11 @@ In the final step, we need to link the Compare objects together into a hierarchy
 Now that the hierarchy represents the decision problem, we can print the target weights of the parent Criteria object to see the results of the analysis:
 
 ```python
->>> print(criteria.target_weights)
+>> > print(criteria.target_weights)
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
-We can also print the weights and consistency ratio of any of the other Compare objects, as well as their overall weight in the hierarchy:
+We can also print the local or global weights and consistency ratio of any of the other Compare objects, as well as their overall weight in the hierarchy:
 
 ```python
 >>> print(experience.local_weights)
@@ -156,8 +159,8 @@ We can also print the weights and consistency ratio of any of the other Compare 
 >>> print(experience.weight)
 0.548
 
->>> print(education.local_weights)
-{'Sue': 0.731, 'Moll': 0.188, 'Nell': 0.081}
+>>> print(education.global_weights)
+{'Sue': 0.093, 'Moll': 0.024, 'Nell': 0.01}
 >>> print(education.consistency_ratio)
 0.062
 >>> print(education.weight)
@@ -171,11 +174,6 @@ Calling `report()` on a Compare object provides a standard way to learn detailed
 {
     "name": "Criteria",
     "weight": 1.0,
-    "target": {
-        "Nell": 0.493,
-        "Moll": 0.358,
-        "Sue": 0.15
-    },
     "weights": {
         "local": {
             "Experience": 0.548,
@@ -188,6 +186,11 @@ Calling `report()` on a Compare object provides a standard way to learn detailed
             "Charisma": 0.27,
             "Education": 0.127,
             "Age": 0.056
+        },
+        "target": {
+            "Nell": 0.493,
+            "Moll": 0.358,
+            "Sue": 0.15
         }
     },
     "consistency_ratio": 0.044,
@@ -259,12 +262,6 @@ If we create a Compare object for the criteria, we can view its report:
 {
     "name": "Criteria",
     "weight": 1.0,
-    "target": {
-        "Cost": 0.51,
-        "Safety": 0.234,
-        "Capacity": 0.215,
-        "Style": 0.041
-    },
     "weights": {
         "local": {
             "Cost": 0.51,
@@ -277,7 +274,13 @@ If we create a Compare object for the criteria, we can view its report:
             "Safety": 0.234,
             "Capacity": 0.215,
             "Style": 0.041
-        }
+        },
+		"target": {
+			"Cost": 0.51,
+			"Safety": 0.234,
+			"Capacity": 0.215,
+			"Style": 0.041
+		}
     },
     "consistency_ratio": 0.08,
     "random_index": "Donegan & Dodd",
@@ -387,31 +390,30 @@ Now that we've created all of the necessary pairwise comparison dictionaries, we
 >>> cargo = ahpy.Compare('Cargo', cargo_comparisons, precision=3)
 ```
 
-The final step is to link all of the Compare objects into a hierarchy, starting at the lowest level and working up. First, we'll make the Price, Fuel, Maintenance and Resale objects the children of the Cost object...
+The final step is to link all of the Compare objects into a hierarchy. First, we'll make the Price, Fuel, Maintenance and Resale objects the children of the Cost object...
 
 ```python
 >>> cost.add_children([price, fuel, maintenance, resale])
 ```
 
-...and do the same to link the Cargo and Passenger objects to the Capacity object:
+...and do the same to link the Cargo and Passenger objects to the Capacity object...
 
 ```python
 >>> capacity.add_children([cargo, passenger])
 ```
 
-Moving up the hierarchy, we can now make the Cost, Safety, Style and Capacity objects the children of the Criteria object...
+...then finally make the Cost, Safety, Style and Capacity objects the children of the Criteria object:
 
 ```python
 >>> criteria.add_children([cost, safety, style, capacity])
 ```
 
-...and we're done! Brilliant!
-
-Now that the hierarchy represents the decision problem, we can print the target weights of the highest level Criteria object to see the results of the analysis:
+Now that the hierarchy represents the decision problem, we can print the target weights of the *highest level* Criteria object to see the results of the analysis:
 
 ```python
->>> print(criteria.target_weights)
-{'Element': 0.144, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Odyssey': 0.219, 'Accord Hybrid': 0.15, 'Pilot': 0.106}
+>> > print(criteria.target_weights)
+{'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
+
 ```
 
 For standardized, detailed information about any of the Compare objects in the hierarchy, we can call `report()`. Because the Criteria object now has children, we see that both its `children` entry and its target weights have been updated to reflect the change:
@@ -421,14 +423,6 @@ For standardized, detailed information about any of the Compare objects in the h
 {
     "name": "Criteria",
     "weight": 1.0,
-    "target": {
-        "Element": 0.144,
-        "Accord Sedan": 0.215,
-        "CR-V": 0.167,
-        "Odyssey": 0.219,
-        "Accord Hybrid": 0.15,
-        "Pilot": 0.106
-    },
     "weights": {
         "local": {
             "Cost": 0.51,
@@ -441,6 +435,14 @@ For standardized, detailed information about any of the Compare objects in the h
             "Safety": 0.234,
             "Capacity": 0.215,
             "Style": 0.041
+        },
+		"target": {
+            "Odyssey": 0.219,
+            "Accord Sedan": 0.215,
+            "CR-V": 0.167,
+            "Accord Hybrid": 0.15,
+            "Element": 0.144,
+            "Pilot": 0.106
         }
     },
     "consistency_ratio": 0.08,
@@ -497,7 +499,6 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
 {
     "name": "Cost",
     "weight": 0.51,
-    "target": null,
     "weights": {
         "local": {
             "Price": 0.488,
@@ -510,7 +511,8 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
             "Fuel": 0.129,
             "Resale": 0.082,
             "Maintenance": 0.051
-        }
+        },
+		"target": null
     },
     "consistency_ratio": 0.016,
     "random_index": "Donegan & Dodd",
@@ -562,7 +564,6 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
 {
     "name": "Price",
     "weight": 0.249,
-    "target": null,
     "weights": {
         "local": {
             "Element": 0.366,
@@ -579,7 +580,8 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
             "Odyssey": 0.023,
             "Accord Hybrid": 0.006,
             "Pilot": 0.006
-        }
+        },
+		"target": null
     },
     "consistency_ratio": 0.072,
     "random_index": "Donegan & Dodd",
@@ -649,7 +651,7 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
 }
 ```
 
-### Purchasing a vehicle, Normalized Weights and Compare.recompute()
+### Purchasing a vehicle, Normalized Weights
 
 After reading through the explanation of the [vehicle decision problem on Wikipedia](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example), you may have wondered whether the data used to represent purely numeric criteria (such as passenger capacity) could be used *directly* when comparing the vehicles to one another, rather than requiring tranformation into judgments of "intensity." In this example, we'll solve the same decision problem as before, except this time we'll normalize the measured values for passenger capacity, fuel costs, resale value and cargo capacity in order to arrive at a different set of weights for these criteria.
 
@@ -682,15 +684,13 @@ We can print the local weights of the Passenger object to see its normalized val
 {'Pilot': 0.229, 'Odyssey': 0.229, 'Accord Sedan': 0.143, 'Accord Hybrid': 0.143, 'CR-V': 0.143, 'Element': 0.114}
 ```
 
-All that's left is to link the objects together into a hierarchy. Though we won't show the code, the other Compare objects we'll use were created in exactly the same way as in the previous example. Though it's not best practice, we'll also build the hierarchy by starting at the top and working down, in order to demonstrate the use of `recompute()`.
-
-First, we'll make the Cost, Safety, Style and Capacity objects the children of the Criteria object:
+All that's left is to link the objects together into a hierarchy. Though we won't show the code, the other Compare objects we'll use were created in exactly the same way as in the previous example. First, we'll make the Cost, Safety, Style and Capacity objects the children of the Criteria object...
 
 ```python
 >>> criteria.add_children([cost, safety, style, capacity])
 ```
 
-Then we'll make the Price, Fuel, Maintenance and Resale objects the children of the Cost object...
+...then we'll make the Price, Fuel, Maintenance and Resale objects the children of the Cost object...
 
 ```python
 >>> cost.add_children([price, fuel, maintenance, resale])
@@ -702,46 +702,79 @@ Then we'll make the Price, Fuel, Maintenance and Resale objects the children of 
 >>> capacity.add_children([cargo, passenger])
 ```
 
-Though the hierarchy now represents the decision problem, the target and global weights of the hierarchy have not been properly updated with their children's information *due to the fact that we started with the highest level in the hierarchy and worked downward*. We can see an example of this discrepancy by viewing the Criteria object's report:
+Viewing the results of the analysis, we can see that normalizing the numeric criteria leads to a slightly different set of target weights, though the Odyssey and the Accord Sedan remain the top two vehicles to consider for purchase:
 
 ```python
 >>> report = criteria.report(show=True)
 {
     "name": "Criteria",
     "weight": 1.0,
-    "target": {
-        "Price": 0.249,
-        "Passenger": 0.179,
-        "Fuel": 0.129,
-        "Odyssey": 0.104,
-        "Resale": 0.082,
-        "Accord Sedan": 0.065,
-        "Accord Hybrid": 0.065,
-        "Maintenance": 0.051,
-        "Cargo": 0.036,
-        "Pilot": 0.019,
-        "CR-V": 0.015,
-        "Element": 0.006
-    }, ...
-}
-```
-
-The problem is that the Criteria object has incorrectly interpreted the elements of the Cost and Capacity objects as vehicles, rather than as subcriteria of the decision problem. To fix this error, we need to call `recompute()` on the Criteria object, which forms highest level of the hierarchy. The target weights will then be correctly updated, though their values will be slightly different from those in the previous example, as we used the normalized weighting method in our current analysis:
-
-```python
->> > criteria._recompute()
->> > report = criteria.report(show=True)
-{
-  "name": "Criteria",
-  "weight": 1.0,
-  "target": {
-    "Accord Sedan": 0.216,
-    "Odyssey": 0.212,
-    "CR-V": 0.168,
-    "Element": 0.156,
-    "Accord Hybrid": 0.151,
-    "Pilot": 0.098
-  }, ...
+    "weights": {
+        "local": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        },
+        "global": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        },
+        "target": {
+            "Odyssey": 0.218,
+            "Accord Sedan": 0.21,
+            "Element": 0.161,
+            "Accord Hybrid": 0.154,
+            "CR-V": 0.149,
+            "Pilot": 0.108
+        }
+    },
+    "consistency_ratio": 0.08,
+    "random_index": "Donegan & Dodd",
+    "elements": {
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "children": {
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "comparisons": {
+        "count": 6,
+        "input": [
+            {
+                "Cost, Safety": 3
+            },
+            {
+                "Cost, Style": 7
+            },
+            {
+                "Cost, Capacity": 3
+            },
+            {
+                "Safety, Style": 9
+            },
+            {
+                "Safety, Capacity": 1
+            },
+            {
+                "Style, Capacity": 0.14285714285714285
+            }
+        ],
+        "computed": null
+    }
 }
 ```
 
@@ -790,7 +823,9 @@ The Compare class computes the priority vector and consistency ratio of a positi
 
 ### Compare.add_children()
 
-Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the *upper* level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its *lower* level (the *children*). **In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary.**
+Compare objects can be linked together to form a hierarchy representing the decision problem. To link Compare objects together into a hierarchy, call `add_children()` on the Compare object intended to form the *upper* level (the *parent*) and include as an argument a list or tuple of one or more Compare objects intended to form its *lower* level (the *children*).
+
+**In order to properly synthesize the levels of the hierarchy, the `name` of each child object MUST appear as an element in its parent object's input `comparisons` dictionary.**
 
 `Compare.add_children(children)`
 
@@ -804,15 +839,7 @@ Compare objects can be linked together to form a hierarchy representing the deci
 >>> parent.add_children([child1, child2])
 ```
 
-The global and target weights of the Compare objects in a hierarchy are updated as the hierarchy is constructed. Each time `add_children()` is called, the parent object's descendants' global weights are updated accordingly. For this reason, the order in which the hierarchy is constructed is important: while it is possible to construct the hierarchy in any order, **it is best practice to construct the hierarchy by beginning with the Compare objects on the *lowest* level and then working *upwards***. This will help to avoid unwittingly creating higher levels that have not been updated with their children's information.
-
-The precision of the target weights are also updated as the hierarchy is constructed. Each time `add_children()` is called, the precision of the parent object's target weights is set to equal the lowest precision of its child objects. Because lower precision propagates up through the hierarchy, *the final target weights will always have the same level of precision as the hierachy's least precise Compare object*. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
-
-### Compare.recompute()
-
-**If the hierarchy is *not* constructed by beginning with the Compare objects on the lowest level and then working upwards, the final step of construction MUST be to call `recompute()` on the Compare object at the hierarchy's highest level**.
-
-Computation of the global and target weights in a hierarchy begins with the Compare object on which `add_children()` was called and then proceeds *down* through that object's descendants. Because of this, *constructing* a hierarchy by beginning with Compare objects at higher levels and working down will result in weights at higher levels that have not been updated with their children's information. Calling `recompute()` on the hierarchy's *highest* Compare object after the hierarchy has been built insures that the global weights of the Compare objects and the target weights in the hierarchy are correctly computed.
+The precision of the target weights is updated as the hierarchy is constructed. Each time `add_children()` is called, the precision of the target weights is set to equal that of the Compare object with the lowest precision in the hierarchy. Because lower precision propagates up through the hierarchy, *the target weights will always have the same level of precision as the hierachy's least precise Compare object*. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
 
 ### Compare.report()
 
@@ -827,13 +854,13 @@ The keys of the report take the following form:
 
 - `name`: *str*, the name of the Compare object
 - `weight`: *float*, the global weight of the Compare object within the hierarchy
-- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, this value will be `None`*
-    - `{'a': 0.5, 'b': 0.5}`
 - `weights`: *dict*, the weights of the Compare object's elements
   - `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
     - `{'a': 0.5, 'b': 0.5}`
   - `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
     - `{'a': 0.25, 'b': 0.25}`
+  - `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, this value will be `None`*
+    - `{'a': 0.5, 'b': 0.5}`
 - `consistency_ratio`: *float*, the consistency ratio of the Compare object
 - `random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
 - `elements`: *dict*, the elements compared by the Compare object
@@ -864,23 +891,23 @@ The example below demonstrates this functionality of AHPy using the following ma
 We'll first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the **(c, d)** comparison marked in bold:
 
 ```python
->>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3/4}
+>> > comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
 
->>> complete = ahpy.Compare('_recompute', comparisons)
->>> print(complete.target_weights)
+>> > complete = ahpy.Compare('_recompute', comparisons)
+>> > print(complete.target_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
->>> print(complete.consistency_ratio)
+>> > print(complete.consistency_ratio)
 0.0372
 
->>> del comparisons[('c', 'd')]
+>> > del comparisons[('c', 'd')]
 
->>> missing_cd = ahpy.Compare('missing_cd', comparisons)
->>> print(missing_cd.target_weights)
+>> > missing_cd = ahpy.Compare('missing_cd', comparisons)
+>> > print(missing_cd.target_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
->>> print(missing_cd.consistency_ratio)
+>> > print(missing_cd.consistency_ratio)
 0.0372
 ```
 
 ### A Note on Weights
 
-In many instances, it will be observed that the sum of the local or target weights of a Compare object does not equal 1.0 exactly. This is due to rounding errors. If it is critical that the sum of the weights equal 1.0 exactly, it is recommended to divide the weights by their cumulative sum.
+In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than 1.0001, it's recommended to simply divide the weights by their cumulative sum.

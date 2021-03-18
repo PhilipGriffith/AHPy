@@ -1,4 +1,4 @@
-import random
+import itertools
 
 from ahpy import ahpy
 
@@ -21,7 +21,7 @@ from ahpy import ahpy
 # criteria.add_children([experience, education, charisma, age])
 
 # ----------------------------------------------------------------------------------
-# Examples from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
+# Example from Saaty, Thomas L., 'Decision making with the analytic hierarchy process,'
 # Int. J. Services Sciences, 1:1, 2008, pp. 83-98.
 
 # drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
@@ -29,7 +29,7 @@ from ahpy import ahpy
 #           ('beer', 'milk'): 1, ('soda', 'wine'): 9, ('soda', 'tea'): 4, ('soda', 'beer'): 2, ('soda', 'milk'): 2,
 #           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
 #           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
-# c = ahpy.Compare('Drinks', drinks, precision=4, random_index='dd')
+# drinks = ahpy.Compare('Drinks', drinks, precision=3, random_index='saaty')
 
 # ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
@@ -37,21 +37,21 @@ from ahpy import ahpy
 # cars = ('civic', 'saturn', 'escort', 'clio')
 #
 # gas_m = dict(zip(cars, (34, 27, 24, 28)))
-# gas = Compare('gas', gas_m, precision=3)
+# gas = ahpy.Compare('gas', gas_m, precision=3)
 #
 # rel_m = dict(zip(itertools.combinations(cars, 2), (2, 5, 1, 3, 2, 0.25)))
-# rel = Compare('rel', rel_m, 3)
+# rel = ahpy.Compare('rel', rel_m, 3)
 #
 # style_m = {('civic', 'escort'): 4,
 #            ('saturn', 'civic'): 4, ('saturn', 'escort'): 4, ('saturn', 'clio'): 0.25,
 #            ('clio', 'civic'): 6, ('clio', 'escort'): 5}
-# style = Compare('style', style_m, precision=3)
+# style = ahpy.Compare('style', style_m, precision=3)
 #
 # cri_m = {('style', 'rel'): 0.5, ('style', 'gas'): 3,
 #          ('rel', 'gas'): 4}
-# goal = Compare('goal', cri_m)
+# goal = ahpy.Compare('goal', cri_m)
 #
-# goal.children([gas, rel, style])
+# goal.add_children([gas, rel, style])
 
 # ----------------------------------------------------------------------------------
 # Example from Saaty, Thomas, L., Theory and Applications of the Analytic Network Process, 2005.
@@ -95,90 +95,74 @@ from ahpy import ahpy
 #
 # cr = ahpy.Compare('Goal', criteria, precision=3, random_index='Saaty')
 # cr.add_children([cu, f, h, j, t])
-# cr.report(True)
 
 # ----------------------------------------------------------------------------------
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
 
 
-# def r(x):
-#     return np.reciprocal(float(x))
-#
-#
-# def m(elements, judgments):
-#     return dict(zip(elements, judgments))
-#
-#
-# cri = ('Cost', 'Safety', 'Style', 'Capacity')
-# c_cri = list(itertools.combinations(cri, 2))
-# criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
-#
-# alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
-# pairs = list(itertools.combinations(alt, 2))
-#
-# costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
-# c_pairs = list(itertools.combinations(costs, 2))
-# cost = ahpy.Compare('Cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
-#
-# cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
-# cost_price = ahpy.Compare('Price', m(pairs, cost_price_m), 3)
-#
-# cost_fuel_m = (r(1.13), 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, r(1.23), r(1.14), r(1.18), 1.08, 1.04, r(1.04))
-# # cost_fuel_m = (31, 35, 22, 27, 25, 26)
-# cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
-# # cost_fuel = ahpy.Compare('Fuel', m(alt, cost_fuel_m), 3)
-#
-# cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
-# # cost_resale_m = (0.52, 0.46, 0.44, 0.55, 0.48, 0.48)
-# cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
-# # cost_resale = ahpy.Compare('Resale', m(alt, cost_resale_m), 3)
-#
-# cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
-# cost_maint = ahpy.Compare('Maintenance', m(pairs, cost_maint_m), 3)
-#
-# safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
-# safety = ahpy.Compare('Safety', m(pairs, safety_m), 3)
-#
-# style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
-# style = ahpy.Compare('Style', m(pairs, style_m), 3)
-#
-# capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
-#
-# # capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
+def m(elements, judgments):
+    return dict(zip(elements, judgments))
+
+
+cri = ('Cost', 'Safety', 'Style', 'Capacity')
+c_cri = list(itertools.combinations(cri, 2))
+criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
+
+alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+pairs = list(itertools.combinations(alt, 2))
+
+costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
+c_pairs = list(itertools.combinations(costs, 2))
+cost = ahpy.Compare('Cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
+
+cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
+cost_price = ahpy.Compare('Price', m(pairs, cost_price_m), 3)
+
+cost_fuel_m = (1/1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1/1.23, 1/1.14, 1/1.18, 1.08, 1.04, 1/1.04)
+# cost_fuel_m = (31, 35, 22, 27, 25, 26)
+cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
+# cost_fuel = ahpy.Compare('Fuel', m(alt, cost_fuel_m), 3)
+
+cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
+# cost_resale_m = (0.52, 0.46, 0.44, 0.55, 0.48, 0.48)
+cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
+# cost_resale = ahpy.Compare('Resale', m(alt, cost_resale_m), 3)
+
+cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+cost_maint = ahpy.Compare('Maintenance', m(pairs, cost_maint_m), 3)
+
+safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
+safety = ahpy.Compare('Safety', m(pairs, safety_m), 3)
+
+style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
+style = ahpy.Compare('Style', m(pairs, style_m), 3)
+
+capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
+
+capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
 # capacity_pass_m = (5, 5, 8, 5, 4, 8)
-# # capacity_pass = ahpy.Compare('Passenger', m(pairs, capacity_pass_m), 3)
+capacity_pass = ahpy.Compare('Passenger', m(pairs, capacity_pass_m), 3)
 # capacity_pass = ahpy.Compare('Passenger', m(alt, capacity_pass_m), 3)
-#
-# capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
-# # capacity_cargo_m = (14, 14, 87.6, 72.9, 74.6, 147.4)
-# capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
-# # capacity_cargo = ahpy.Compare('Cargo', m(alt, capacity_cargo_m), precision=3)
 
-# capacity_pass = ahpy.Compare('capacity passenger', {('leg room', 'seats'): 0.2})
-# leg_room = ahpy.Compare('leg room', m(pairs, capacity_cargo_m))
-# seats = ahpy.Compare('seats', {('top', 'bottom'): 0.2})
-# top = ahpy.Compare('top', m(pairs, capacity_cargo_m))
-# bottom = ahpy.Compare('bottom', m(pairs, capacity_pass_m))
-# seats.add_children([top, bottom])
+capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
+# capacity_cargo_m = (14, 14, 87.6, 72.9, 74.6, 147.4)
+capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
+# capacity_cargo = ahpy.Compare('Cargo', m(alt, capacity_cargo_m), precision=3)
 
-# capacity_pass.add_children([leg_room, seats])
+criteria.add_children([cost, safety, style, capacity])
+cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
+capacity.add_children([capacity_pass, capacity_cargo])
 
-# criteria.add_children([cost, safety, style, capacity])
-#
-# cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
-# capacity.add_children([capacity_pass, capacity_cargo])
-# criteria._recompute()
-# criteria.report(1)
+print(cost.global_weights)
+print(cost.target_weights)
 
 # ----------------------------------------------------------------------------------
+# Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
+# Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333. (https://doi.org/10.1016/j.mcm.2010.02.047)
 
 # u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
-#      ('beta', 'chi'): 3, ('beta', 'delta'): 4}#, ('chi', 'delta'): 3/4}
+#      ('beta', 'chi'): 3, ('beta', 'delta'): 4}  # , ('chi', 'delta'): 3/4}
 # cu = ahpy.Compare('Incomplete Test', u, cr=False)
-# print(cu.target_weights)
-# print(cu.consistency_ratio)
-# r = cu.report(True)
-# print(r)
 
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
@@ -187,26 +171,19 @@ from ahpy import ahpy
 #      ('g', 'a'): 3, ('g', 'e'): 5,
 #      ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
 #
-# cm = Compare('Incomplete Housing', m)
-# cm.report()
-#
+# cm = ahpy.Compare('Incomplete Housing', m)
+
+# ----------------------------------------------------------------------------------
+# Example from Haas, R. and Meixner, L., 'An Illustrated Guide to the Analytic Hierarchy Process,'
+# http://www.inbest.co.il/NGO/ahptutorial.pdf
+
 # f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
 # cf = ahpy.Compare('Fuel Economy', f)
-# r = cf.report(True)
-# print(r)
 
-#
-# books = {('Jane Eyre', 'Moby Dick'): 5,
-#          ('Jane Eyre', 'Pride & Prejudice'): 3,
-#          ('Jane Eyre', 'Catcher in the Rye'): 1,
-#          ('Pride & Prejudice', 'Moby Dick'): 3,
-#          ('Moby Dick', 'Catcher in the Rye'): 1 / 4,
-#          ('Pride & Prejudice', 'Catcher in the Rye'): 2}
-#
-# c = Compare('Book List', books)
-# c.report()
+# ----------------------------------------------------------------------------------
 
 # Master Test
+
 
 a_m = {('b', 'c'): 1}
 b_m = {('d', 'e'): 4}
@@ -238,31 +215,31 @@ l = ahpy.Compare('l', l_m, precision=4)
 m = ahpy.Compare('m', m_m, precision=4)
 n = ahpy.Compare('n', n_m, precision=4)
 
-# l.add_children([m, n])
-# d.add_children([i, j])
-# f.add_children([k, l])
-# b.add_children([d, e])
-# c.add_children([f, g, h])
-# a.add_children([b, c])
+l.add_children([m, n])
+d.add_children([i, j])
+f.add_children([l, k])
+b.add_children([d, e])
+c.add_children([h, f, g])
+a.add_children([b, c])
+# a.report(1)
 
-nodes = [(a, [b, c]), (b, [d, e]), (c, [f, g, h]), (d, [i, j]), (f, [k, l]), (l, [m, n])]
-
-for _ in range(100):
-    random.shuffle(nodes)
-    for node in nodes:
-        node[0].add_children(node[1])
-
-    assert a.report() == {'name': 'a', 'weight': 1.0, 'target': {'z': 0.4652, 'y': 0.3626, 'x': 0.1723}, 'weights': {'local': {'b': 0.5, 'c': 0.5}, 'global': {'b': 0.5, 'c': 0.5}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
-    assert b.report() == {'name': 'b', 'weight': 0.5, 'target': None, 'weights': {'local': {'d': 0.8, 'e': 0.2}, 'global': {'d': 0.4, 'e': 0.1}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
-    assert c.report() == {'name': 'c', 'weight': 0.5, 'target': None, 'weights': {'local': {'h': 0.5, 'f': 0.25, 'g': 0.25}, 'global': {'h': 0.25, 'f': 0.125, 'g': 0.125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['f', 'g', 'h']}, 'children': {'count': 3, 'names': ['f', 'g', 'h']}, 'comparisons': {'count': 3, 'input': {('f', 'g'): 1, ('g', 'h'): 0.5}, 'computed': {('f', 'h'): 0.5000007807004769}}}
-    assert d.report() == {'name': 'd', 'weight': 0.4, 'target': None, 'weights': {'local': {'i': 0.6667, 'j': 0.3333}, 'global': {'i': 0.2667, 'j': 0.1333}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['i', 'j']}, 'children': {'count': 2, 'names': ['i', 'j']}, 'comparisons': {'count': 1, 'input': {('i', 'j'): 2}, 'computed': None}}
-    assert e.report() == {'name': 'e', 'weight': 0.1, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
-    assert f.report() == {'name': 'f', 'weight': 0.125, 'target': None, 'weights': {'local': {'l': 0.9, 'k': 0.1}, 'global': {'l': 0.1125, 'k': 0.0125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['k', 'l']}, 'children': {'count': 2, 'names': ['k', 'l']}, 'comparisons': {'count': 1, 'input': {('k', 'l'): 0.1111111111111111}, 'computed': None}}
-    assert g.report() == {'name': 'g', 'weight': 0.125, 'target': None, 'weights': {'local': {'z': 0.6, 'y': 0.3, 'x': 0.1}, 'global': {'z': 0.075, 'y': 0.0375, 'x': 0.0125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 3, 'z': 6}, 'computed': None}}
-    assert h.report() == {'name': 'h', 'weight': 0.25, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1, 'z': 0.1, 'x': 0.05}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
-    assert i.report() == {'name': 'i', 'weight': 0.2667, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
-    assert j.report() == {'name': 'j', 'weight': 0.1333, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
-    assert k.report() == {'name': 'k', 'weight': 0.0125, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.005, 'z': 0.005, 'x': 0.0025}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
-    assert l.report() == {'name': 'l', 'weight': 0.1125, 'target': None, 'weights': {'local': {'m': 0.5, 'n': 0.5}, 'global': {'m': 0.0562, 'n': 0.0562}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['m', 'n']}, 'children': {'count': 2, 'names': ['m', 'n']}, 'comparisons': {'count': 1, 'input': {('m', 'n'): 1}, 'computed': None}}
-    assert m.report() == {'name': 'm', 'weight': 0.0562, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0281, 'y': 0.0187, 'x': 0.0094}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
-    assert n.report() == {'name': 'n', 'weight': 0.0562, 'target': None, 'weights': {'local': {'z': 0.6, 'y': 0.3, 'x': 0.1}, 'global': {'z': 0.0337, 'y': 0.0169, 'x': 0.0056}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 3, 'z': 6}, 'computed': None}}
+# nodes = [(a, [b, c]), (b, [d, e]), (c, [f, g, h]), (d, [i, j]), (f, [k, l]), (l, [m, n])]
+# permutations = itertools.permutations(nodes)
+# for permutation in permutations:
+#     for node in permutation:
+#         node[0].add_children(node[1])
+#
+#     assert a.report() == {'name': 'a', 'weight': 1.0, 'target': {'z': 0.4652, 'y': 0.3626, 'x': 0.1723}, 'weights': {'local': {'b': 0.5, 'c': 0.5}, 'global': {'b': 0.5, 'c': 0.5}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
+#     assert b.report() == {'name': 'b', 'weight': 0.5, 'target': None, 'weights': {'local': {'d': 0.8, 'e': 0.2}, 'global': {'d': 0.4, 'e': 0.1}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
+#     assert c.report() == {'name': 'c', 'weight': 0.5, 'target': None, 'weights': {'local': {'h': 0.5, 'f': 0.25, 'g': 0.25}, 'global': {'h': 0.25, 'f': 0.125, 'g': 0.125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['f', 'g', 'h']}, 'children': {'count': 3, 'names': ['f', 'g', 'h']}, 'comparisons': {'count': 3, 'input': {('f', 'g'): 1, ('g', 'h'): 0.5}, 'computed': {('f', 'h'): 0.5000007807004769}}}
+#     assert d.report() == {'name': 'd', 'weight': 0.4, 'target': None, 'weights': {'local': {'i': 0.6667, 'j': 0.3333}, 'global': {'i': 0.2667, 'j': 0.1333}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['i', 'j']}, 'children': {'count': 2, 'names': ['i', 'j']}, 'comparisons': {'count': 1, 'input': {('i', 'j'): 2}, 'computed': None}}
+#     assert e.report() == {'name': 'e', 'weight': 0.1, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+#     assert f.report() == {'name': 'f', 'weight': 0.125, 'target': None, 'weights': {'local': {'l': 0.9, 'k': 0.1}, 'global': {'l': 0.1125, 'k': 0.0125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['k', 'l']}, 'children': {'count': 2, 'names': ['k', 'l']}, 'comparisons': {'count': 1, 'input': {('k', 'l'): 0.1111111111111111}, 'computed': None}}
+#     assert g.report() == {'name': 'g', 'weight': 0.125, 'target': None, 'weights': {'local': {'z': 0.6, 'y': 0.3, 'x': 0.1}, 'global': {'z': 0.075, 'y': 0.0375, 'x': 0.0125}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 3, 'z': 6}, 'computed': None}}
+#     assert h.report() == {'name': 'h', 'weight': 0.25, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1, 'z': 0.1, 'x': 0.05}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+#     assert i.report() == {'name': 'i', 'weight': 0.2667, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+#     assert j.report() == {'name': 'j', 'weight': 0.1333, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+#     assert k.report() == {'name': 'k', 'weight': 0.0125, 'target': None, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.005, 'z': 0.005, 'x': 0.0025}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+#     assert l.report() == {'name': 'l', 'weight': 0.1125, 'target': None, 'weights': {'local': {'m': 0.5, 'n': 0.5}, 'global': {'m': 0.0562, 'n': 0.0562}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['m', 'n']}, 'children': {'count': 2, 'names': ['m', 'n']}, 'comparisons': {'count': 1, 'input': {('m', 'n'): 1}, 'computed': None}}
+#     assert m.report() == {'name': 'm', 'weight': 0.0562, 'target': None, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0281, 'y': 0.0187, 'x': 0.0094}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+#     assert n.report() == {'name': 'n', 'weight': 0.0562, 'target': None, 'weights': {'local': {'z': 0.6, 'y': 0.3, 'x': 0.1}, 'global': {'z': 0.0337, 'y': 0.0169, 'x': 0.0056}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 3, 'z': 6}, 'computed': None}}

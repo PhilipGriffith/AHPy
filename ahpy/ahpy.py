@@ -1,8 +1,8 @@
 import bisect
-import itertools
 import copy
-import warnings
+import itertools
 import json
+import warnings
 
 import numpy as np
 import scipy.optimize as spo
@@ -19,15 +19,15 @@ class Compare:
         each value is their pairwise comparison value, or (ii) each key is a single element and each value
         is that element's measured value
         Examples: (i) {('a', 'b'): 3, ('b', 'c'): 2}, (ii) {'a': 1.2, 'b': 2.3, 'c': 3.4}
-    :param precision: integer, number of decimal places of precision used when computing both the priority
+    :param precision: integer, number of decimal places used when computing both the priority
         vector and the consistency ratio; default is 4
     :param random_index: string, the random index estimates used to compute the consistency ratio;
-        see 'compute_consistency_ratio()' for more information regarding the different estimates;
+        see '_compute_consistency_ratio()' for more information regarding the different estimates;
         valid input: 'dd', 'saaty'; default is 'dd'
-    :param iterations: integer, number of iterations before 'compute_priority_vector()' stops;
+    :param iterations: integer, number of iterations before '_compute_priority_vector()' stops;
         default is 100
     :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by
-        'complete_matrix()'; the algorithm stops when the difference between the norms of two cycles
+        '_complete_matrix()'; the algorithm stops when the difference between the norms of two cycles
          of coordinates is less than this value; default is 0.0001
     :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
     """
@@ -87,19 +87,6 @@ class Compare:
                 msg = f'{key}: {value} is an invalid input. All input values must be numeric.'
                 raise TypeError(msg)
 
-    def _check_size(self):
-        """
-        Raises a ValueError if a consistency ratio is requested and
-        the chosen random index does not support the size of the matrix.
-        """
-        if not self._normalize and self.cr and \
-                ((self.random_index == 'saaty' and self._size > 15) or self._size > 100):
-            msg = "The input matrix is too large and a consistency ratio cannot be computed.\n" \
-                  "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
-                  "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
-                  "\tTo compute the priority vector without a consistency ratio, use the 'cr=False' argument."
-            raise ValueError(msg)
-
     def _build_elements(self):
         """
         Creates an empty 'pairs' dictionary that contains all possible permutations
@@ -119,6 +106,21 @@ class Compare:
         self._elements = list(self.comparisons)
         self._pairs = {}
         self._size = len(self._elements)
+
+    def _check_size(self):
+        """
+        Raises a ValueError if a consistency ratio is requested and
+        the chosen random index does not support the size of the matrix.
+        """
+        if not self._normalize and self.cr and \
+                ((self.random_index == 'saaty' and self._size > 15) or self._size > 100):
+            msg = f"The input matrix of {self._size} x {self._size} is too large for {self.random_index}" \
+                  " and a consistency ratio cannot be computed.\n" \
+                  "\tThe maximum matrix size supported by the 'saaty' random index is 15 x 15;\n" \
+                  "\tthe maximum matrix size supported by the 'dd' random index is 100 x 100.\n" \
+                  "\tTo compute the priority vector of the matrix without a consistency ratio\n," \
+                  "\tuse the 'cr=False' argument."
+            raise ValueError(msg)
 
     def _insert_comparisons(self):
         """
@@ -304,7 +306,8 @@ class Compare:
 
     def add_children(self, children):
         """
-        Sets the input Compare objects as children of the current Compare object, then calls '_recompute()'.
+        Sets the input Compare objects as children of the current Compare object, assigns itself as their parent,
+        then updates the global and target weights of the new hierarchy.
         NB: A child Compare object's name MUST be included as an element of the current Compare object.
         :param children: list or tuple, Compare objects to form the children of the current Compare object
         """
@@ -315,6 +318,9 @@ class Compare:
         self._recompute()
 
     def _check_children(self):
+        """
+        Raises a TypeError if an input child is not a Compare object.
+        """
         for child in self._node_children:
             if not isinstance(child, Compare):
                 msg = f'{child} is an invalid input. All children must be Compare objects.'
@@ -322,7 +328,7 @@ class Compare:
 
     def _set_node_precision(self):
         """
-        Sets the 'node_precision' property of the Compare object by selecting the lowest precision of its children.
+        Sets the '_node_precision' property of the Compare object by selecting the lowest precision of its children.
         """
         lowest_precision = np.min([child.precision for child in self._node_children])
         if lowest_precision < self.precision:
@@ -370,8 +376,9 @@ class Compare:
 
     def _recompute(self):
         """
-        Calls all functions necessary for building the node weights of the Compare object, given its children,
-        as well as updating the global weights of the Compare object's descendants.
+        Calls all functions necessary for building the target weights of the Compare object,
+        given its children, as well as updating the global weights of the Compare object's descendants.
+        Then calls the same function on the current Compare object's parent.
         """
         self._set_node_precision()
         self._compute_target_weights()
@@ -405,10 +412,10 @@ class Compare:
 
         report = {'name': self.name,
                   'weight': self.weight,
-                  'target': self.target_weights if self.weight == 1.0 else None,
                   'weights': {
                       'local': self.local_weights,
                       'global': self.global_weights,
+                      'target': self.target_weights if self.weight == 1.0 else None
                   },
                   'consistency_ratio': self.consistency_ratio,
                   'random_index': set_random_index(),
