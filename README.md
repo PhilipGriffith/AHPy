@@ -2,7 +2,7 @@
 
 **AHPy** is an implementation of the Analytic Hierarchy Process ([AHP](https://en.wikipedia.org/wiki/Analytic_hierarchy_process)), a method used to structure, synthesize and evaluate the elements of a decision problem. Developed by [Thomas Saaty](http://www.creativedecisions.org/about/ThomasLSaaty.php) in the 1970s, AHP's broad use in fields well beyond that of operational research is a testament to its simple yet powerful combination of psychology and mathematics.
 
- AHPy attempts to provide a programming interface that is not only simple to use, but also capable of intuitively working within the numerous conceptual frameworks to which the AHP can be applied. For this reason, general terms have been preferred to more specific ones within the library. 
+ AHPy attempts to provide a library that is not only simple to use, but also capable of intuitively working within the numerous conceptual frameworks to which the AHP can be applied. For this reason, general terms have been preferred to more specific ones within the programming interface.
 
 #### Installing AHPy
 
@@ -68,7 +68,7 @@ The table below shows the relative consumption of drinks as computed using the A
 We can recreate this analysis with AHPy using the following code:
 
 ```python
->> > drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
+>>> drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
                           ('coffee', 'milk'): 1, ('coffee', 'water'): 1 / 2,
                           ('wine', 'tea'): 1 / 3, ('wine', 'beer'): 1 / 9, ('wine', 'soda'): 1 / 9,
                           ('wine', 'milk'): 1 / 9, ('wine', 'water'): 1 / 9,
@@ -78,12 +78,12 @@ We can recreate this analysis with AHPy using the following code:
                           ('soda', 'milk'): 2, ('soda', 'water'): 1 / 2,
                           ('milk', 'water'): 1 / 3}
 
->> > drinks = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
+>>> drinks = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
 
->> > print(drinks.target_weights)
+>>> print(drinks.target_weights)
 {'water': 0.327, 'soda': 0.19, 'coffee': 0.177, 'milk': 0.129, 'beer': 0.116, 'tea': 0.042, 'wine': 0.019}
 
->> > print(drinks.consistency_ratio)
+>>> print(drinks.consistency_ratio)
 0.022
 ```
 
@@ -141,7 +141,7 @@ In the final step, we need to link the Compare objects together into a hierarchy
 Now that the hierarchy represents the decision problem, we can print the target weights of the parent Criteria object to see the results of the analysis:
 
 ```python
->> > print(criteria.target_weights)
+>>> print(criteria.target_weights)
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
@@ -271,12 +271,12 @@ If we create a Compare object for the criteria, we can view its report:
             "Capacity": 0.215,
             "Style": 0.041
         },
-		"target": {
-			"Cost": 0.51,
-			"Safety": 0.234,
-			"Capacity": 0.215,
-			"Style": 0.041
-		}
+        "target": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        }
     },
     "consistency_ratio": 0.08,
     "random_index": "Donegan & Dodd",
@@ -407,7 +407,7 @@ The final step is to link all of the Compare objects into a hierarchy. First, we
 Now that the hierarchy represents the decision problem, we can print the target weights of the *highest level* Criteria object to see the results of the analysis:
 
 ```python
->> > print(criteria.target_weights)
+>>> print(criteria.target_weights)
 {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
 
 ```
@@ -432,7 +432,7 @@ For standardized, detailed information about any of the Compare objects in the h
             "Capacity": 0.215,
             "Style": 0.041
         },
-		"target": {
+        "target": {
             "Odyssey": 0.219,
             "Accord Sedan": 0.215,
             "CR-V": 0.167,
@@ -508,7 +508,7 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
             "Resale": 0.082,
             "Maintenance": 0.051
         },
-		"target": null
+        "target": null
     },
     "consistency_ratio": 0.016,
     "random_index": "Donegan & Dodd",
@@ -577,7 +577,7 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
             "Accord Hybrid": 0.006,
             "Pilot": 0.006
         },
-		"target": null
+        "target": null
     },
     "consistency_ratio": 0.072,
     "random_index": "Donegan & Dodd",
@@ -673,7 +673,7 @@ Using the list of vehicles from the previous example, we can simply zip together
 >>> cargo = ahp.Compare('Cargo', cargo_data, precision=3)
 ```
 
-We can print the local weights of the Passenger object to see its normalized values:
+Let's print the local weights of the Passenger object to see its normalized values:
 
 ```python
 >>> print(passenger.local_weights)
@@ -780,7 +780,7 @@ Keep reading to learn the details of the AHPy library's API.
 
 ### The Compare Class
 
-The Compare class computes the priority vector and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any [missing pairwise comparisons](#missing-pairwise-comparisons). Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem elements are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the target weights and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any [missing pairwise comparisons](#missing-pairwise-comparisons). Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem elements are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
@@ -793,28 +793,28 @@ The Compare class computes the priority vector and consistency ratio of a positi
     - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
 2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
     - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-    - Given this form, AHPy will automatically create a consistent priority vector of normalized values
+    - Given this form, AHPy will automatically create consistent, normalized target weights
 
-`precision`: *int*, the number of decimal places to take into account when computing both the priority vector and the consistency ratio of the Compare object
+`precision`: *int*, the number of decimal places to take into account when computing both the target weights and the consistency ratio of the Compare object
 - The default precision value is 4
 
-`random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the priority vector's consistency ratio
+`random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the target weights' consistency ratio
 - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size and uses estimates from:
   >Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
 - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size and uses estimates from:
   >Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
 - The default random index is 'dd'
 
-`iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's priority vector
-- If a priority vector has not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the priority vector
+`iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's target weights
+- If target weights have not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the target weight
 - The default number of iterations is 100
 
 `tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons
 - The algorithm stops when the difference between the norms of two cycles of coordinates is less than this value
 - The default tolerance value is 0.0001
 
-`cr`: *bool*, whether to compute the priority vector's consistency ratio
-- Set `cr=False` to compute the priority vector of a matrix when a consistency ratio cannot be determined due to the size of the matrix
+`cr`: *bool*, whether to compute the target weights' consistency ratio
+- Set `cr=False` to compute the target weights of a matrix when a consistency ratio cannot be determined due to the size of the matrix
 - The default value is True
 
 The properties used to initialize the Compare class are intended to be accessed directly, along with a few others:
@@ -899,7 +899,7 @@ When a Compare object is initialized, the elements forming the keys of the input
 
 >Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,' *Mathematical and Computer Modelling*, 52:1–2, 2010, pp. 318-333 (DOI: [10.1016/j.mcm.2010.02.047](https://doi.org/10.1016/j.mcm.2010.02.047))
 
-As the paper notes, "The number of *necessary* pairwise comparisons ... depends on the characteristics of the real decision problem and provides an exciting topic of future research" (29). In other words, don't rely on the algorithm to fill in comparison dictionaries with large numbers of missing values: it very well might, but it also might not. **Caveat emptor!**
+As the paper notes, "The number of *necessary* pairwise comparisons ... depends on the characteristics of the real decision problem and provides an exciting topic of future research" (29). In other words, don't rely on the algorithm to fill in a comparison dictionary that has a large number of missing values: it certainly might, but it also very well might not. **Caveat emptor!**
 
 The example below demonstrates this functionality of AHPy using the following matrix:
 
