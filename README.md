@@ -913,20 +913,20 @@ The example below demonstrates this functionality of AHPy using the following ma
 We'll first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the **(c, d)** comparison marked in bold:
 
 ```python
->> > comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
+>>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
 
->> > complete = ahpy.Compare('_recompute', comparisons)
->> > print(complete._node_weights)
+>>> complete = ahpy.Compare('_recompute', comparisons)
+>>> print(complete._node_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
->> > print(complete.consistency_ratio)
+>>> print(complete.consistency_ratio)
 0.0372
 
->> > del comparisons[('c', 'd')]
+>>> del comparisons[('c', 'd')]
 
->> > missing_cd = ahpy.Compare('missing_cd', comparisons)
->> > print(missing_cd._node_weights)
+>>> missing_cd = ahpy.Compare('missing_cd', comparisons)
+>>> print(missing_cd._node_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
->> > print(missing_cd.consistency_ratio)
+>>> print(missing_cd.consistency_ratio)
 0.0372
 ```
 
