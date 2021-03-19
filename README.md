@@ -798,7 +798,7 @@ The Compare class computes the target weights and consistency ratio of a positiv
 `precision`: *int*, the number of decimal places to take into account when computing both the target weights and the consistency ratio of the Compare object
 - The default precision value is 4
 
-`random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the target weights' consistency ratio
+`random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the Compare object's consistency ratio
 - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size and uses estimates from:
   >Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
 - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size and uses estimates from:
@@ -806,7 +806,7 @@ The Compare class computes the target weights and consistency ratio of a positiv
 - The default random index is 'dd'
 
 `iterations`: *int*, the stopping criterion for the algorithm used to compute the Compare object's target weights
-- If target weights have not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is assigned as the target weight
+- If target weights have not been determined after this number of iterations, the algorithm stops and the last principal eigenvector to be computed is used as the target weights
 - The default number of iterations is 100
 
 `tolerance`: *float*, the stopping criterion for the cycling coordinates algorithm used to compute the optimal value of missing pairwise comparisons
