@@ -9,7 +9,7 @@ import ahpy
 
 drinks = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
           ('coffee', 'milk'): 1,
-          ('water', 'coffee'): 2, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
+          ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3,
           ('tea', 'wine'): 3,
           ('beer', 'wine'): 9, ('beer', 'tea'): 3, ('beer', 'milk'): 1,

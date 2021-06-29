@@ -46,13 +46,13 @@ The easiest way to learn how to use AHPy is to *see* it used, so this README beg
 
 ### Relative consumption of drinks in the United States
 
-This example is often used in Saaty's expositions of the AHP as a brief but clear demonstration of the method. The version I'm using is from Saaty's 2008 'Decision making with the analytic hierarchy process' in Vol. 1, No. 1 of the *International Journal of Services Sciences*. It's what first opened my eyes to the broad usefulness of the AHP (as well as the wisdom of crowds!). If you're unfamiliar with the example, 30 participants were asked to compare the relative consumption of drinks in the United States. For instance, they believed that coffee was consumed *much* more than wine, but at the same rate as milk. The matrix derived from their answers was as follows:
+This example is often used in Saaty's expositions of the AHP as a brief but clear demonstration of the method; the version I'm using is from Saaty's 2008 'Decision making with the analytic hierarchy process' in Vol. 1, No. 1 of the *International Journal of Services Sciences*. It's what first opened my eyes to the broad usefulness of the AHP (as well as the wisdom of crowds!). If you're unfamiliar with the example, 30 participants were asked to compare the relative consumption of drinks in the United States. For instance, they believed that coffee was consumed *much* more than wine, but at the same rate as milk. The matrix derived from their answers was as follows:
 
 ||Coffee|Wine|Tea|Beer|Soda|Milk|Water|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |Coffee|1|9|5|2|1|1|1/2|
 |Wine|1/9|1|1/3|1/9|1/9|1/9|1/9|
-|Tea|1/5|2|1|1/3|1/4|1/3|1/9|
+|Tea|1/5|3|1|1/3|1/4|1/3|1/9|
 |Beer|1/2|9|3|1|1/2|1|1/3|
 |Soda|1|9|4|2|1|2|1/2|
 |Milk|1|9|3|1|1/2|1|1/3|
