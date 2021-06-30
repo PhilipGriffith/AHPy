@@ -935,3 +935,16 @@ We'll first compute the target weights and consistency ratio for the complete ma
 ### A Note on Weights
 
 In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than 1.0001, it's recommended to simply divide the weights by their cumulative sum.
+
+
+# Developing and testing
+
+To set up a development environment and run the tests:
+
+```
+virtualenv .venv
+source .venv/bin/activate
+python setup.py develop
+pip install pytest
+pytest
+```

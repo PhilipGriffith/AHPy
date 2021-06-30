@@ -120,7 +120,7 @@ u = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
 
 def test_incomplete_example_missing_comparisons():
     cu = ahpy.Compare('Incomplete Example', u)
-    assert cu._missing_comparisons == {('c', 'd'): 0.730297106886979}
+    assert cu._missing_comparisons == pytest.approx({('c', 'd'): 0.730297106886979})
 
 
 def test_incomplete_example_weights():
@@ -141,12 +141,13 @@ def test_incomplete_housing_missing_comparisons():
          ('g', 'a'): 3, ('g', 'e'): 5,
          ('h', 'a'): 4, ('h', 'b'): 7, ('h', 'd'): 8, ('h', 'f'): 6}
     cm = ahpy.Compare('Incomplete Housing', m)
-    assert cm._missing_comparisons == {('b', 'c'): 0.3300187496240363, ('b', 'e'): 1.7197409185349517,
-                                       ('b', 'g'): 0.4663515002203321, ('c', 'd'): 9.920512661898753,
-                                       ('c', 'f'): 4.852486449214693, ('c', 'h'): 0.5696073301509899,
-                                       ('d', 'e'): 0.5252768142894285, ('d', 'g'): 0.1424438146531802,
-                                       ('e', 'f'): 0.9311973564754218, ('e', 'h'): 0.10930828182051665,
-                                       ('f', 'g'): 0.2912120796181874, ('g', 'h'): 0.4030898885178746}
+    assert (cm._missing_comparisons ==
+            pytest.approx({('b', 'c'): 0.3300187496240363, ('b', 'e'): 1.7197409185349517,
+                           ('b', 'g'): 0.4663515002203321, ('c', 'd'): 9.920512661898753,
+                           ('c', 'f'): 4.852486449214693, ('c', 'h'): 0.5696073301509899,
+                           ('d', 'e'): 0.5252768142894285, ('d', 'g'): 0.1424438146531802,
+                           ('e', 'f'): 0.9311973564754218, ('e', 'h'): 0.10930828182051665,
+                           ('f', 'g'): 0.2912120796181874, ('g', 'h'): 0.4030898885178746}))
 
 
 # Example from Haas, R. and Meixner, L., 'An Illustrated Guide to the Analytic Hierarchy Process,'
