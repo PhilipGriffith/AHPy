@@ -38,6 +38,8 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [A Note on Weights](#a-note-on-weights)
 
+[Development and Testing](#development-and-testing)
+
 ---
 
 ## Examples
@@ -936,10 +938,9 @@ We'll first compute the target weights and consistency ratio for the complete ma
 
 In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than 1.0001, it's recommended to simply divide the weights by their cumulative sum.
 
+## Development and Testing
 
-# Developing and testing
-
-To set up a development environment and run the tests:
+To set up a development environment and run the tests, use the following commands:
 
 ```
 virtualenv .venv
