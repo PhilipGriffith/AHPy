@@ -57,7 +57,7 @@ def test_ahp_data():
                  'Criteria': ['Cost', 'Safety', 'Style', 'Capacity']}
 
     # run through the hierarchy to get target_weights from comparisons
-    results = ahp_data.run_compare('Criteria', hierarchy)
+    results = ahp_data.run_compare('Criteria', hierarchy, precision=3)
 
     assert results.target_weights == (
         {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167,
@@ -85,7 +85,7 @@ def test_empty_hierarchy():
     # run through the hierarchy to get target_weights from comparisons
     results = ahp_data.run_compare('Criteria', hierarchy)
 
-    direct_results = ahpy.Compare('Criteria', comparison_data, precision=3)
+    direct_results = ahpy.Compare('Criteria', comparison_data)
     assert results.target_weights == direct_results.target_weights
 
     # Less than 100 ms to run.

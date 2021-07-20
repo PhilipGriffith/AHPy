@@ -16,7 +16,7 @@ class AhpData:
                 f'{pair} not in {dimension}')
             self.comparisons[dimension][pair] = intensity
 
-    def run_compare(self, node, hierarchy, precision=3):
+    def run_compare(self, node, hierarchy, precision=4):
         """Run Compare for the given hierarchy with 'node' as the root.
 
         :param node is the name of a node in the hierarchy
