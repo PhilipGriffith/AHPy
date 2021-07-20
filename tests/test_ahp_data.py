@@ -65,3 +65,28 @@ def test_ahp_data():
 
     # Less than 100 ms to run.
     assert (time.time() - t1) < 0.1
+
+
+def test_empty_hierarchy():
+    t1 = time.time()
+
+    ahp_data = ahpy.AhpData()
+    comparison_data = {
+        ('Cost', 'Safety'): 3, ('Cost', 'Style'): 7,
+        ('Cost', 'Capacity'): 3,
+        ('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
+        ('Style', 'Capacity'): 1/7,
+    }
+    ahp_data.add_comparisons('Criteria', comparison_data)
+
+    # An empty hierarchy
+    hierarchy = {'Criteria': []}
+
+    # run through the hierarchy to get target_weights from comparisons
+    results = ahp_data.run_compare('Criteria', hierarchy)
+
+    direct_results = ahpy.Compare('Criteria', comparison_data, precision=3)
+    assert results.target_weights == direct_results.target_weights
+
+    # Less than 100 ms to run.
+    assert (time.time() - t1) < 0.1

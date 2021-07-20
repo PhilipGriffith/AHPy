@@ -25,7 +25,9 @@ class AhpData:
         """
         node_comps = self.comparisons[node]
         results = ahpy.Compare(node, node_comps, precision)
-        if node in hierarchy:
+        if (node in hierarchy
+                # tolerate empty sub-criteria list
+                and hierarchy[node]):
             # this is not a leaf, get child results first
             child_results = []
             for child in hierarchy[node]:
