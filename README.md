@@ -48,7 +48,7 @@ The easiest way to learn how to use AHPy is to *see* it used, so this README beg
 
 ### Relative consumption of drinks in the United States
 
-This example is often used in Saaty's expositions of the AHP as a brief but clear demonstration of the method; the version I'm using is from Saaty's 2008 'Decision making with the analytic hierarchy process' in Vol. 1, No. 1 of the *International Journal of Services Sciences*. It's what first opened my eyes to the broad usefulness of the AHP (as well as the wisdom of crowds!). If you're unfamiliar with the example, 30 participants were asked to compare the relative consumption of drinks in the United States. For instance, they believed that coffee was consumed *much* more than wine, but at the same rate as milk. The matrix derived from their answers was as follows:
+This example is often used in Saaty's expositions of the AHP as a brief but clear demonstration of the method; it's what first opened my eyes to the broad usefulness of the AHP (as well as the wisdom of crowds!). The version I'm using here is from his 2008 article '[Decision making with the analytic hierarchy process](https://doi.org/10.1504/IJSSCI.2008.017590)'. If you're unfamiliar with the example, 30 participants were asked to compare the relative consumption of drinks in the United States. For instance, they believed that coffee was consumed *much* more than wine, but at the same rate as milk. The matrix derived from their answers was as follows:
 
 ||Coffee|Wine|Tea|Beer|Soda|Milk|Water|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
@@ -413,7 +413,6 @@ Now that the hierarchy represents the decision problem, we can print the target 
 ```python
 >>> print(criteria.target_weights)
 {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
-
 ```
 
 For standardized, detailed information about any of the Compare objects in the hierarchy, we can call `report()`. Because the Criteria object now has children, we see that both its `children` entry and its target weights have been updated to reflect the change:
@@ -784,7 +783,7 @@ Keep reading to learn the details of the AHPy library's API.
 
 ### The Compare Class
 
-The Compare class computes the target weights and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any [missing pairwise comparisons](#missing-pairwise-comparisons). Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: global problem elements are then derived by synthesizing all levels of the hierarchy.
+The Compare class computes the weights and consistency ratio of a positive reciprocal matrix, created using an input dictionary of pairwise comparison values. Optimal values are computed for any [missing pairwise comparisons](#missing-pairwise-comparisons). Compare objects can also be [linked together to form a hierarchy](#compareadd_children) representing the decision problem: the target weights of the problem elements are then derived by synthesizing all levels of the hierarchy.
 
 `Compare(name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
@@ -854,7 +853,7 @@ Compare objects can be linked together to form a hierarchy representing the deci
 >>> parent.add_children([child1, child2])
 ```
 
-The precision of the target weights is updated as the hierarchy is constructed. Each time `add_children()` is called, the precision of the target weights is set to equal that of the Compare object with the lowest precision in the hierarchy. Because lower precision propagates up through the hierarchy, *the target weights will always have the same level of precision as the hierachy's least precise Compare object*. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
+The precision of the target weights is updated as the hierarchy is constructed. Each time `add_children()` is called, the precision of the target weights is set to equal that of the Compare object with the lowest precision in the hierarchy. Because lower precision propagates up through the hierarchy, *the target weights will always have the same level of precision as the hierarchy's least precise Compare object*. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
 
 ### Compare.report()
 
@@ -897,6 +896,25 @@ The keys of the report take the following form:
 - `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, the value will be `None`
   - `{('c', 'd'): 0.730297106886979}, ...}`
 
+### A Note on Weights
+
+Compare objects compute up to three kinds of weights: local weights, global weights and target weights.
+
+- **Local** weights display the computed rankings of a Compare object's elements **independent of** that object's location in a hierarchy
+  - For this reason, the local weights of a Compare object will always (approximately) sum to 1.0
+
+- **Global** weights display the computed rankings of a Compare object's elements **dependent on** that object's location in a hierarchy
+  - Global weights are derived by multiplying the local weights of the Compare object by that object's *own* global weight in the hierarchy
+	- If the Compare object does not have a parent, its global weight will equal 1.0
+	- If the Compare object does have a parent, its global weight will equal its own local weight as computed by its parent, multiplied by *that* parent's global weight
+
+- **Target** weights display the synthesized rankings of the problem elements described in the *lowest level* of a hierarchy
+  - Target weights are only computed by the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
+
+A Compare object that does not have a parent will have identical local and global weights; a Compare object that has neither a parent nor children will have identical local, global and target weights.
+
+In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than, say, 1.0001, it's recommended to simply divide the weights by their cumulative sum: `x = x / np.sum(x)`. Note, however, that the resulting values will contain a false level of precision, given their inputs.
+
 ### Missing Pairwise Comparisons
 
 When a Compare object is initialized, the elements forming the keys of the input `comparisons` dictionary are permuted. Permutations of elements that do not contain a value within the input `comparisons` dictionary are then optimally solved for using the cyclic coordinates algorithm described in:
@@ -934,13 +952,9 @@ We'll first compute the target weights and consistency ratio for the complete ma
 0.0372
 ```
 
-### A Note on Weights
-
-In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than 1.0001, it's recommended to simply divide the weights by their cumulative sum.
-
 ## Development and Testing
 
-To set up a development environment and run the tests, use the following commands:
+To set up a development environment and run the included tests, use the following commands:
 
 ```
 virtualenv .venv
