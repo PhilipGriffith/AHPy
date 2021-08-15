@@ -912,7 +912,7 @@ Compare objects also compute their own global weight, given their parent.
 
 A Compare object that does not have a parent will have identical local and global weights; a Compare object that has neither a parent nor children will have identical local, global and target weights.
 
-In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than, say, 1.0001, it's recommended to simply divide the weights by their cumulative sum: `x = x / np.sum(x)`. Note, however, that the resulting values will contain a false level of precision, given their inputs.
+In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, rather than 1.0001, it's recommended to simply divide the weights by their cumulative sum: `x = x / np.sum(x)`. Note, however, that the resulting values will contain a false level of precision, given their inputs.
 
 ### Missing Pairwise Comparisons
 
