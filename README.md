@@ -898,17 +898,16 @@ The keys of the report take the following form:
 
 ### A Note on Weights
 
-Compare objects compute up to three kinds of weights: local weights, global weights and target weights.
+Compare objects compute up to three kinds of weights for their elements: local weights, global weights and target weights.
+Compare objects also compute their own global weight, given their parent.
 
-- **Local** weights display the computed rankings of a Compare object's elements **independent of** that object's location in a hierarchy
-  - For this reason, the local weights of a Compare object will always (approximately) sum to 1.0
+- **Local** weights display the computed weights of a Compare object's elements **independent of** that object's global weight within a hierarchy
+  - For this reason, the local weights of the elements within a Compare object will always (approximately) sum to 1.0
 
-- **Global** weights display the computed rankings of a Compare object's elements **dependent on** that object's location in a hierarchy
-  - Global weights are derived by multiplying the local weights of the Compare object by that object's *own* global weight in the hierarchy
-	- If the Compare object does not have a parent, its global weight will equal 1.0
-	- If the Compare object does have a parent, its global weight will equal its own local weight as computed by its parent, multiplied by *that* parent's global weight
+- **Global** weights display the computed weights of a Compare object's elements **dependent on** that object's global weight within a hierarchy
+  - Global weights are derived by multiplying the local weights of the elements within a Compare object by that object's *own* global weight in the hierarchy
 
-- **Target** weights display the synthesized rankings of the problem elements described in the *lowest level* of a hierarchy
+- **Target** weights display the synthesized weights of the problem elements described in the *lowest level* of a hierarchy
   - Target weights are only computed by the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
 
 A Compare object that does not have a parent will have identical local and global weights; a Compare object that has neither a parent nor children will have identical local, global and target weights.
