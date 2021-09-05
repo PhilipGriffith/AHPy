@@ -7,6 +7,8 @@ import warnings
 import numpy as np
 import scipy.optimize as spo
 
+import ahpy
+
 
 class Compare:
     """
@@ -455,3 +457,36 @@ class Compare:
                 json_report['comparisons']['computed'] = convert_to_json_format(self._missing_comparisons)
             print(json.dumps(json_report, indent=4))
         return report
+
+
+class Compose:
+    '''
+    '''
+
+    def __init__(self):
+        self.nodes = []
+        self.hierarchy = None
+
+    def _get_node(self, name):
+        for node in self.nodes:
+            if node.name == name:
+                return node
+
+    def add_comparisons(self, name, comparisons=None, precision=4, random_index='dd',
+                        iterations=100, tolerance=0.0001, cr=True):
+        if isinstance(name, ahpy.Compare):
+            self.nodes.append(name)
+        elif isinstance(name, list):
+            self.nodes.extend([i for i in name if isinstance(i, ahpy.Compare)])
+        else:
+            self.nodes.append(ahpy.Compare(name, comparisons, precision, random_index, iterations, tolerance, cr))
+
+    def add_hierarchy(self, hierarchy):
+        self.hierarchy = hierarchy
+        for name in self.hierarchy.keys():
+            children = [self._get_node(child_name) for child_name in self.hierarchy[name]]
+            self._get_node(name).add_children(children)
+
+    def report(self, name=None, show=False):
+        if name:
+            self._get_node(name).report(show)
