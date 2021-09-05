@@ -446,7 +446,7 @@ class Compare:
                       'count': len(self.comparisons) + len(self._missing_comparisons),
                       'input': self.comparisons,
                       'computed': self._missing_comparisons if self._missing_comparisons else None
-                  }
+                    }
                   }
 
         if show:
@@ -472,14 +472,18 @@ class Compose:
             if node.name == name:
                 return node
 
-    def add_comparisons(self, name, comparisons=None, precision=4, random_index='dd',
-                        iterations=100, tolerance=0.0001, cr=True):
-        if isinstance(name, ahpy.Compare):
-            self.nodes.append(name)
-        elif isinstance(name, list):
-            self.nodes.extend([i for i in name if isinstance(i, ahpy.Compare)])
-        else:
-            self.nodes.append(ahpy.Compare(name, comparisons, precision, random_index, iterations, tolerance, cr))
+    def add_comparisons(self, item,
+                        comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
+        if isinstance(item, ahpy.Compare):
+            self.nodes.append(item)
+        elif isinstance(item, (list, tuple)):
+            for i in item:
+                if isinstance(i, ahpy.Compare):
+                    self.nodes.append(i)
+                else:
+                    self.nodes.append(ahpy.Compare(*i))
+        else:  # item is a Compare object name
+            self.nodes.append(ahpy.Compare(item, comparisons, precision, random_index, iterations, tolerance, cr))
 
     def add_hierarchy(self, hierarchy):
         self.hierarchy = hierarchy
@@ -490,3 +494,6 @@ class Compose:
     def report(self, name=None, show=False):
         if name:
             self._get_node(name).report(show)
+
+
+# TODO Create report for entire structure

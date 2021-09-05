@@ -152,25 +152,24 @@ criteria.add_children([cost, safety, style, capacity])
 cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
 capacity.add_children([capacity_pass, capacity_cargo])
 
-# criteria.report(True)
+criteria.report(True)
 # cost.report(True)
-safety.report(True)
+# safety.report(True)
 
 a = ahpy.Compose()
 a.add_comparisons('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
 a.add_comparisons([cost, capacity])
 a.add_comparisons('Passenger', m(pairs, capacity_pass_m), 3)
 a.add_comparisons(capacity_cargo)
-a.add_comparisons('Price', m(pairs, cost_price_m), 3)
-a.add_comparisons('Fuel', m(pairs, cost_fuel_m), 3)
-a.add_comparisons('Resale', m(pairs, cost_resale_m), 3)
-a.add_comparisons('Maintenance', m(pairs, cost_maint_m), 3)
-a.add_comparisons([safety, style])
+a.add_comparisons([('Price', m(pairs, cost_price_m), 3), ('Fuel', m(pairs, cost_fuel_m), 3)])
+a.add_comparisons([['Resale', m(pairs, cost_resale_m), 3], ['Maintenance', m(pairs, cost_maint_m), 3, 'saaty']])
+a.add_comparisons((safety, style))
 h = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
      'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
      'Capacity': ['Passenger', 'Cargo']}
 a.add_hierarchy(h)
-a.report('Safety', True)
+a.report('Resale', True)
+a.report('Maintenance', True)
 
 # ----------------------------------------------------------------------------------
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
