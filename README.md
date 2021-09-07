@@ -175,13 +175,13 @@ Calling `report()` on a Compare object provides a standard way to learn detailed
     "name": "Criteria",
     "weight": 1.0,
     "weights": {
-        "local": {
+        "global": {
             "Experience": 0.548,
             "Charisma": 0.27,
             "Education": 0.127,
             "Age": 0.056
         },
-        "global": {
+        "local": {
             "Experience": 0.548,
             "Charisma": 0.27,
             "Education": 0.127,
@@ -263,13 +263,13 @@ If we create a Compare object for the criteria, we can view its report:
     "name": "Criteria",
     "weight": 1.0,
     "weights": {
-        "local": {
+        "global": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
             "Style": 0.041
         },
-        "global": {
+        "local": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
@@ -423,13 +423,13 @@ For standardized, detailed information about any of the Compare objects in the h
     "name": "Criteria",
     "weight": 1.0,
     "weights": {
-        "local": {
+        "global": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
             "Style": 0.041
         },
-        "global": {
+        "local": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
@@ -499,17 +499,17 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
     "name": "Cost",
     "weight": 0.51,
     "weights": {
-        "local": {
-            "Price": 0.488,
-            "Fuel": 0.252,
-            "Resale": 0.161,
-            "Maintenance": 0.1
-        },
         "global": {
             "Price": 0.249,
             "Fuel": 0.129,
             "Resale": 0.082,
             "Maintenance": 0.051
+        },
+        "local": {
+            "Price": 0.488,
+            "Fuel": 0.252,
+            "Resale": 0.161,
+            "Maintenance": 0.1
         },
         "target": null
     },
@@ -564,14 +564,6 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
     "name": "Price",
     "weight": 0.249,
     "weights": {
-        "local": {
-            "Element": 0.366,
-            "Accord Sedan": 0.246,
-            "CR-V": 0.246,
-            "Odyssey": 0.093,
-            "Accord Hybrid": 0.025,
-            "Pilot": 0.025
-        },
         "global": {
             "Element": 0.091,
             "Accord Sedan": 0.061,
@@ -579,6 +571,14 @@ Calling `report()` on Compare objects at lower levels of the hierarchy will prov
             "Odyssey": 0.023,
             "Accord Hybrid": 0.006,
             "Pilot": 0.006
+        },
+        "local": {
+            "Element": 0.366,
+            "Accord Sedan": 0.246,
+            "CR-V": 0.246,
+            "Odyssey": 0.093,
+            "Accord Hybrid": 0.025,
+            "Pilot": 0.025
         },
         "target": null
     },
@@ -709,13 +709,13 @@ Viewing the results of the analysis, we can see that normalizing the numeric cri
     "name": "Criteria",
     "weight": 1.0,
     "weights": {
-        "local": {
+        "global": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
             "Style": 0.041
         },
-        "global": {
+        "local": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
@@ -826,11 +826,11 @@ The properties used to initialize the Compare class are intended to be accessed 
 
 `Compare.consistency_ratio`: *float*, the consistency ratio of the Compare object
 
-`Compare.local_weights`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
-- `{'a': 0.5, 'b': 0.5}`
-
 `Compare.global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
 - `{'a': 0.25, 'b': 0.25}`
+
+`Compare.local_weights`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
+- `{'a': 0.5, 'b': 0.5}`
 
 `Compare.target_weights`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, the value will be `None`*
 - `{'a': 0.5, 'b': 0.5}`
@@ -871,10 +871,10 @@ The keys of the report take the following form:
 `weight`: *float*, the global weight of the Compare object within the hierarchy
 
 `weights`: *dict*, the weights of the Compare object's elements
-- `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
-  - `{'a': 0.5, 'b': 0.5}`
 - `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
   - `{'a': 0.25, 'b': 0.25}`
+- `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
+  - `{'a': 0.5, 'b': 0.5}`
 - `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, the value will be `None`*
   - `{'a': 0.5, 'b': 0.5}`
   
@@ -898,19 +898,19 @@ The keys of the report take the following form:
 
 ### A Note on Weights
 
-Compare objects compute up to three kinds of weights for their elements: local weights, global weights and target weights.
+Compare objects compute up to three kinds of weights for their elements: global weights, local weights and target weights.
 Compare objects also compute their own global weight, given their parent.
-
-- **Local** weights display the computed weights of a Compare object's elements **independent of** that object's global weight within a hierarchy
-  - For this reason, the local weights of the elements within a Compare object will always (approximately) sum to 1.0
 
 - **Global** weights display the computed weights of a Compare object's elements **dependent on** that object's global weight within a hierarchy
   - Global weights are derived by multiplying the local weights of the elements within a Compare object by that object's *own* global weight in the hierarchy
 
+- **Local** weights display the computed weights of a Compare object's elements **independent of** that object's global weight within a hierarchy
+  - For this reason, the local weights of the elements within a Compare object will always (approximately) sum to 1.0
+
 - **Target** weights display the synthesized weights of the problem elements described in the *lowest level* of a hierarchy
   - Target weights are only computed by the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
 
-A Compare object that does not have a parent will have identical local and global weights; a Compare object that has neither a parent nor children will have identical local, global and target weights.
+A Compare object that does not have a parent will have identical global and local weights; a Compare object that has neither a parent nor children will have identical global, local and target weights.
 
 In many instances, the sum of the local or target weights of a Compare object will not equal 1.0 *exactly*. This is due to rounding. If it's critical that the sum of the weights equals 1.0, it's recommended to simply divide the weights by their cumulative sum: `x = x / np.sum(x)`. Note, however, that the resulting values will contain a false level of precision, given their inputs.
 

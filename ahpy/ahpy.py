@@ -401,6 +401,32 @@ class Compare:
         for key in self.global_weights:
             self.global_weights[key] = np.round(self.weight * self.local_weights[key], self.precision)
 
+    def _climb_to_top(self, hierarchy):
+        if self.weight != 1.0:
+            self._node_parent._climb_to_top(hierarchy)
+        else:
+            self._build_report(hierarchy)
+
+    def _build_report(self, hierarchy):
+        if self.weight == 1.0:
+            hierarchy[self.name] = {'global_weight': self.weight, 'local_weight': self.weight,
+                                    'target_weights': self.target_weights}
+        else:
+            hierarchy[self.name] = {'global_weight': self.weight,
+                                    'local_weight': self._node_parent.local_weights[self.name]}
+
+        hierarchy[self.name].update(
+            {'elements': {'global_weights': self.global_weights, 'local_weights': self.local_weights,
+                          'consistency_ratio': self.consistency_ratio}})
+        if self._node_children:
+            for child in self._node_children:
+                child._build_report(hierarchy)
+
+    def report2(self, name=None):
+        hierarchy = {}
+        self._climb_to_top(hierarchy)
+        return {name: hierarchy[name]} if name else hierarchy
+
     def report(self, show=False):
         """
         Returns the key information of the Compare object as a dictionary, optionally prints to the console.
@@ -428,8 +454,8 @@ class Compare:
         report = {'name': self.name,
                   'weight': self.weight,
                   'weights': {
-                      'local': self.local_weights,
                       'global': self.global_weights,
+                      'local': self.local_weights,
                       'target': self._node_weights if self.weight == 1.0 else None
                   },
                   'consistency_ratio': self.consistency_ratio,
@@ -446,7 +472,7 @@ class Compare:
                       'count': len(self.comparisons) + len(self._missing_comparisons),
                       'input': self.comparisons,
                       'computed': self._missing_comparisons if self._missing_comparisons else None
-                    }
+                  }
                   }
 
         if show:
@@ -495,5 +521,4 @@ class Compose:
         if name:
             self._get_node(name).report(show)
 
-
-# TODO Create report for entire structure
+# TODO Make the new report default, extended report set as 'verbose'
