@@ -172,70 +172,29 @@ Calling `report()` on a Compare object provides a standard way to learn detailed
 ```python
 >>> report = criteria.report(show=True)
 {
-    "name": "Criteria",
-    "weight": 1.0,
-    "weights": {
-        "global": {
-            "Experience": 0.548,
-            "Charisma": 0.27,
-            "Education": 0.127,
-            "Age": 0.056
-        },
-        "local": {
-            "Experience": 0.548,
-            "Charisma": 0.27,
-            "Education": 0.127,
-            "Age": 0.056
-        },
-        "target": {
+    "Criteria": {
+        "global_weight": 1.0,
+        "local_weight": 1.0,
+        "target_weights": {
             "Nell": 0.493,
             "Moll": 0.358,
             "Sue": 0.15
+        },
+        "elements": {
+            "global_weights": {
+                "Experience": 0.548,
+                "Charisma": 0.27,
+                "Education": 0.127,
+                "Age": 0.056
+            },
+            "local_weights": {
+                "Experience": 0.548,
+                "Charisma": 0.27,
+                "Education": 0.127,
+                "Age": 0.056
+            },
+            "consistency_ratio": 0.044
         }
-    },
-    "consistency_ratio": 0.044,
-    "random_index": "Saaty",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Experience",
-            "Education",
-            "Charisma",
-            "Age"
-        ]
-    },
-    "children": {
-        "count": 4,
-        "names": [
-            "Experience",
-            "Education",
-            "Charisma",
-            "Age"
-        ]
-    },
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Experience, Education": 4
-            },
-            {
-                "Experience, Charisma": 3
-            },
-            {
-                "Experience, Age": 7
-            },
-            {
-                "Education, Charisma": 0.3333333333333333
-            },
-            {
-                "Education, Age": 3
-            },
-            {
-                "Charisma, Age": 5
-            }
-        ],
-        "computed": null
     }
 }
 ```
@@ -260,63 +219,30 @@ If we create a Compare object for the criteria, we can view its report:
 >>> criteria = ahpy.Compare('Criteria', criteria_comparisons, precision=3)
 >>> report = criteria.report(show=True)
 {
-    "name": "Criteria",
-    "weight": 1.0,
-    "weights": {
-        "global": {
+    "Criteria": {
+        "global_weight": 1.0,
+        "local_weight": 1.0,
+        "target_weights": {
             "Cost": 0.51,
             "Safety": 0.234,
             "Capacity": 0.215,
             "Style": 0.041
         },
-        "local": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "target": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
+        "elements": {
+            "global_weights": {
+                "Cost": 0.51,
+                "Safety": 0.234,
+                "Capacity": 0.215,
+                "Style": 0.041
+            },
+            "local_weights": {
+                "Cost": 0.51,
+                "Safety": 0.234,
+                "Capacity": 0.215,
+                "Style": 0.041
+            },
+            "consistency_ratio": 0.08
         }
-    },
-    "consistency_ratio": 0.08,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "children": null,
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Cost, Safety": 3
-            },
-            {
-                "Cost, Style": 7
-            },
-            {
-                "Cost, Capacity": 3
-            },
-            {
-                "Safety, Style": 9
-            },
-            {
-                "Safety, Capacity": 1
-            },
-            {
-                "Style, Capacity": 0.14285714285714285
-            }
-        ],
-        "computed": null
     }
 }
 ```
@@ -415,237 +341,237 @@ Now that the hierarchy represents the decision problem, we can print the target 
 {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
 ```
 
-For standardized, detailed information about any of the Compare objects in the hierarchy, we can call `report()`. Because the Criteria object now has children, we see that both its `children` entry and its target weights have been updated to reflect the change:
+For detailed information about any of the Compare objects in the hierarchy, we can call that object's `report(show=True, verbose=True)`:
 
 ```python
->>> report = criteria.report(show=True)
+>>> report = criteria.report(show=True, verbose=True)
 {
-    "name": "Criteria",
-    "weight": 1.0,
-    "weights": {
-        "global": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "local": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "target": {
+    "Criteria": {
+        "global_weight": 1.0,
+        "local_weight": 1.0,
+        "target_weights": {
             "Odyssey": 0.219,
             "Accord Sedan": 0.215,
             "CR-V": 0.167,
             "Accord Hybrid": 0.15,
             "Element": 0.144,
             "Pilot": 0.106
+        },
+        "elements": {
+            "global_weights": {
+                "Cost": 0.51,
+                "Safety": 0.234,
+                "Capacity": 0.215,
+                "Style": 0.041
+            },
+            "local_weights": {
+                "Cost": 0.51,
+                "Safety": 0.234,
+                "Capacity": 0.215,
+                "Style": 0.041
+            },
+            "consistency_ratio": 0.08,
+            "random_index": "Donegan & Dodd",
+            "count": 4,
+            "names": [
+                "Cost",
+                "Safety",
+                "Style",
+                "Capacity"
+            ]
+        },
+        "children": {
+            "count": 4,
+            "names": [
+                "Cost",
+                "Safety",
+                "Style",
+                "Capacity"
+            ]
+        },
+        "comparisons": {
+            "count": 6,
+            "input": [
+                {
+                    "Cost, Safety": 3
+                },
+                {
+                    "Cost, Style": 7
+                },
+                {
+                    "Cost, Capacity": 3
+                },
+                {
+                    "Safety, Style": 9
+                },
+                {
+                    "Safety, Capacity": 1
+                },
+                {
+                    "Style, Capacity": 0.14285714285714285
+                }
+            ],
+            "computed": null
         }
-    },
-    "consistency_ratio": 0.08,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "children": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Cost, Safety": 3
-            },
-            {
-                "Cost, Style": 7
-            },
-            {
-                "Cost, Capacity": 3
-            },
-            {
-                "Safety, Style": 9
-            },
-            {
-                "Safety, Capacity": 1
-            },
-            {
-                "Style, Capacity": 0.14285714285714285
-            }
-        ],
-        "computed": null
     }
 }
 ```
 
-Calling `report()` on Compare objects at lower levels of the hierarchy will provide different information, depending on the level they're in:
+Calling `report(verbose=True)` on Compare objects at lower levels of the hierarchy will provide different information, depending on the level they're in:
 
 ```python
->>> report = cost.report(show=True)
+>>> report = cost.report(show=True, verbose=True)
 {
-    "name": "Cost",
-    "weight": 0.51,
-    "weights": {
-        "global": {
-            "Price": 0.249,
-            "Fuel": 0.129,
-            "Resale": 0.082,
-            "Maintenance": 0.051
+    "Cost": {
+        "global_weight": 0.51,
+        "local_weight": 0.51,
+        "target_weights": null,
+        "elements": {
+            "global_weights": {
+                "Price": 0.249,
+                "Fuel": 0.129,
+                "Resale": 0.082,
+                "Maintenance": 0.051
+            },
+            "local_weights": {
+                "Price": 0.488,
+                "Fuel": 0.252,
+                "Resale": 0.161,
+                "Maintenance": 0.1
+            },
+            "consistency_ratio": 0.016,
+            "random_index": "Donegan & Dodd",
+            "count": 4,
+            "names": [
+                "Price",
+                "Fuel",
+                "Maintenance",
+                "Resale"
+            ]
         },
-        "local": {
-            "Price": 0.488,
-            "Fuel": 0.252,
-            "Resale": 0.161,
-            "Maintenance": 0.1
+        "children": {
+            "count": 4,
+            "names": [
+                "Price",
+                "Fuel",
+                "Resale",
+                "Maintenance"
+            ]
         },
-        "target": null
-    },
-    "consistency_ratio": 0.016,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Price",
-            "Fuel",
-            "Maintenance",
-            "Resale"
-        ]
-    },
-    "children": {
-        "count": 4,
-        "names": [
-            "Price",
-            "Fuel",
-            "Resale",
-            "Maintenance"
-        ]
-    },
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Price, Fuel": 2
-            },
-            {
-                "Price, Maintenance": 5
-            },
-            {
-                "Price, Resale": 3
-            },
-            {
-                "Fuel, Maintenance": 2
-            },
-            {
-                "Fuel, Resale": 2
-            },
-            {
-                "Maintenance, Resale": 0.5
-            }
-        ],
-        "computed": null
+        "comparisons": {
+            "count": 6,
+            "input": [
+                {
+                    "Price, Fuel": 2
+                },
+                {
+                    "Price, Maintenance": 5
+                },
+                {
+                    "Price, Resale": 3
+                },
+                {
+                    "Fuel, Maintenance": 2
+                },
+                {
+                    "Fuel, Resale": 2
+                },
+                {
+                    "Maintenance, Resale": 0.5
+                }
+            ],
+            "computed": null
+        }
     }
 }
 
->>> report = price.report(show=True)
+>>> report = price.report(show=True, verbose=True)
 {
-    "name": "Price",
-    "weight": 0.249,
-    "weights": {
-        "global": {
-            "Element": 0.091,
-            "Accord Sedan": 0.061,
-            "CR-V": 0.061,
-            "Odyssey": 0.023,
-            "Accord Hybrid": 0.006,
-            "Pilot": 0.006
+    "Price": {
+        "global_weight": 0.249,
+        "local_weight": 0.488,
+        "target_weights": null,
+        "elements": {
+            "global_weights": {
+                "Element": 0.091,
+                "Accord Sedan": 0.061,
+                "CR-V": 0.061,
+                "Odyssey": 0.023,
+                "Accord Hybrid": 0.006,
+                "Pilot": 0.006
+            },
+            "local_weights": {
+                "Element": 0.366,
+                "Accord Sedan": 0.246,
+                "CR-V": 0.246,
+                "Odyssey": 0.093,
+                "Accord Hybrid": 0.025,
+                "Pilot": 0.025
+            },
+            "consistency_ratio": 0.072,
+            "random_index": "Donegan & Dodd",
+            "count": 6,
+            "names": [
+                "Accord Sedan",
+                "Accord Hybrid",
+                "Pilot",
+                "CR-V",
+                "Element",
+                "Odyssey"
+            ]
         },
-        "local": {
-            "Element": 0.366,
-            "Accord Sedan": 0.246,
-            "CR-V": 0.246,
-            "Odyssey": 0.093,
-            "Accord Hybrid": 0.025,
-            "Pilot": 0.025
-        },
-        "target": null
-    },
-    "consistency_ratio": 0.072,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 6,
-        "names": [
-            "Accord Sedan",
-            "Accord Hybrid",
-            "Pilot",
-            "CR-V",
-            "Element",
-            "Odyssey"
-        ]
-    },
-    "children": null,
-    "comparisons": {
-        "count": 15,
-        "input": [
-            {
-                "Accord Sedan, Accord Hybrid": 9
-            },
-            {
-                "Accord Sedan, Pilot": 9
-            },
-            {
-                "Accord Sedan, CR-V": 1
-            },
-            {
-                "Accord Sedan, Element": 0.5
-            },
-            {
-                "Accord Sedan, Odyssey": 5
-            },
-            {
-                "Accord Hybrid, Pilot": 1
-            },
-            {
-                "Accord Hybrid, CR-V": 0.1111111111111111
-            },
-            {
-                "Accord Hybrid, Element": 0.1111111111111111
-            },
-            {
-                "Accord Hybrid, Odyssey": 0.14285714285714285
-            },
-            {
-                "Pilot, CR-V": 0.1111111111111111
-            },
-            {
-                "Pilot, Element": 0.1111111111111111
-            },
-            {
-                "Pilot, Odyssey": 0.14285714285714285
-            },
-            {
-                "CR-V, Element": 0.5
-            },
-            {
-                "CR-V, Odyssey": 5
-            },
-            {
-                "Element, Odyssey": 6
-            }
-        ],
-        "computed": null
+        "children": null,
+        "comparisons": {
+            "count": 15,
+            "input": [
+                {
+                    "Accord Sedan, Accord Hybrid": 9
+                },
+                {
+                    "Accord Sedan, Pilot": 9
+                },
+                {
+                    "Accord Sedan, CR-V": 1
+                },
+                {
+                    "Accord Sedan, Element": 0.5
+                },
+                {
+                    "Accord Sedan, Odyssey": 5
+                },
+                {
+                    "Accord Hybrid, Pilot": 1
+                },
+                {
+                    "Accord Hybrid, CR-V": 0.1111111111111111
+                },
+                {
+                    "Accord Hybrid, Element": 0.1111111111111111
+                },
+                {
+                    "Accord Hybrid, Odyssey": 0.14285714285714285
+                },
+                {
+                    "Pilot, CR-V": 0.1111111111111111
+                },
+                {
+                    "Pilot, Element": 0.1111111111111111
+                },
+                {
+                    "Pilot, Odyssey": 0.14285714285714285
+                },
+                {
+                    "CR-V, Element": 0.5
+                },
+                {
+                    "CR-V, Odyssey": 5
+                },
+                {
+                    "Element, Odyssey": 6
+                }
+            ],
+            "computed": null
+        }
     }
 }
 ```
@@ -706,73 +632,32 @@ Viewing the results of the analysis, we can see that normalizing the numeric cri
 ```python
 >>> report = criteria.report(show=True)
 {
-    "name": "Criteria",
-    "weight": 1.0,
-    "weights": {
-        "global": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "local": {
-            "Cost": 0.51,
-            "Safety": 0.234,
-            "Capacity": 0.215,
-            "Style": 0.041
-        },
-        "target": {
+    "Criteria": {
+        "global_weight": 1.0,
+        "local_weight": 1.0,
+        "target_weights": {
             "Odyssey": 0.218,
             "Accord Sedan": 0.21,
             "Element": 0.161,
             "Accord Hybrid": 0.154,
             "CR-V": 0.149,
             "Pilot": 0.108
+        },
+        "elements": {
+            "global_weights": {
+                "Cost": 0.51,
+                "Safety": 0.234,
+                "Capacity": 0.215,
+                "Style": 0.041
+            },
+            "local_weights": {
+                "Cost": 0.51,
+                "Safety": 0.234,
+                "Capacity": 0.215,
+                "Style": 0.041
+            },
+            "consistency_ratio": 0.08
         }
-    },
-    "consistency_ratio": 0.08,
-    "random_index": "Donegan & Dodd",
-    "elements": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "children": {
-        "count": 4,
-        "names": [
-            "Cost",
-            "Safety",
-            "Style",
-            "Capacity"
-        ]
-    },
-    "comparisons": {
-        "count": 6,
-        "input": [
-            {
-                "Cost, Safety": 3
-            },
-            {
-                "Cost, Style": 7
-            },
-            {
-                "Cost, Capacity": 3
-            },
-            {
-                "Safety, Style": 9
-            },
-            {
-                "Safety, Capacity": 1
-            },
-            {
-                "Style, Capacity": 0.14285714285714285
-            }
-        ],
-        "computed": null
     }
 }
 ```

@@ -401,45 +401,16 @@ class Compare:
         for key in self.global_weights:
             self.global_weights[key] = np.round(self.weight * self.local_weights[key], self.precision)
 
-    def _climb_to_top(self, hierarchy):
+    def _get_report(self, params):
         if self.weight != 1.0:
-            self._node_parent._climb_to_top(hierarchy)
+            self._node_parent._get_report(params)
         else:
-            self._build_report(hierarchy)
+            return self._build_report(params)
 
-    def _build_report(self, hierarchy):
-        if self.weight == 1.0:
-            hierarchy[self.name] = {'global_weight': self.weight, 'local_weight': self.weight,
-                                    'target_weights': self.target_weights}
-        else:
-            hierarchy[self.name] = {'global_weight': self.weight,
-                                    'local_weight': self._node_parent.local_weights[self.name]}
-
-        hierarchy[self.name].update(
-            {'elements': {'global_weights': self.global_weights, 'local_weights': self.local_weights,
-                          'consistency_ratio': self.consistency_ratio}})
-        if self._node_children:
-            for child in self._node_children:
-                child._build_report(hierarchy)
-
-    def report2(self, name=None):
-        hierarchy = {}
-        self._climb_to_top(hierarchy)
-        return {name: hierarchy[name]} if name else hierarchy
-
-    def report(self, show=False):
-        """
-        Returns the key information of the Compare object as a dictionary, optionally prints to the console.
-        :param show: bool, whether to print the report to the console; default is False
+    def _build_report(self, params):
         """
 
-        def convert_to_json_format(input_dict):
-            """
-            Returns a dictionary as a list of JSON compatible objects.
-            :param input_dict: dictionary, the dictionary to be converted
-            """
-            return list({(', '.join(key)): value} for key, value in input_dict.items())
-
+        """
         def set_random_index():
             """
             Returns the full name of a valid random index as a string, else None.
@@ -451,38 +422,65 @@ class Compare:
                 random_index = 'Saaty'
             return random_index
 
-        report = {'name': self.name,
-                  'weight': self.weight,
-                  'weights': {
-                      'global': self.global_weights,
-                      'local': self.local_weights,
-                      'target': self._node_weights if self.weight == 1.0 else None
-                  },
-                  'consistency_ratio': self.consistency_ratio,
-                  'random_index': set_random_index(),
-                  'elements': {
-                      'count': len(self._elements),
-                      'names': self._elements
-                  },
-                  'children': {
-                      'count': len(self._node_children),
-                      'names': [child.name for child in self._node_children]
-                  } if self._node_children else None,
-                  'comparisons': {
-                      'count': len(self.comparisons) + len(self._missing_comparisons),
-                      'input': self.comparisons,
-                      'computed': self._missing_comparisons if self._missing_comparisons else None
-                  }
-                  }
+        hierarchy, verbose = params
+
+        hierarchy[self.name] = {'global_weight': self.weight,
+                                'local_weight': self._node_parent.local_weights[self.name] if self.weight != 1.0 else 1.0,
+                                'target_weights': self._node_weights if self.weight == 1.0 else None,
+                                'elements': {
+                                    'global_weights': self.global_weights,
+                                    'local_weights': self.local_weights,
+                                    'consistency_ratio': self.consistency_ratio
+                                    }
+                                }
+        if verbose:
+            hierarchy[self.name]['elements'].update({'random_index': set_random_index(),
+                                                     'count': len(self._elements),
+                                                     'names': self._elements})
+            hierarchy[self.name].update({'children': {
+                                            'count': len(self._node_children),
+                                            'names': [child.name for child in self._node_children]
+                                        } if self._node_children else None,
+                                        'comparisons': {
+                                            'count': len(self.comparisons) + len(self._missing_comparisons),
+                                            'input': self.comparisons,
+                                            'computed': self._missing_comparisons if self._missing_comparisons else None
+                                            }
+                                        })
+        if self._node_children:
+            for child in self._node_children:
+                child._build_report(params)
+
+        return hierarchy
+
+    def report(self, complete=False, show=False, verbose=False):
+        """
+        Returns the key information of the Compare object as a dictionary, optionally prints to the console.
+        :param show: bool, whether to print the report to the console; default is False
+        """
+        def convert_to_json_format(input_dict):
+            """
+            Returns a dictionary as a list of JSON compatible objects.
+            :param input_dict: dictionary, the dictionary to be converted
+            """
+            return list({(', '.join(key)): value} for key, value in input_dict.items())
+
+        hierarchy = {}
+        self._get_report((hierarchy, verbose))
+        hierarchy = {self.name: hierarchy[self.name]} if not complete else hierarchy
 
         if show:
-            json_report = copy.deepcopy(report)
-            if not self._normalize:
-                json_report['comparisons']['input'] = convert_to_json_format(self.comparisons)
-            if self._missing_comparisons:
-                json_report['comparisons']['computed'] = convert_to_json_format(self._missing_comparisons)
+            json_report = copy.deepcopy(hierarchy)
+            if verbose:
+                if not self._normalize:
+                    for key in json_report.keys():
+                        json_report[key]['comparisons']['input'] = convert_to_json_format(json_report[key]['comparisons']['input'])
+                if self._missing_comparisons:
+                    for key in json_report.keys():
+                        json_report[key]['comparisons']['computed'] = convert_to_json_format(json_report[key]['comparisons']['computed'])
             print(json.dumps(json_report, indent=4))
-        return report
+
+        return hierarchy
 
 
 class Compose:
@@ -517,8 +515,8 @@ class Compose:
             children = [self._get_node(child_name) for child_name in self.hierarchy[name]]
             self._get_node(name).add_children(children)
 
-    def report(self, name=None, show=False):
+    def report(self, name=None, show=False, verbose=False):
         if name:
-            self._get_node(name).report(show)
-
-# TODO Make the new report default, extended report set as 'verbose'
+            self._get_node(name).report(complete=False, show=show, verbose=verbose)
+        else:
+            self._get_node(list(self.hierarchy.keys())[0]).report(complete=True, show=show, verbose=verbose)
