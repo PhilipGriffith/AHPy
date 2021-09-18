@@ -91,7 +91,7 @@ We can recreate this analysis with AHPy using the following code:
 
 1. First, we create a dictionary of pairwise comparisons using the values from the matrix above.<br>
 2. We then create a Compare object, initializing it with a unique name and the dictionary we just made. We also change the precision and random index so that the results match those provided by Saaty.<br>
-3. Finally, we can print the Compare object's target weights and consistency ratio to see the results of our analysis.
+3. Finally, we print the Compare object's target weights and consistency ratio to see the results of our analysis.
 
 Brilliant!
 
@@ -152,18 +152,18 @@ Now that the hierarchy represents the decision problem, we can print the target 
 We can also print the local or global weights and consistency ratio of any of the other Compare objects, as well as their overall weight in the hierarchy:
 
 ```python
->>> print(experience.local_weights)
+>> > print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
->>> print(experience.consistency_ratio)
+>> > print(experience.consistency_ratio)
 0.035
->>> print(experience.weight)
+>> > print(experience.global_weight)
 0.548
 
->>> print(education.global_weights)
+>> > print(education.global_weights)
 {'Sue': 0.093, 'Moll': 0.024, 'Nell': 0.01}
->>> print(education.consistency_ratio)
+>> > print(education.consistency_ratio)
 0.062
->>> print(education.weight)
+>> > print(education.global_weight)
 0.127
 ```
 

@@ -55,10 +55,11 @@ class Compare:
         self._node_precision = self.precision
         self._node_weights = None
 
-        self.weight = 1.0
+        self.global_weight = 1.0
+        self.local_weight = self.global_weight
         self.consistency_ratio = None
-        self.local_weights = None
         self.global_weights = None
+        self.local_weights = None
         self.target_weights = None
 
         self._check_input()
@@ -76,7 +77,7 @@ class Compare:
             self._complete_matrix()
         self._compute()
 
-        self.target_weights = self._node_weights if self.weight == 1.0 else None
+        self.target_weights = self._node_weights if self.global_weight == 1.0 else None
 
     def _check_input(self):
         """
@@ -389,7 +390,8 @@ class Compare:
             for parent_key, parent_value in self.local_weights.items():
                 for child in self._node_children:
                     if parent_key == child.name:
-                        child.weight = np.round(self.weight * parent_value, self.precision)
+                        child.global_weight = np.round(self.global_weight * parent_value, self.precision)
+                        child.local_weight = parent_value
                         child._apply_weight()
                         child._compute_global_weights()
                         break
@@ -399,10 +401,10 @@ class Compare:
         Updates the 'global_weights' dictionary of the Compare object, given the global weight of the node.
         """
         for key in self.global_weights:
-            self.global_weights[key] = np.round(self.weight * self.local_weights[key], self.precision)
+            self.global_weights[key] = np.round(self.global_weight * self.local_weights[key], self.precision)
 
     def _get_report(self, params):
-        if self.weight != 1.0:
+        if self.global_weight != 1.0:
             self._node_parent._get_report(params)
         else:
             return self._build_report(params)
@@ -424,9 +426,10 @@ class Compare:
 
         hierarchy, verbose = params
 
-        hierarchy[self.name] = {'global_weight': self.weight,
-                                'local_weight': self._node_parent.local_weights[self.name] if self.weight != 1.0 else 1.0,
-                                'target_weights': self._node_weights if self.weight == 1.0 else None,
+        hierarchy[self.name] = {'name': self.name,
+                                'global_weight': self.global_weight,
+                                'local_weight': self._node_parent.local_weights[self.name] if self.global_weight != 1.0 else 1.0,
+                                'target_weights': self._node_weights if self.global_weight == 1.0 else None,
                                 'elements': {
                                     'global_weights': self.global_weights,
                                     'local_weights': self.local_weights,
@@ -463,21 +466,29 @@ class Compare:
             Returns a dictionary as a list of JSON compatible objects.
             :param input_dict: dictionary, the dictionary to be converted
             """
-            return list({(', '.join(key)): value} for key, value in input_dict.items())
+            try:
+                comparisons = {}
+                for key, value in input_dict.items():
+                    comparisons[', '.join(key)] = value
+            except AttributeError:
+                comparisons = input_dict
+            return comparisons
 
         hierarchy = {}
         self._get_report((hierarchy, verbose))
-        hierarchy = {self.name: hierarchy[self.name]} if not complete else hierarchy
+        if not complete:
+            hierarchy = dict({'name': self.name}, **hierarchy[self.name])
 
         if show:
             json_report = copy.deepcopy(hierarchy)
             if verbose:
-                if not self._normalize:
-                    for key in json_report.keys():
-                        json_report[key]['comparisons']['input'] = convert_to_json_format(json_report[key]['comparisons']['input'])
-                if self._missing_comparisons:
-                    for key in json_report.keys():
-                        json_report[key]['comparisons']['computed'] = convert_to_json_format(json_report[key]['comparisons']['computed'])
+                for comparison in ('input', 'computed'):
+                    if complete:
+                        for key in json_report.keys():
+                            json_report[key]['comparisons'][comparison] = \
+                                convert_to_json_format(json_report[key]['comparisons'][comparison])
+                    else:
+                        json_report['comparisons'][comparison] = convert_to_json_format(json_report['comparisons'][comparison])
             print(json.dumps(json_report, indent=4))
 
         return hierarchy
@@ -520,3 +531,5 @@ class Compose:
             self._get_node(name).report(complete=False, show=show, verbose=verbose)
         else:
             self._get_node(list(self.hierarchy.keys())[0]).report(complete=True, show=show, verbose=verbose)
+
+# todo Unit tests

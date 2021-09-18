@@ -207,28 +207,28 @@ d.add_children([f, g])
 
 
 def test_master_a():
-    assert a.report() == {'name': 'a', 'weight': 1.0, 'weights': {'local': {'b': 0.5, 'c': 0.5}, 'global': {'b': 0.5, 'c': 0.5}, 'target': {'z': 0.4233, 'y': 0.3844, 'x': 0.1922}}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
+    assert a.report(verbose=True) == {'name': 'a', 'global_weight': 1.0, 'local_weight': 1.0, 'target_weights': {'z': 0.4233, 'y': 0.3844, 'x': 0.1922}, 'elements': {'global_weights': {'b': 0.5, 'c': 0.5}, 'local_weights': {'b': 0.5, 'c': 0.5}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
 
 
 def test_master_b():
-    assert b.report() == {'name': 'b', 'weight': 0.5, 'weights': {'local': {'d': 0.8, 'e': 0.2}, 'global': {'d': 0.4, 'e': 0.1}, 'target': None}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
+    assert b.report(verbose=True) == {'name': 'b', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'d': 0.4, 'e': 0.1}, 'local_weights': {'d': 0.8, 'e': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
 
 
 def test_master_c():
-    assert c.report() == {'name': 'c', 'weight': 0.5, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.2, 'z': 0.2, 'x': 0.1}, 'target': None}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert c.report(verbose=True) == {'name': 'c', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'y': 0.2, 'z': 0.2, 'x': 0.1}, 'local_weights': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
 
 
 def test_master_d():
-    assert d.report() == {'name': 'd', 'weight': 0.4, 'weights': {'local': {'f': 0.6667, 'g': 0.3333}, 'global': {'f': 0.2667, 'g': 0.1333}, 'target': None}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 2, 'names': ['f', 'g']}, 'children': {'count': 2, 'names': ['f', 'g']}, 'comparisons': {'count': 1, 'input': {('f', 'g'): 2}, 'computed': None}}
+    assert d.report(verbose=True) == {'name': 'd', 'global_weight': 0.4, 'local_weight': 0.8, 'target_weights': None, 'elements': {'global_weights': {'f': 0.2667, 'g': 0.1333}, 'local_weights': {'f': 0.6667, 'g': 0.3333}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['f', 'g']}, 'children': {'count': 2, 'names': ['f', 'g']}, 'comparisons': {'count': 1, 'input': {('f', 'g'): 2}, 'computed': None}}
 
 
 def test_master_e():
-    assert e.report() == {'name': 'e', 'weight': 0.1, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}, 'target': None}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert e.report(verbose=True) == {'name': 'e', 'global_weight': 0.1, 'local_weight': 0.2, 'target_weights': None, 'elements': {'global_weights': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}, 'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
 
 
 def test_master_f():
-    assert f.report() == {'name': 'f', 'weight': 0.2667, 'weights': {'local': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'global': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}, 'target': None}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert f.report(verbose=True) == {'name': 'f', 'global_weight': 0.2667, 'local_weight': 0.6667, 'target_weights': None, 'elements': {'global_weights': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}, 'local_weights': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
 
 
 def test_master_g():
-    assert g.report() == {'name': 'g', 'weight': 0.1333, 'weights': {'local': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'global': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}, 'target': None}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'elements': {'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert g.report(verbose=True) == {'name': 'g', 'global_weight': 0.1333, 'local_weight': 0.3333, 'target_weights': None, 'elements': {'global_weights': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}, 'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
