@@ -34,9 +34,11 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Compare.report()](#comparereport)
 
-[Missing Pairwise Comparisons](#missing-pairwise-comparisons)
-
 [A Note on Weights](#a-note-on-weights)
+
+[The Compose Class](#the-compose-class)
+
+[Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
 [Development and Testing](#development-and-testing)
 
@@ -105,7 +107,7 @@ You may notice that in some cases AHPy's results will not match those on the Wik
 
 > You can duplicate this analysis at this online demonstration site...**IMPORTANT: The demo site is designed for convenience, not accuracy. The priorities it returns may differ somewhat from those returned by rigorous AHP calculations.**
 
-In this example, we'll be judging candidates by their experience, education, charisma and age. Therefore, we need to compare each potential leader to the others, given each criterion...
+In this example, we'll be judging job candidates by their experience, education, charisma and age. Therefore, we need to compare each potential leader to the others, given each criterion...
 
 ```python
 >>> experience_comparisons = {('Moll', 'Nell'): 1/4, ('Moll', 'Sue'): 4, ('Nell', 'Sue'): 9}
@@ -149,25 +151,25 @@ Now that the hierarchy represents the decision problem, we can print the target 
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
-We can also print the local or global weights and consistency ratio of any of the other Compare objects, as well as their overall weight in the hierarchy:
+We can also print the local and global weights of the elements within any of the other Compare objects, as well as the consistency ratio of their comparisons. The global and local weight of the Compare object itself is likewise available:
 
 ```python
->> > print(experience.local_weights)
+>>> print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
->> > print(experience.consistency_ratio)
+>>> print(experience.consistency_ratio)
 0.035
->> > print(experience.global_weight)
+>>> print(experience.global_weight)
 0.548
 
->> > print(education.global_weights)
+>>> print(education.global_weights)
 {'Sue': 0.093, 'Moll': 0.024, 'Nell': 0.01}
->> > print(education.consistency_ratio)
+>>> print(education.consistency_ratio)
 0.062
->> > print(education.global_weight)
+>>> print(education.local_weight)
 0.127
 ```
 
-Calling `report()` on a Compare object provides a standard way to learn detailed information about the object. In the code below, the variable `report` contains a Python dictionary, while the `show=True` argument prints the same information to the console in JSON format:
+Calling `report()` on a Compare object provides a standard way to learn detailed information about the object. In the code below, the variable `report` contains a [Python dictionary](#comparereport), while the `show=True` argument prints the same information to the console in JSON format:
 
 ```python
 >>> report = criteria.report(show=True)
@@ -341,239 +343,201 @@ Now that the hierarchy represents the decision problem, we can print the target 
 {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
 ```
 
-For detailed information about any of the Compare objects in the hierarchy, we can call that object's `report(show=True, verbose=True)`:
+For detailed information about any of the Compare objects in the hierarchy, we can call that object's `report()` with the `verbose=True` argument:
 
 ```python
 >>> report = criteria.report(show=True, verbose=True)
 {
-    "Criteria": {
-        "global_weight": 1.0,
-        "local_weight": 1.0,
-        "target_weights": {
-            "Odyssey": 0.219,
-            "Accord Sedan": 0.215,
-            "CR-V": 0.167,
-            "Accord Hybrid": 0.15,
-            "Element": 0.144,
-            "Pilot": 0.106
+    "name": "Criteria",
+    "global_weight": 1.0,
+    "local_weight": 1.0,
+    "target_weights": {
+        "Odyssey": 0.219,
+        "Accord Sedan": 0.215,
+        "CR-V": 0.167,
+        "Accord Hybrid": 0.15,
+        "Element": 0.144,
+        "Pilot": 0.106
+    },
+    "elements": {
+        "global_weights": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
         },
-        "elements": {
-            "global_weights": {
-                "Cost": 0.51,
-                "Safety": 0.234,
-                "Capacity": 0.215,
-                "Style": 0.041
-            },
-            "local_weights": {
-                "Cost": 0.51,
-                "Safety": 0.234,
-                "Capacity": 0.215,
-                "Style": 0.041
-            },
-            "consistency_ratio": 0.08,
-            "random_index": "Donegan & Dodd",
-            "count": 4,
-            "names": [
-                "Cost",
-                "Safety",
-                "Style",
-                "Capacity"
-            ]
+        "local_weights": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
         },
-        "children": {
-            "count": 4,
-            "names": [
-                "Cost",
-                "Safety",
-                "Style",
-                "Capacity"
-            ]
+        "consistency_ratio": 0.08,
+        "random_index": "Donegan & Dodd",
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "children": {
+        "count": 4,
+        "names": [
+            "Cost",
+            "Safety",
+            "Style",
+            "Capacity"
+        ]
+    },
+    "comparisons": {
+        "count": 6,
+        "input": {
+            "Cost, Safety": 3,
+            "Cost, Style": 7,
+            "Cost, Capacity": 3,
+            "Safety, Style": 9,
+            "Safety, Capacity": 1,
+            "Style, Capacity": 0.14285714285714285
         },
-        "comparisons": {
-            "count": 6,
-            "input": [
-                {
-                    "Cost, Safety": 3
-                },
-                {
-                    "Cost, Style": 7
-                },
-                {
-                    "Cost, Capacity": 3
-                },
-                {
-                    "Safety, Style": 9
-                },
-                {
-                    "Safety, Capacity": 1
-                },
-                {
-                    "Style, Capacity": 0.14285714285714285
-                }
-            ],
-            "computed": null
-        }
+        "computed": null
     }
 }
 ```
 
-Calling `report(verbose=True)` on Compare objects at lower levels of the hierarchy will provide different information, depending on the level they're in:
+Calling `report(show=True, verbose=True)` on Compare objects at lower levels of the hierarchy will provide different information, depending on the level they're in:
 
 ```python
 >>> report = cost.report(show=True, verbose=True)
 {
-    "Cost": {
-        "global_weight": 0.51,
-        "local_weight": 0.51,
-        "target_weights": null,
-        "elements": {
-            "global_weights": {
-                "Price": 0.249,
-                "Fuel": 0.129,
-                "Resale": 0.082,
-                "Maintenance": 0.051
-            },
-            "local_weights": {
-                "Price": 0.488,
-                "Fuel": 0.252,
-                "Resale": 0.161,
-                "Maintenance": 0.1
-            },
-            "consistency_ratio": 0.016,
-            "random_index": "Donegan & Dodd",
-            "count": 4,
-            "names": [
-                "Price",
-                "Fuel",
-                "Maintenance",
-                "Resale"
-            ]
+    "name": "Cost",
+    "global_weight": 0.51,
+    "local_weight": 0.51,
+    "target_weights": null,
+    "elements": {
+        "global_weights": {
+            "Price": 0.249,
+            "Fuel": 0.129,
+            "Resale": 0.082,
+            "Maintenance": 0.051
         },
-        "children": {
-            "count": 4,
-            "names": [
-                "Price",
-                "Fuel",
-                "Resale",
-                "Maintenance"
-            ]
+        "local_weights": {
+            "Price": 0.488,
+            "Fuel": 0.252,
+            "Resale": 0.161,
+            "Maintenance": 0.1
         },
-        "comparisons": {
-            "count": 6,
-            "input": [
-                {
-                    "Price, Fuel": 2
-                },
-                {
-                    "Price, Maintenance": 5
-                },
-                {
-                    "Price, Resale": 3
-                },
-                {
-                    "Fuel, Maintenance": 2
-                },
-                {
-                    "Fuel, Resale": 2
-                },
-                {
-                    "Maintenance, Resale": 0.5
-                }
-            ],
-            "computed": null
-        }
+        "consistency_ratio": 0.016,
+        "random_index": "Donegan & Dodd",
+        "count": 4,
+        "names": [
+            "Price",
+            "Fuel",
+            "Maintenance",
+            "Resale"
+        ]
+    },
+    "children": {
+        "count": 4,
+        "names": [
+            "Price",
+            "Fuel",
+            "Resale",
+            "Maintenance"
+        ]
+    },
+    "comparisons": {
+        "count": 6,
+        "input": {
+            "Price, Fuel": 2,
+            "Price, Maintenance": 5,
+            "Price, Resale": 3,
+            "Fuel, Maintenance": 2,
+            "Fuel, Resale": 2,
+            "Maintenance, Resale": 0.5
+        },
+        "computed": null
     }
 }
 
 >>> report = price.report(show=True, verbose=True)
 {
-    "Price": {
-        "global_weight": 0.249,
-        "local_weight": 0.488,
-        "target_weights": null,
-        "elements": {
-            "global_weights": {
-                "Element": 0.091,
-                "Accord Sedan": 0.061,
-                "CR-V": 0.061,
-                "Odyssey": 0.023,
-                "Accord Hybrid": 0.006,
-                "Pilot": 0.006
-            },
-            "local_weights": {
-                "Element": 0.366,
-                "Accord Sedan": 0.246,
-                "CR-V": 0.246,
-                "Odyssey": 0.093,
-                "Accord Hybrid": 0.025,
-                "Pilot": 0.025
-            },
-            "consistency_ratio": 0.072,
-            "random_index": "Donegan & Dodd",
-            "count": 6,
-            "names": [
-                "Accord Sedan",
-                "Accord Hybrid",
-                "Pilot",
-                "CR-V",
-                "Element",
-                "Odyssey"
-            ]
+    "name": "Price",
+    "global_weight": 0.249,
+    "local_weight": 0.488,
+    "target_weights": null,
+    "elements": {
+        "global_weights": {
+            "Element": 0.091,
+            "Accord Sedan": 0.061,
+            "CR-V": 0.061,
+            "Odyssey": 0.023,
+            "Accord Hybrid": 0.006,
+            "Pilot": 0.006
         },
-        "children": null,
-        "comparisons": {
-            "count": 15,
-            "input": [
-                {
-                    "Accord Sedan, Accord Hybrid": 9
-                },
-                {
-                    "Accord Sedan, Pilot": 9
-                },
-                {
-                    "Accord Sedan, CR-V": 1
-                },
-                {
-                    "Accord Sedan, Element": 0.5
-                },
-                {
-                    "Accord Sedan, Odyssey": 5
-                },
-                {
-                    "Accord Hybrid, Pilot": 1
-                },
-                {
-                    "Accord Hybrid, CR-V": 0.1111111111111111
-                },
-                {
-                    "Accord Hybrid, Element": 0.1111111111111111
-                },
-                {
-                    "Accord Hybrid, Odyssey": 0.14285714285714285
-                },
-                {
-                    "Pilot, CR-V": 0.1111111111111111
-                },
-                {
-                    "Pilot, Element": 0.1111111111111111
-                },
-                {
-                    "Pilot, Odyssey": 0.14285714285714285
-                },
-                {
-                    "CR-V, Element": 0.5
-                },
-                {
-                    "CR-V, Odyssey": 5
-                },
-                {
-                    "Element, Odyssey": 6
-                }
-            ],
-            "computed": null
-        }
+        "local_weights": {
+            "Element": 0.366,
+            "Accord Sedan": 0.246,
+            "CR-V": 0.246,
+            "Odyssey": 0.093,
+            "Accord Hybrid": 0.025,
+            "Pilot": 0.025
+        },
+        "consistency_ratio": 0.072,
+        "random_index": "Donegan & Dodd",
+        "count": 6,
+        "names": [
+            "Accord Sedan",
+            "Accord Hybrid",
+            "Pilot",
+            "CR-V",
+            "Element",
+            "Odyssey"
+        ]
+    },
+    "children": null,
+    "comparisons": {
+        "count": 15,
+        "input": {
+            "Accord Sedan, Accord Hybrid": 9,
+            "Accord Sedan, Pilot": 9,
+            "Accord Sedan, CR-V": 1,
+            "Accord Sedan, Element": 0.5,
+            "Accord Sedan, Odyssey": 5,
+            "Accord Hybrid, Pilot": 1,
+            "Accord Hybrid, CR-V": 0.1111111111111111,
+            "Accord Hybrid, Element": 0.1111111111111111,
+            "Accord Hybrid, Odyssey": 0.14285714285714285,
+            "Pilot, CR-V": 0.1111111111111111,
+            "Pilot, Element": 0.1111111111111111,
+            "Pilot, Odyssey": 0.14285714285714285,
+            "CR-V, Element": 0.5,
+            "CR-V, Odyssey": 5,
+            "Element, Odyssey": 6
+        },
+        "computed": null
     }
 }
+```
+
+Finally, calling `report(complete=True)` on any Compare object in the hierarchy will return a dictionary containing a report for *every* Compare object in the hierarchy, with the keys of the dictionary being the names of the Compare objects:
+
+```python
+>>> complete_report = cargo.report(complete=True)
+>>> print(complete_report['Cargo'])
+{'name': 'Cargo', 'global_weight': 0.0358, 'local_weight': 0.1667, 'target_weights': None, 'elements': {'global_weights': {'Odyssey': 0.011, 'Pilot': 0.006, 'CR-V': 0.006, 'Element': 0.006, 'Accord Sedan': 0.003, 'Accord Hybrid': 0.003}, 'local_weights': {'Odyssey': 0.311, 'Pilot': 0.17, 'CR-V': 0.17, 'Element': 0.17, 'Accord Sedan': 0.089, 'Accord Hybrid': 0.089}, 'consistency_ratio': 0.002}}
+
+>>> print(complete_report['Criteria']['target_weights'])
+{'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167, 'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
+```
+
+Calling `report(complete=True, verbose=True)` will return a similar dictionary, but with the detailed version of the reports.
+
+```python
+>>> complete_report = style.report(complete=True, verbose=True)
+>>> print(complete_report['Price']['comparisons']['count'])
+15
 ```
 
 ### Purchasing a vehicle, Normalized Weights
@@ -707,9 +671,11 @@ The Compare class computes the weights and consistency ratio of a positive recip
 
 The properties used to initialize the Compare class are intended to be accessed directly, along with a few others:
 
-`Compare.weight`: *float*, the global weight of the Compare object within the hierarchy
+`Compare.global_weight`: *float*, the global weight of the Compare object within the hierarchy
 
-`Compare.consistency_ratio`: *float*, the consistency ratio of the Compare object
+`Compare.local_weight`: *float*, the local weight of the Compare object within the hierarchy
+
+`Compare.consistency_ratio`: *float*, the consistency ratio of the Compare object's pairwise comparisons
 
 `Compare.global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
 - `{'a': 0.25, 'b': 0.25}`
@@ -738,61 +704,76 @@ Compare objects can be linked together to form a hierarchy representing the deci
 >>> parent.add_children([child1, child2])
 ```
 
-The precision of the target weights is updated as the hierarchy is constructed. Each time `add_children()` is called, the precision of the target weights is set to equal that of the Compare object with the lowest precision in the hierarchy. Because lower precision propagates up through the hierarchy, *the target weights will always have the same level of precision as the hierarchy's least precise Compare object*. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
+The precision of the target weights is updated as the hierarchy is constructed: each time `add_children()` is called, the precision of the target weights is set to equal that of the Compare object with the lowest precision in the hierarchy. Because lower precision propagates up through the hierarchy, *the target weights will always have the same level of precision as the hierarchy's least precise Compare object*. This also means that it is possible for the precision of a Compare object's target weights to be different from the precision of its local and global weights.
 
 ### Compare.report()
 
-A report on the details of a Compare object is available. To return the report as a dictionary, call `report()` on the Compare object; to simultaneously print the information to the console in JSON format, set `show=True`.
+A standard report on the details of a Compare object is available. To return the report as a dictionary, call `report()` on the Compare object; to simultaneously print the information to the console in JSON format, set `show=True`. The report is available in two levels of detail; to return the most detailed report, set `verbose=True`.
 
-`Compare.report(show=False)`
+`Compare.report(complete=False, show=False, verbose=False)`
 
+- `complete`: *bool*, whether to return a report for every Compare object in the hierarchy
+  - This returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects
+    - `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
+  - The default value is False
 - `show`: *bool*, whether to print the report to the console in JSON format
+  - The default value is False
+- `verbose`: *bool*, whether to include full details of the Compare object within the report
   - The default value is False
 
 The keys of the report take the following form:
 
 `name`: *str*, the name of the Compare object
 
-`weight`: *float*, the global weight of the Compare object within the hierarchy
+`global_weight`: *float*, the global weight of the Compare object within the hierarchy
 
-`weights`: *dict*, the weights of the Compare object's elements
-- `global`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
+`local_weight`: *float*, the local weight of the Compare object within the hierarchy
+
+`target_weights`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight
+  - *If the global weight of the Compare object is less than 1.0, the value will be `None`*
+  - `{'a': 0.5, 'b': 0.5}`
+
+`elements`: *dict*, information regarding the elements compared by the Compare object
+- `global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
   - `{'a': 0.25, 'b': 0.25}`
-- `local`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
+- `local_weights`: *dict*, the local weights of the Compare object's elements; each key is an element and each value is that element's computed local weight
   - `{'a': 0.5, 'b': 0.5}`
-- `target`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, the value will be `None`*
-  - `{'a': 0.5, 'b': 0.5}`
-  
-`consistency_ratio`: *float*, the consistency ratio of the Compare object
+- `consistency_ratio`: *float*, the consistency ratio of the Compare object's pairwise comparisons
 
-`random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
+The remaining dictionary keys are only displayed when `verbose=True`:
 
-`elements`: *dict*, the elements compared by the Compare object
+- `random_index`: *'Donegan & Dodd' or 'Saaty'*, the random index used to compute the consistency ratio
 - `count`: *int*, the number of elements compared by the Compare object
 - `names`: *list*, the names of the elements compared by the Compare object
 
-`children`: *dict*, the children of the Compare object; if the Compare object has no children, the value will be `None`
+`children`: *dict*, the children of the Compare object
+  - If the Compare object has no children, the value will be `None`
 - `count`: *int*, the number of the Compare object's children
 - `names`: *list*, the names of the Compare object's children
 
 `comparisons`: *dict*, the comparisons of the Compare object
 - `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
 - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
-- `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value; if the Compare object has no computed comparisons, the value will be `None`
+- `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value
+  - If the Compare object has no computed comparisons, the value will be `None`
   - `{('c', 'd'): 0.730297106886979}, ...}`
+
+### The Compose Class
+
+
 
 ### A Note on Weights
 
 Compare objects compute up to three kinds of weights for their elements: global weights, local weights and target weights.
-Compare objects also compute their own global weight, given their parent.
+Compare objects also compute their own global and local weight, given their parent.
 
-- **Global** weights display the computed weights of a Compare object's elements **dependent on** that object's global weight within a hierarchy
-  - Global weights are derived by multiplying the local weights of the elements within a Compare object by that object's *own* global weight in the hierarchy
+- **Global** weights display the computed weights of a Compare object's elements **dependent on** that object's global weight within the current hierarchy
+  - Global weights are derived by multiplying the local weights of the elements within a Compare object by that object's *own* global weight in the current hierarchy
 
-- **Local** weights display the computed weights of a Compare object's elements **independent of** that object's global weight within a hierarchy
-  - For this reason, the local weights of the elements within a Compare object will always (approximately) sum to 1.0
+- **Local** weights display the computed weights of a Compare object's elements **independent of** that object's global weight within the current hierarchy
+  - The local weights of the elements within a Compare object will always (approximately) sum to 1.0
 
-- **Target** weights display the synthesized weights of the problem elements described in the *lowest level* of a hierarchy
+- **Target** weights display the synthesized weights of the problem elements described in the *lowest level* of the current hierarchy
   - Target weights are only computed by the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
 
 A Compare object that does not have a parent will have identical global and local weights; a Compare object that has neither a parent nor children will have identical global, local and target weights.

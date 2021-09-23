@@ -106,7 +106,7 @@ from ahpy import ahpy
 # cri = ('Cost', 'Safety', 'Style', 'Capacity')
 # c_cri = list(itertools.combinations(cri, 2))
 # criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
-#
+# 
 # alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
 # pairs = list(itertools.combinations(alt, 2))
 #
@@ -117,15 +117,15 @@ from ahpy import ahpy
 # cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
 # cost_price = ahpy.Compare('Price', m(pairs, cost_price_m), 3)
 #
-# # cost_fuel_m = (1/1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1/1.23, 1/1.14, 1/1.18, 1.08, 1.04, 1/1.04)
-# cost_fuel_m = (31, 35, 22, 27, 25, 26)
-# # cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
-# cost_fuel = ahpy.Compare('Fuel', m(alt, cost_fuel_m), 3)
+# cost_fuel_m = (1/1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1/1.23, 1/1.14, 1/1.18, 1.08, 1.04, 1/1.04)
+# # cost_fuel_m = (31, 35, 22, 27, 25, 26)
+# cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
+# # cost_fuel = ahpy.Compare('Fuel', m(alt, cost_fuel_m), 3)
 #
-# # cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
-# cost_resale_m = (0.52, 0.46, 0.44, 0.55, 0.48, 0.48)
-# # cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
-# cost_resale = ahpy.Compare('Resale', m(alt, cost_resale_m), 3)
+# cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
+# # cost_resale_m = (0.52, 0.46, 0.44, 0.55, 0.48, 0.48)
+# cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
+# # cost_resale = ahpy.Compare('Resale', m(alt, cost_resale_m), 3)
 #
 # cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
 # cost_maint = ahpy.Compare('Maintenance', m(pairs, cost_maint_m), 3)
@@ -138,25 +138,27 @@ from ahpy import ahpy
 #
 # capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
 #
-# # capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
-# capacity_pass_m = (5, 5, 8, 5, 4, 8)
-# # capacity_pass = ahpy.Compare('Passenger', m(pairs, capacity_pass_m), 3)
-# capacity_pass = ahpy.Compare('Passenger', m(alt, capacity_pass_m), 3)
+# capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
+# # capacity_pass_m = (5, 5, 8, 5, 4, 8)
+# capacity_pass = ahpy.Compare('Passenger', m(pairs, capacity_pass_m), 3)
+# # capacity_pass = ahpy.Compare('Passenger', m(alt, capacity_pass_m), 3)
 #
-# # capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
-# capacity_cargo_m = (14, 14, 87.6, 72.9, 74.6, 147.4)
-# # capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
-# capacity_cargo = ahpy.Compare('Cargo', m(alt, capacity_cargo_m), precision=3)
+# capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
+# # capacity_cargo_m = (14, 14, 87.6, 72.9, 74.6, 147.4)
+# capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
+# # capacity_cargo = ahpy.Compare('Cargo', m(alt, capacity_cargo_m), precision=3)
 #
 # criteria.add_children([cost, safety, style, capacity])
 # cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
 # capacity.add_children([capacity_pass, capacity_cargo])
 #
-# criteria.report(show=True)
+# criteria.report(show=True, verbose=True)
 # cost_price.report(show=True, verbose=True)
 # safety.report(show=True)
-# h = cost.report(complete=False, show=True, verbose=True)
-# print(h)
+# h = cost.report(complete=True, show=True, verbose=True)
+# c = capacity_cargo.report(complete=True)
+# print(c['Criteria']['target_weights'])
+# print(h['Price']['comparisons']['count'])
 
 # a = ahpy.Compose()
 # a.add_comparisons('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
@@ -242,7 +244,7 @@ for permutation in permutations:
     for node in permutation:
         node[0].add_children(node[1])
 
-d.report(show=True, complete=True, verbose=True)
+h.report()
 
 assert a.report(verbose=True) == {'name': 'a', 'global_weight': 1.0, 'local_weight': 1.0, 'target_weights': {'z': 0.4652, 'y': 0.3626, 'x': 0.1723}, 'elements': {'global_weights': {'b': 0.5, 'c': 0.5}, 'local_weights': {'b': 0.5, 'c': 0.5}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
 assert b.report(verbose=True) == {'name': 'b', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'d': 0.4, 'e': 0.1}, 'local_weights': {'d': 0.8, 'e': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}

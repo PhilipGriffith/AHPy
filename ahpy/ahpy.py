@@ -532,4 +532,4 @@ class Compose:
         else:
             self._get_node(list(self.hierarchy.keys())[0]).report(complete=True, show=show, verbose=verbose)
 
-# todo Unit tests
+# todo Unit tests, code docs
