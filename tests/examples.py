@@ -106,7 +106,7 @@ from ahpy import ahpy
 # cri = ('Cost', 'Safety', 'Style', 'Capacity')
 # c_cri = list(itertools.combinations(cri, 2))
 # criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
-# 
+#
 # alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
 # pairs = list(itertools.combinations(alt, 2))
 #

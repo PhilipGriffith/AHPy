@@ -2,10 +2,9 @@ import bisect
 import copy
 import itertools
 import json
-import warnings
-
 import numpy as np
 import scipy.optimize as spo
+import warnings
 
 import ahpy
 
@@ -33,7 +32,6 @@ class Compare:
          of coordinates is less than this value; default is 0.0001
     :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
     """
-
     def __init__(self, name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
         self.name = name
         self.comparisons = comparisons
@@ -342,7 +340,7 @@ class Compare:
         self._set_node_precision()
         self._compute_node_weights()
         self._set_target_weights()
-        self._compute_global_weights()
+        self._compute_global_and_local_weights()
         if self._node_parent:
             self._node_parent._recompute()
 
@@ -382,9 +380,9 @@ class Compare:
             child.target_weights = None
         self.target_weights = self._node_weights
 
-    def _compute_global_weights(self):
+    def _compute_global_and_local_weights(self):
         """
-        Recursively updates the global weights of the Compare object's immediate descendants.
+        Recursively updates both the global and local weights of the Compare object's immediate descendants.
         """
         if self._node_children:
             for parent_key, parent_value in self.local_weights.items():
@@ -393,7 +391,7 @@ class Compare:
                         child.global_weight = np.round(self.global_weight * parent_value, self.precision)
                         child.local_weight = parent_value
                         child._apply_weight()
-                        child._compute_global_weights()
+                        child._compute_global_and_local_weights()
                         break
 
     def _apply_weight(self):
@@ -404,6 +402,10 @@ class Compare:
             self.global_weights[key] = np.round(self.global_weight * self.local_weights[key], self.precision)
 
     def _get_report(self, params):
+        """
+        Climbs to the top of the hierarchy, then calls '_build_report()'.
+        :param params: tuple, a nested dictionary containing reports and a boolean for the verbose argument
+        """
         if self.global_weight != 1.0:
             self._node_parent._get_report(params)
         else:
@@ -411,8 +413,10 @@ class Compare:
 
     def _build_report(self, params):
         """
-
+        Creates a standard or verbose report for the Compare object, then calls itself on all of the object's children.
+        :param params: tuple, a nested dictionary containing reports and a boolean for the verbose argument
         """
+
         def set_random_index():
             """
             Returns the full name of a valid random index as a string, else None.
@@ -428,28 +432,29 @@ class Compare:
 
         hierarchy[self.name] = {'name': self.name,
                                 'global_weight': self.global_weight,
-                                'local_weight': self._node_parent.local_weights[self.name] if self.global_weight != 1.0 else 1.0,
+                                'local_weight': self._node_parent.local_weights[
+                                    self.name] if self.global_weight != 1.0 else 1.0,
                                 'target_weights': self._node_weights if self.global_weight == 1.0 else None,
                                 'elements': {
                                     'global_weights': self.global_weights,
                                     'local_weights': self.local_weights,
                                     'consistency_ratio': self.consistency_ratio
-                                    }
+                                }
                                 }
         if verbose:
             hierarchy[self.name]['elements'].update({'random_index': set_random_index(),
                                                      'count': len(self._elements),
                                                      'names': self._elements})
             hierarchy[self.name].update({'children': {
-                                            'count': len(self._node_children),
-                                            'names': [child.name for child in self._node_children]
-                                        } if self._node_children else None,
-                                        'comparisons': {
-                                            'count': len(self.comparisons) + len(self._missing_comparisons),
-                                            'input': self.comparisons,
-                                            'computed': self._missing_comparisons if self._missing_comparisons else None
-                                            }
-                                        })
+                'count': len(self._node_children),
+                'names': [child.name for child in self._node_children]
+            } if self._node_children else None,
+                                         'comparisons': {
+                                             'count': len(self.comparisons) + len(self._missing_comparisons),
+                                             'input': self.comparisons,
+                                             'computed': self._missing_comparisons if self._missing_comparisons else None
+                                         }
+                                         })
         if self._node_children:
             for child in self._node_children:
                 child._build_report(params)
@@ -459,11 +464,14 @@ class Compare:
     def report(self, complete=False, show=False, verbose=False):
         """
         Returns the key information of the Compare object as a dictionary, optionally prints to the console.
-        :param show: bool, whether to print the report to the console; default is False
+        :param complete: boolean, whether to return a report for every Compare object in the hierarchy; default is False
+        :param show: boolean, whether to print the report to the console; default is False
+        :param verbose: boolean, whether to include full details of the Compare object within the report; default is False
         """
-        def convert_to_json_format(input_dict):
+
+        def convert_keys_to_json_format(input_dict):
             """
-            Returns a dictionary as a list of JSON compatible objects.
+            Returns a dictionary with keys in JSON format.
             :param input_dict: dictionary, the dictionary to be converted
             """
             try:
@@ -485,30 +493,61 @@ class Compare:
                 for comparison in ('input', 'computed'):
                     if complete:
                         for key in json_report.keys():
-                            json_report[key]['comparisons'][comparison] = \
-                                convert_to_json_format(json_report[key]['comparisons'][comparison])
+                            json_report[key]['comparisons'][comparison] = convert_keys_to_json_format(
+                                json_report[key]['comparisons'][comparison])
                     else:
-                        json_report['comparisons'][comparison] = convert_to_json_format(json_report['comparisons'][comparison])
+                        json_report['comparisons'][comparison] = convert_keys_to_json_format(
+                            json_report['comparisons'][comparison])
             print(json.dumps(json_report, indent=4))
 
         return hierarchy
 
 
 class Compose:
-    '''
-    '''
-
+    """
+    This class provides an alternative way to build a hierarchy of Compare objects using a dictionary
+    of parent-child relationships, as well as an alternative way to build Compare objects using a list or tuple
+    of the necessary inputs.
+    """
     def __init__(self):
         self.nodes = []
         self.hierarchy = None
 
     def _get_node(self, name):
+        """
+        Returns the named Compare object.
+        :param name: string, the name of the desired Compare object
+        """
         for node in self.nodes:
             if node.name == name:
                 return node
 
     def add_comparisons(self, item,
                         comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
+        """
+        Adds Compare objects to a stored list of nodes. Input can be either one or more Compose objects,
+        one or more lists or tuples containing the inputs necessary to create a Compare object,
+        or the arguments necessary to create a Compare object.
+        The method signature is intended to mimic that of the Compare class for this reason.
+        :param item: Compare object, list or tuple, string, either one or more Compare objects (or the data required
+            to create a Compare object, stored as a list or tuple) or the 'name' argument that forms
+            the first parameter required to create a new Compare object
+        :param comparisons: dictionary, a dictionary in one of two forms: (i) each key is a tuple of two elements and
+            each value is their pairwise comparison value, or (ii) each key is a single element and each value
+            is that element's measured value; default is None
+            Examples: (i) {('a', 'b'): 3, ('b', 'c'): 2}, (ii) {'a': 1.2, 'b': 2.3, 'c': 3.4}
+        :param precision: integer, number of decimal places used when computing both the priority
+            vector and the consistency ratio; default is 4
+        :param random_index: string, the random index estimates used to compute the consistency ratio;
+            see '_compute_consistency_ratio()' for more information regarding the different estimates;
+            valid input: 'dd', 'saaty'; default is 'dd'
+        :param iterations: integer, number of iterations before '_compute_priority_vector()' stops;
+            default is 100
+        :param tolerance: float, the stopping criteria for the cycling coordinates algorithm instantiated by
+            '_complete_matrix()'; the algorithm stops when the difference between the norms of two cycles
+             of coordinates is less than this value; default is 0.0001
+        :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
+        """
         if isinstance(item, ahpy.Compare):
             self.nodes.append(item)
         elif isinstance(item, (list, tuple)):
@@ -521,15 +560,29 @@ class Compose:
             self.nodes.append(ahpy.Compare(item, comparisons, precision, random_index, iterations, tolerance, cr))
 
     def add_hierarchy(self, hierarchy):
+        """
+        Builds a hierarchy of the stored Compare objects according to the input.
+        :param hierarchy: dictionary, a representation of the hierarchy in which each key of the dictionary
+            is the name of a parent and each value is a list of names of one or more of its children
+            Example: {'a': ['b', 'c'], 'b': ['d', 'e']}
+        """
         self.hierarchy = hierarchy
         for name in self.hierarchy.keys():
             children = [self._get_node(child_name) for child_name in self.hierarchy[name]]
             self._get_node(name).add_children(children)
 
     def report(self, name=None, show=False, verbose=False):
+        """
+        Returns the key information of the stored Compare objects as a dictionary, optionally prints to the console.
+        :param name: string, the name of the Compare object report to return; if None, returns a complete report
+            for the given hierarchy; default is None
+        :param show: boolean, whether to print the report to the console; default is False
+        :param verbose: boolean, whether to include full details of the Compare object within the report;
+            default is False
+        """
         if name:
             self._get_node(name).report(complete=False, show=show, verbose=verbose)
         else:
             self._get_node(list(self.hierarchy.keys())[0]).report(complete=True, show=show, verbose=verbose)
 
-# todo Unit tests, code docs
+# todo Unit tests
