@@ -77,6 +77,9 @@ class Compare:
 
         self.target_weights = self._node_weights if self.global_weight == 1.0 else None
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
     def _check_input(self):
         """
         Raises a ValueError if an input value is not greater than zero;
@@ -513,6 +516,12 @@ class Compose:
         self.nodes = []
         self.hierarchy = None
 
+    def __getitem__(self, item):
+        return self._get_node(item)
+
+    def __getattr__(self, item):
+        return self._get_node(item)
+
     def _get_node(self, name):
         """
         Returns the named Compare object.
@@ -554,6 +563,9 @@ class Compose:
             for i in item:
                 if isinstance(i, ahpy.Compare):
                     self.nodes.append(i)
+                elif isinstance(i, str):
+                    self.nodes.append(ahpy.Compare(*item))
+                    break
                 else:
                     self.nodes.append(ahpy.Compare(*i))
         else:  # item is a Compare object name
@@ -581,8 +593,7 @@ class Compose:
             default is False
         """
         if name:
-            self._get_node(name).report(complete=False, show=show, verbose=verbose)
+            report = self._get_node(name).report(complete=False, show=show, verbose=verbose)
         else:
-            self._get_node(list(self.hierarchy.keys())[0]).report(complete=True, show=show, verbose=verbose)
-
-# todo Unit tests
+            report = self._get_node(list(self.hierarchy.keys())[0]).report(complete=True, show=show, verbose=verbose)
+        return report

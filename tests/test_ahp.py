@@ -110,6 +110,7 @@ def test_cities_target_weights():
 
     assert t.target_weights is None
 
+
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete
 # pairwise comparison matrices,' Mathematical and Computer Modelling, 52:1–2, 2010, pp. 318-333.
 # https://doi.org/10.1016/j.mcm.2010.02.047
@@ -161,9 +162,9 @@ def test_normalized_weights():
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 values = {'a': 0.0385, 'b': 0.0385, 'c': 0.0385, 'd': 0.0385, 'e': 0.0385, 'f': 0.0385, 'g': 0.0385, 'h': 0.0385,
-     'i': 0.0385, 'j': 0.0385, 'k': 0.0385, 'l': 0.0385, 'm': 0.0385, 'n': 0.0385, 'o': 0.0385, 'p': 0.0385,
-     'q': 0.0385, 'r': 0.0385, 's': 0.0385, 't': 0.0385, 'u': 0.0385, 'v': 0.0385, 'w': 0.0385, 'x': 0.0385,
-     'y': 0.0385, 'z': 0.0385}
+          'i': 0.0385, 'j': 0.0385, 'k': 0.0385, 'l': 0.0385, 'm': 0.0385, 'n': 0.0385, 'o': 0.0385, 'p': 0.0385,
+          'q': 0.0385, 'r': 0.0385, 's': 0.0385, 't': 0.0385, 'u': 0.0385, 'v': 0.0385, 'w': 0.0385, 'x': 0.0385,
+          'y': 0.0385, 'z': 0.0385}
 
 
 def test_size_limit_saaty():
@@ -207,28 +208,425 @@ d.add_children([f, g])
 
 
 def test_master_a():
-    assert a.report(verbose=True) == {'name': 'a', 'global_weight': 1.0, 'local_weight': 1.0, 'target_weights': {'z': 0.4233, 'y': 0.3844, 'x': 0.1922}, 'elements': {'global_weights': {'b': 0.5, 'c': 0.5}, 'local_weights': {'b': 0.5, 'c': 0.5}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
+    assert a.report(verbose=True) == {'name': 'a', 'global_weight': 1.0, 'local_weight': 1.0,
+                                      'target_weights': {'z': 0.4233, 'y': 0.3844, 'x': 0.1922},
+                                      'elements': {'global_weights': {'b': 0.5, 'c': 0.5},
+                                                   'local_weights': {'b': 0.5, 'c': 0.5}, 'consistency_ratio': 0.0,
+                                                   'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['b', 'c']},
+                                      'children': {'count': 2, 'names': ['b', 'c']},
+                                      'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
 
 
 def test_master_b():
-    assert b.report(verbose=True) == {'name': 'b', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'d': 0.4, 'e': 0.1}, 'local_weights': {'d': 0.8, 'e': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
+    assert b.report(verbose=True) == {'name': 'b', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None,
+                                      'elements': {'global_weights': {'d': 0.4, 'e': 0.1},
+                                                   'local_weights': {'d': 0.8, 'e': 0.2}, 'consistency_ratio': 0.0,
+                                                   'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['d', 'e']},
+                                      'children': {'count': 2, 'names': ['d', 'e']},
+                                      'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
 
 
 def test_master_c():
-    assert c.report(verbose=True) == {'name': 'c', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'y': 0.2, 'z': 0.2, 'x': 0.1}, 'local_weights': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert c.report(verbose=True) == {'name': 'c', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None,
+                                      'elements': {'global_weights': {'y': 0.2, 'z': 0.2, 'x': 0.1},
+                                                   'local_weights': {'y': 0.4, 'z': 0.4, 'x': 0.2},
+                                                   'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                   'count': 3, 'names': ['x', 'y', 'z']}, 'children': None,
+                                      'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
 
 
 def test_master_d():
-    assert d.report(verbose=True) == {'name': 'd', 'global_weight': 0.4, 'local_weight': 0.8, 'target_weights': None, 'elements': {'global_weights': {'f': 0.2667, 'g': 0.1333}, 'local_weights': {'f': 0.6667, 'g': 0.3333}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['f', 'g']}, 'children': {'count': 2, 'names': ['f', 'g']}, 'comparisons': {'count': 1, 'input': {('f', 'g'): 2}, 'computed': None}}
+    assert d.report(verbose=True) == {'name': 'd', 'global_weight': 0.4, 'local_weight': 0.8, 'target_weights': None,
+                                      'elements': {'global_weights': {'f': 0.2667, 'g': 0.1333},
+                                                   'local_weights': {'f': 0.6667, 'g': 0.3333},
+                                                   'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                   'count': 2, 'names': ['f', 'g']},
+                                      'children': {'count': 2, 'names': ['f', 'g']},
+                                      'comparisons': {'count': 1, 'input': {('f', 'g'): 2}, 'computed': None}}
 
 
 def test_master_e():
-    assert e.report(verbose=True) == {'name': 'e', 'global_weight': 0.1, 'local_weight': 0.2, 'target_weights': None, 'elements': {'global_weights': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}, 'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert e.report(verbose=True) == {'name': 'e', 'global_weight': 0.1, 'local_weight': 0.2, 'target_weights': None,
+                                      'elements': {'global_weights': {'z': 0.05, 'y': 0.0333, 'x': 0.0167},
+                                                   'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667},
+                                                   'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                   'count': 3, 'names': ['x', 'y', 'z']}, 'children': None,
+                                      'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
 
 
 def test_master_f():
-    assert f.report(verbose=True) == {'name': 'f', 'global_weight': 0.2667, 'local_weight': 0.6667, 'target_weights': None, 'elements': {'global_weights': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533}, 'local_weights': {'y': 0.4, 'z': 0.4, 'x': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
+    assert f.report(verbose=True) == {'name': 'f', 'global_weight': 0.2667, 'local_weight': 0.6667,
+                                      'target_weights': None,
+                                      'elements': {'global_weights': {'y': 0.1067, 'z': 0.1067, 'x': 0.0533},
+                                                   'local_weights': {'y': 0.4, 'z': 0.4, 'x': 0.2},
+                                                   'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                   'count': 3, 'names': ['x', 'y', 'z']}, 'children': None,
+                                      'comparisons': {'count': 3, 'input': {'x': 2, 'y': 4, 'z': 4}, 'computed': None}}
 
 
 def test_master_g():
-    assert g.report(verbose=True) == {'name': 'g', 'global_weight': 0.1333, 'local_weight': 0.3333, 'target_weights': None, 'elements': {'global_weights': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222}, 'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+    assert g.report(verbose=True) == {'name': 'g', 'global_weight': 0.1333, 'local_weight': 0.3333,
+                                      'target_weights': None,
+                                      'elements': {'global_weights': {'z': 0.0666, 'y': 0.0444, 'x': 0.0222},
+                                                   'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667},
+                                                   'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                   'count': 3, 'names': ['x', 'y', 'z']}, 'children': None,
+                                      'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
+
+
+# Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
+
+cri = ('Cost', 'Safety', 'Style', 'Capacity')
+c_cri = list(itertools.combinations(cri, 2))
+
+costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
+c_pairs = list(itertools.combinations(costs, 2))
+
+alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+pairs = list(itertools.combinations(alt, 2))
+
+capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
+capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
+cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
+cost_fuel_m = (
+    1 / 1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1 / 1.23, 1 / 1.14, 1 / 1.18, 1.08, 1.04, 1 / 1.04)
+cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
+cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
+style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
+
+cost = ahpy.Compare('Cost', dict(zip(c_pairs, (2, 5, 3, 2, 2, .5))))
+capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
+capacity_cargo = ahpy.Compare('Cargo', dict(zip(pairs, capacity_cargo_m)))
+safety = ahpy.Compare('Safety', dict(zip(pairs, safety_m)), 3)
+style = ahpy.Compare('Style', dict(zip(pairs, style_m)), 3)
+
+h = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
+     'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
+     'Capacity': ['Passenger', 'Cargo']}
+
+compose = ahpy.Compose()
+
+compose.add_comparisons(capacity_cargo)
+compose.add_comparisons([cost, capacity])
+compose.add_comparisons((safety, style))
+
+compose.add_comparisons('Criteria', dict(zip(c_cri, (3, 7, 3, 9, 1, 1 / 7))), 3)
+compose.add_comparisons(('Passenger', dict(zip(pairs, capacity_pass_m))))
+
+compose.add_comparisons([('Price', dict(zip(pairs, cost_price_m)), 3), ('Fuel', dict(zip(pairs, cost_fuel_m)), 3)])
+compose.add_comparisons(
+    (['Resale', dict(zip(pairs, cost_resale_m)), 3], ['Maintenance', dict(zip(pairs, cost_maint_m)), 3, 'saaty']))
+
+compose.add_hierarchy(h)
+
+
+def test_compose_target_weights_attr():
+    assert compose.Criteria.target_weights == {'Odyssey': 0.219, 'Accord Sedan': 0.215, 'CR-V': 0.167,
+                                               'Accord Hybrid': 0.15, 'Element': 0.144, 'Pilot': 0.106}
+
+
+def test_compose_item():
+    assert compose['Price']['local_weights'] == {'Element': 0.366, 'Accord Sedan': 0.246, 'CR-V': 0.246,
+                                                 'Odyssey': 0.093, 'Accord Hybrid': 0.025, 'Pilot': 0.025}
+
+
+def test_compose_verbose_report():
+    assert compose.report(verbose=True) == {'Criteria': {'name': 'Criteria', 'global_weight': 1.0, 'local_weight': 1.0,
+                                                         'target_weights': {'Odyssey': 0.219, 'Accord Sedan': 0.215,
+                                                                            'CR-V': 0.167, 'Accord Hybrid': 0.15,
+                                                                            'Element': 0.144, 'Pilot': 0.106},
+                                                         'elements': {'global_weights': {'Cost': 0.51, 'Safety': 0.234,
+                                                                                         'Capacity': 0.215,
+                                                                                         'Style': 0.041},
+                                                                      'local_weights': {'Cost': 0.51, 'Safety': 0.234,
+                                                                                        'Capacity': 0.215,
+                                                                                        'Style': 0.041},
+                                                                      'consistency_ratio': 0.08,
+                                                                      'random_index': 'Donegan & Dodd', 'count': 4,
+                                                                      'names': ['Cost', 'Safety', 'Style', 'Capacity']},
+                                                         'children': {'count': 4,
+                                                                      'names': ['Cost', 'Safety', 'Style', 'Capacity']},
+                                                         'comparisons': {'count': 6,
+                                                                         'input': pytest.approx({('Cost', 'Safety'): 3,
+                                                                                                 ('Cost', 'Style'): 7,
+                                                                                                 (
+                                                                                                     'Cost',
+                                                                                                     'Capacity'): 3,
+                                                                                                 ('Safety', 'Style'): 9,
+                                                                                                 (
+                                                                                                     'Safety',
+                                                                                                     'Capacity'): 1,
+                                                                                                 ('Style',
+                                                                                                  'Capacity'): 0.14285714285714285}),
+                                                                         'computed': None}},
+                                            'Cost': {'name': 'Cost', 'global_weight': 0.51, 'local_weight': 0.51,
+                                                     'target_weights': None, 'elements': {
+                                                    'global_weights': {'Price': 0.2489, 'Fuel': 0.1283,
+                                                                       'Resale': 0.0819, 'Maintenance': 0.0509},
+                                                    'local_weights': {'Price': 0.4881, 'Fuel': 0.2515, 'Resale': 0.1605,
+                                                                      'Maintenance': 0.0999},
+                                                    'consistency_ratio': 0.0164, 'random_index': 'Donegan & Dodd',
+                                                    'count': 4, 'names': ['Price', 'Fuel', 'Maintenance', 'Resale']},
+                                                     'children': {'count': 4,
+                                                                  'names': ['Price', 'Fuel', 'Resale', 'Maintenance']},
+                                                     'comparisons': {'count': 6, 'input': {('Price', 'Fuel'): 2,
+                                                                                           ('Price', 'Maintenance'): 5,
+                                                                                           ('Price', 'Resale'): 3,
+                                                                                           ('Fuel', 'Maintenance'): 2,
+                                                                                           ('Fuel', 'Resale'): 2, (
+                                                                                               'Maintenance',
+                                                                                               'Resale'): 0.5},
+                                                                     'computed': None}},
+                                            'Price': {'name': 'Price', 'global_weight': 0.2489, 'local_weight': 0.4881,
+                                                      'target_weights': None, 'elements': {
+                                                    'global_weights': {'Element': 0.091, 'Accord Sedan': 0.061,
+                                                                       'CR-V': 0.061, 'Odyssey': 0.023,
+                                                                       'Accord Hybrid': 0.006, 'Pilot': 0.006},
+                                                    'local_weights': {'Element': 0.366, 'Accord Sedan': 0.246,
+                                                                      'CR-V': 0.246, 'Odyssey': 0.093,
+                                                                      'Accord Hybrid': 0.025, 'Pilot': 0.025},
+                                                    'consistency_ratio': 0.072, 'random_index': 'Donegan & Dodd',
+                                                    'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                      'comparisons': {'count': 15,
+                                                                      'input': pytest.approx(
+                                                                          {('Accord Sedan', 'Accord Hybrid'): 9,
+                                                                           ('Accord Sedan', 'Pilot'): 9,
+                                                                           ('Accord Sedan', 'CR-V'): 1,
+                                                                           ('Accord Sedan', 'Element'): 0.5,
+                                                                           ('Accord Sedan', 'Odyssey'): 5,
+                                                                           ('Accord Hybrid', 'Pilot'): 1, (
+                                                                               'Accord Hybrid',
+                                                                               'CR-V'): 0.1111111111111111, (
+                                                                               'Accord Hybrid',
+                                                                               'Element'): 0.1111111111111111, (
+                                                                               'Accord Hybrid',
+                                                                               'Odyssey'): 0.14285714285714285,
+                                                                           ('Pilot', 'CR-V'): 0.1111111111111111, (
+                                                                               'Pilot', 'Element'): 0.1111111111111111,
+                                                                           ('Pilot',
+                                                                            'Odyssey'): 0.14285714285714285,
+                                                                           ('CR-V', 'Element'): 0.5,
+                                                                           ('CR-V', 'Odyssey'): 5,
+                                                                           ('Element', 'Odyssey'): 6}),
+                                                                      'computed': None}},
+                                            'Fuel': {'name': 'Fuel', 'global_weight': 0.1283, 'local_weight': 0.2515,
+                                                     'target_weights': None, 'elements': {
+                                                    'global_weights': {'Accord Hybrid': 0.027, 'Accord Sedan': 0.024,
+                                                                       'CR-V': 0.021, 'Odyssey': 0.02, 'Element': 0.019,
+                                                                       'Pilot': 0.017},
+                                                    'local_weights': {'Accord Hybrid': 0.211, 'Accord Sedan': 0.187,
+                                                                      'CR-V': 0.163, 'Odyssey': 0.157, 'Element': 0.151,
+                                                                      'Pilot': 0.132}, 'consistency_ratio': 0.0,
+                                                    'random_index': 'Donegan & Dodd', 'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                     'comparisons': {'count': 15, 'input': pytest.approx({
+                                                         ('Accord Sedan', 'Accord Hybrid'): 0.8849557522123894,
+                                                         ('Accord Sedan', 'Pilot'): 1.41,
+                                                         ('Accord Sedan', 'CR-V'): 1.15,
+                                                         ('Accord Sedan', 'Element'): 1.24,
+                                                         ('Accord Sedan', 'Odyssey'): 1.19,
+                                                         ('Accord Hybrid', 'Pilot'): 1.59,
+                                                         ('Accord Hybrid', 'CR-V'): 1.3,
+                                                         ('Accord Hybrid', 'Element'): 1.4,
+                                                         ('Accord Hybrid', 'Odyssey'): 1.35,
+                                                         ('Pilot', 'CR-V'): 0.8130081300813008,
+                                                         ('Pilot', 'Element'): 0.8771929824561404,
+                                                         ('Pilot', 'Odyssey'): 0.8474576271186441,
+                                                         ('CR-V', 'Element'): 1.08, ('CR-V', 'Odyssey'): 1.04,
+                                                         ('Element', 'Odyssey'): 0.9615384615384615}),
+                                                                     'computed': None}},
+                                            'Resale': {'name': 'Resale', 'global_weight': 0.0819,
+                                                       'local_weight': 0.1605, 'target_weights': None, 'elements': {
+                                                    'global_weights': {'CR-V': 0.034, 'Accord Sedan': 0.018,
+                                                                       'Element': 0.009, 'Odyssey': 0.009,
+                                                                       'Accord Hybrid': 0.008, 'Pilot': 0.005},
+                                                    'local_weights': {'CR-V': 0.416, 'Accord Sedan': 0.225,
+                                                                      'Element': 0.105, 'Odyssey': 0.105,
+                                                                      'Accord Hybrid': 0.095, 'Pilot': 0.055},
+                                                    'consistency_ratio': 0.005, 'random_index': 'Donegan & Dodd',
+                                                    'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                       'comparisons': {'count': 15,
+                                                                       'input': pytest.approx(
+                                                                           {('Accord Sedan', 'Accord Hybrid'): 3,
+                                                                            ('Accord Sedan', 'Pilot'): 4,
+                                                                            ('Accord Sedan', 'CR-V'): 0.5,
+                                                                            ('Accord Sedan', 'Element'): 2,
+                                                                            ('Accord Sedan', 'Odyssey'): 2,
+                                                                            ('Accord Hybrid', 'Pilot'): 2,
+                                                                            ('Accord Hybrid', 'CR-V'): 0.2,
+                                                                            ('Accord Hybrid', 'Element'): 1,
+                                                                            ('Accord Hybrid', 'Odyssey'): 1,
+                                                                            ('Pilot', 'CR-V'): 0.16666666666666666,
+                                                                            ('Pilot', 'Element'): 0.5,
+                                                                            ('Pilot', 'Odyssey'): 0.5,
+                                                                            ('CR-V', 'Element'): 4,
+                                                                            ('CR-V', 'Odyssey'): 4,
+                                                                            ('Element', 'Odyssey'): 1}),
+                                                                       'computed': None}},
+                                            'Maintenance': {'name': 'Maintenance', 'global_weight': 0.0509,
+                                                            'local_weight': 0.0999, 'target_weights': None,
+                                                            'elements': {'global_weights': {'Accord Sedan': 0.018,
+                                                                                            'Accord Hybrid': 0.016,
+                                                                                            'CR-V': 0.005,
+                                                                                            'Element': 0.004,
+                                                                                            'Pilot': 0.004,
+                                                                                            'Odyssey': 0.003},
+                                                                         'local_weights': {'Accord Sedan': 0.358,
+                                                                                           'Accord Hybrid': 0.313,
+                                                                                           'CR-V': 0.1,
+                                                                                           'Element': 0.088,
+                                                                                           'Pilot': 0.084,
+                                                                                           'Odyssey': 0.057},
+                                                                         'consistency_ratio': 0.023,
+                                                                         'random_index': 'Saaty', 'count': 6,
+                                                                         'names': ['Accord Sedan', 'Accord Hybrid',
+                                                                                   'Pilot', 'CR-V', 'Element',
+                                                                                   'Odyssey']}, 'children': None,
+                                                            'comparisons': {'count': 15, 'input': {
+                                                                ('Accord Sedan', 'Accord Hybrid'): 1.5,
+                                                                ('Accord Sedan', 'Pilot'): 4,
+                                                                ('Accord Sedan', 'CR-V'): 4,
+                                                                ('Accord Sedan', 'Element'): 4,
+                                                                ('Accord Sedan', 'Odyssey'): 5,
+                                                                ('Accord Hybrid', 'Pilot'): 4,
+                                                                ('Accord Hybrid', 'CR-V'): 4,
+                                                                ('Accord Hybrid', 'Element'): 4,
+                                                                ('Accord Hybrid', 'Odyssey'): 5, ('Pilot', 'CR-V'): 1,
+                                                                ('Pilot', 'Element'): 1.2, ('Pilot', 'Odyssey'): 1,
+                                                                ('CR-V', 'Element'): 1, ('CR-V', 'Odyssey'): 3,
+                                                                ('Element', 'Odyssey'): 2}, 'computed': None}},
+                                            'Safety': {'name': 'Safety', 'global_weight': 0.234, 'local_weight': 0.234,
+                                                       'target_weights': None, 'elements': {
+                                                    'global_weights': {'Odyssey': 0.102, 'Accord Sedan': 0.051,
+                                                                       'Accord Hybrid': 0.051, 'Pilot': 0.018,
+                                                                       'CR-V': 0.008, 'Element': 0.005},
+                                                    'local_weights': {'Odyssey': 0.434, 'Accord Sedan': 0.216,
+                                                                      'Accord Hybrid': 0.216, 'Pilot': 0.075,
+                                                                      'CR-V': 0.036, 'Element': 0.022},
+                                                    'consistency_ratio': 0.085, 'random_index': 'Donegan & Dodd',
+                                                    'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                       'comparisons': {'count': 15,
+                                                                       'input': pytest.approx(
+                                                                           {('Accord Sedan', 'Accord Hybrid'): 1,
+                                                                            ('Accord Sedan', 'Pilot'): 5,
+                                                                            ('Accord Sedan', 'CR-V'): 7,
+                                                                            ('Accord Sedan', 'Element'): 9, (
+                                                                                'Accord Sedan',
+                                                                                'Odyssey'): 0.3333333333333333,
+                                                                            ('Accord Hybrid', 'Pilot'): 5,
+                                                                            ('Accord Hybrid', 'CR-V'): 7,
+                                                                            ('Accord Hybrid', 'Element'): 9, (
+                                                                                'Accord Hybrid',
+                                                                                'Odyssey'): 0.3333333333333333,
+                                                                            ('Pilot', 'CR-V'): 2,
+                                                                            ('Pilot', 'Element'): 9,
+                                                                            ('Pilot', 'Odyssey'): 0.125,
+                                                                            ('CR-V', 'Element'): 2,
+                                                                            ('CR-V', 'Odyssey'): 0.125, ('Element',
+                                                                                                         'Odyssey'): 0.1111111111111111}),
+                                                                       'computed': None}},
+                                            'Style': {'name': 'Style', 'global_weight': 0.041, 'local_weight': 0.041,
+                                                      'target_weights': None, 'elements': {
+                                                    'global_weights': {'Accord Sedan': 0.015, 'Accord Hybrid': 0.015,
+                                                                       'CR-V': 0.006, 'Odyssey': 0.003, 'Pilot': 0.002,
+                                                                       'Element': 0.001},
+                                                    'local_weights': {'Accord Sedan': 0.358, 'Accord Hybrid': 0.358,
+                                                                      'CR-V': 0.155, 'Odyssey': 0.068, 'Pilot': 0.039,
+                                                                      'Element': 0.023}, 'consistency_ratio': 0.107,
+                                                    'random_index': 'Donegan & Dodd', 'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                      'comparisons': {'count': 15,
+                                                                      'input': pytest.approx(
+                                                                          {('Accord Sedan', 'Accord Hybrid'): 1,
+                                                                           ('Accord Sedan', 'Pilot'): 7,
+                                                                           ('Accord Sedan', 'CR-V'): 5,
+                                                                           ('Accord Sedan', 'Element'): 9,
+                                                                           ('Accord Sedan', 'Odyssey'): 6,
+                                                                           ('Accord Hybrid', 'Pilot'): 7,
+                                                                           ('Accord Hybrid', 'CR-V'): 5,
+                                                                           ('Accord Hybrid', 'Element'): 9,
+                                                                           ('Accord Hybrid', 'Odyssey'): 6,
+                                                                           ('Pilot', 'CR-V'): 0.16666666666666666,
+                                                                           ('Pilot', 'Element'): 3, (
+                                                                               'Pilot', 'Odyssey'): 0.3333333333333333,
+                                                                           ('CR-V', 'Element'): 7,
+                                                                           ('CR-V', 'Odyssey'): 5,
+                                                                           ('Element', 'Odyssey'): 0.2}),
+                                                                      'computed': None}},
+                                            'Capacity': {'name': 'Capacity', 'global_weight': 0.215,
+                                                         'local_weight': 0.215, 'target_weights': None, 'elements': {
+                                                    'global_weights': {'Passenger': 0.1792, 'Cargo': 0.0358},
+                                                    'local_weights': {'Passenger': 0.8333, 'Cargo': 0.1667},
+                                                    'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                    'count': 2, 'names': ['Cargo', 'Passenger']},
+                                                         'children': {'count': 2, 'names': ['Passenger', 'Cargo']},
+                                                         'comparisons': {'count': 1,
+                                                                         'input': {('Cargo', 'Passenger'): 0.2},
+                                                                         'computed': None}},
+                                            'Passenger': {'name': 'Passenger', 'global_weight': 0.1792,
+                                                          'local_weight': 0.8333, 'target_weights': None, 'elements': {
+                                                    'global_weights': {'Pilot': 0.0489, 'Odyssey': 0.0489,
+                                                                       'Accord Sedan': 0.0244, 'Accord Hybrid': 0.0244,
+                                                                       'CR-V': 0.0244, 'Element': 0.0082},
+                                                    'local_weights': {'Pilot': 0.2727, 'Odyssey': 0.2727,
+                                                                      'Accord Sedan': 0.1364, 'Accord Hybrid': 0.1364,
+                                                                      'CR-V': 0.1364, 'Element': 0.0455},
+                                                    'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd',
+                                                    'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                          'comparisons': {'count': 15, 'input': pytest.approx({
+                                                              ('Accord Sedan', 'Accord Hybrid'): 1,
+                                                              ('Accord Sedan', 'Pilot'): 0.5,
+                                                              ('Accord Sedan', 'CR-V'): 1,
+                                                              ('Accord Sedan', 'Element'): 3,
+                                                              ('Accord Sedan', 'Odyssey'): 0.5,
+                                                              ('Accord Hybrid', 'Pilot'): 0.5,
+                                                              ('Accord Hybrid', 'CR-V'): 1,
+                                                              ('Accord Hybrid', 'Element'): 3,
+                                                              ('Accord Hybrid', 'Odyssey'): 0.5, ('Pilot', 'CR-V'): 2,
+                                                              ('Pilot', 'Element'): 6, ('Pilot', 'Odyssey'): 1,
+                                                              ('CR-V', 'Element'): 3, ('CR-V', 'Odyssey'): 0.5,
+                                                              ('Element', 'Odyssey'): 0.16666666666666666}),
+                                                                          'computed': None}},
+                                            'Cargo': {'name': 'Cargo', 'global_weight': 0.0358, 'local_weight': 0.1667,
+                                                      'target_weights': None, 'elements': {
+                                                    'global_weights': {'Odyssey': 0.0111, 'Pilot': 0.0061,
+                                                                       'CR-V': 0.0061, 'Element': 0.0061,
+                                                                       'Accord Sedan': 0.0032, 'Accord Hybrid': 0.0032},
+                                                    'local_weights': {'Odyssey': 0.3106, 'Pilot': 0.1702,
+                                                                      'CR-V': 0.1702, 'Element': 0.1702,
+                                                                      'Accord Sedan': 0.0894, 'Accord Hybrid': 0.0894},
+                                                    'consistency_ratio': 0.0023, 'random_index': 'Donegan & Dodd',
+                                                    'count': 6,
+                                                    'names': ['Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V',
+                                                              'Element', 'Odyssey']}, 'children': None,
+                                                      'comparisons': {'count': 15,
+                                                                      'input': pytest.approx(
+                                                                          {('Accord Sedan', 'Accord Hybrid'): 1,
+                                                                           ('Accord Sedan', 'Pilot'): 0.5,
+                                                                           ('Accord Sedan', 'CR-V'): 0.5,
+                                                                           ('Accord Sedan', 'Element'): 0.5, (
+                                                                               'Accord Sedan',
+                                                                               'Odyssey'): 0.3333333333333333,
+                                                                           ('Accord Hybrid', 'Pilot'): 0.5,
+                                                                           ('Accord Hybrid', 'CR-V'): 0.5,
+                                                                           ('Accord Hybrid', 'Element'): 0.5, (
+                                                                               'Accord Hybrid',
+                                                                               'Odyssey'): 0.3333333333333333,
+                                                                           ('Pilot', 'CR-V'): 1,
+                                                                           ('Pilot', 'Element'): 1,
+                                                                           ('Pilot', 'Odyssey'): 0.5,
+                                                                           ('CR-V', 'Element'): 1,
+                                                                           ('CR-V', 'Odyssey'): 0.5,
+                                                                           ('Element', 'Odyssey'): 0.5}),
+                                                                      'computed': None}}}
