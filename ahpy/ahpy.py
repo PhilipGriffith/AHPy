@@ -2,9 +2,10 @@ import bisect
 import copy
 import itertools
 import json
+import warnings
+
 import numpy as np
 import scipy.optimize as spo
-import warnings
 
 import ahpy
 
@@ -32,6 +33,7 @@ class Compare:
          of coordinates is less than this value; default is 0.0001
     :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
     """
+
     def __init__(self, name, comparisons, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
         self.name = name
         self.comparisons = comparisons
@@ -512,6 +514,7 @@ class Compose:
     of parent-child relationships, as well as an alternative way to build Compare objects using a list or tuple
     of the necessary inputs.
     """
+
     def __init__(self):
         self.nodes = []
         self.hierarchy = None
