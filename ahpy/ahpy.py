@@ -331,7 +331,7 @@ class Compare:
         """
         for child in self._node_children:
             if not isinstance(child, Compare):
-                msg = f'{child} is an invalid input. All children must be Compare objects.'
+                msg = 'A Compare object is either misconfigured or missing from the hierarchy.'
                 raise TypeError(msg)
 
     def _recompute(self):
@@ -534,14 +534,14 @@ class Compose:
     def add_comparisons(self, item,
                         comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
         """
-        Adds Compare objects to a stored list of nodes. Input can be either one or more Compose objects,
+        Adds Compare objects to a stored list of nodes. Input can be either one or more Compare objects,
         one or more lists or tuples containing the inputs necessary to create a Compare object,
         or the arguments necessary to create a Compare object.
         The method signature is intended to mimic that of the Compare class for this reason.
         :param item: Compare object, list or tuple, string, either one or more Compare objects (or the data required
             to create a Compare object, stored as a list or tuple) or the 'name' argument that forms
             the first parameter required to create a new Compare object
-        :param comparisons: dictionary, a dictionary in one of two forms: (i) each key is a tuple of two elements and
+        :param comparisons: dictionary, the elements and values to be compared, provided in one of two forms: (i) each key is a tuple of two elements and
             each value is their pairwise comparison value, or (ii) each key is a single element and each value
             is that element's measured value; default is None
             Examples: (i) {('a', 'b'): 3, ('b', 'c'): 2}, (ii) {'a': 1.2, 'b': 2.3, 'c': 3.4}
@@ -578,10 +578,14 @@ class Compose:
             is the name of a parent and each value is a list of names of one or more of its children
             Example: {'a': ['b', 'c'], 'b': ['d', 'e']}
         """
-        self.hierarchy = hierarchy
-        for name in self.hierarchy.keys():
-            children = [self._get_node(child_name) for child_name in self.hierarchy[name]]
-            self._get_node(name).add_children(children)
+        try:
+            self.hierarchy = hierarchy
+            for name in self.hierarchy.keys():
+                children = [self._get_node(child_name) for child_name in self.hierarchy[name]]
+                self._get_node(name).add_children(children)
+        except AttributeError:
+            msg = 'All comparisons must be added to the Compose object before adding a hierarchy.'
+            raise AttributeError(msg)
 
     def report(self, name=None, show=False, verbose=False):
         """

@@ -24,7 +24,8 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Purchasing a vehicle](#purchasing-a-vehicle)
 
-[Purchasing a vehicle, Normalized Weights](#purchasing-a-vehicle-normalized-weights)
+[Purchasing a vehicle reprised: normalized weights and the Compose class](#purchasing-a-vehicle-reprised-normalized-weights-and-the-compose-class)
+
 
 #### Details
 
@@ -34,9 +35,15 @@ AHPy requires [Python 3.7+](https://www.python.org/), as well as [numpy](https:/
 
 [Compare.report()](#comparereport)
 
-[A Note on Weights](#a-note-on-weights)
-
 [The Compose Class](#the-compose-class)
+
+[Compose.add_comparisons()](#composeadd_comparisons)
+
+[Compose.add_hierarchy()](#composeadd_hierarchy)
+
+[Compose.report()](#composereport)
+
+[A Note on Weights](#a-note-on-weights)
 
 [Missing Pairwise Comparisons](#missing-pairwise-comparisons)
 
@@ -73,14 +80,14 @@ We can recreate this analysis with AHPy using the following code:
 
 ```python
 >>> drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
-                          ('coffee', 'milk'): 1, ('coffee', 'water'): 1 / 2,
-                          ('wine', 'tea'): 1 / 3, ('wine', 'beer'): 1 / 9, ('wine', 'soda'): 1 / 9,
-                          ('wine', 'milk'): 1 / 9, ('wine', 'water'): 1 / 9,
-                          ('tea', 'beer'): 1 / 3, ('tea', 'soda'): 1 / 4, ('tea', 'milk'): 1 / 3,
-                          ('tea', 'water'): 1 / 9,
-                          ('beer', 'soda'): 1 / 2, ('beer', 'milk'): 1, ('beer', 'water'): 1 / 3,
-                          ('soda', 'milk'): 2, ('soda', 'water'): 1 / 2,
-                          ('milk', 'water'): 1 / 3}
+						 ('coffee', 'milk'): 1, ('coffee', 'water'): 1 / 2,
+                         ('wine', 'tea'): 1 / 3, ('wine', 'beer'): 1 / 9, ('wine', 'soda'): 1 / 9,
+                         ('wine', 'milk'): 1 / 9, ('wine', 'water'): 1 / 9,
+                         ('tea', 'beer'): 1 / 3, ('tea', 'soda'): 1 / 4, ('tea', 'milk'): 1 / 3,
+                         ('tea', 'water'): 1 / 9,
+                         ('beer', 'soda'): 1 / 2, ('beer', 'milk'): 1, ('beer', 'water'): 1 / 3,
+                         ('soda', 'milk'): 2, ('soda', 'water'): 1 / 2,
+                         ('milk', 'water'): 1 / 3}
 
 >>> drinks = ahpy.Compare(name='Drinks', comparisons=drink_comparisons, precision=3, random_index='saaty')
 
@@ -92,7 +99,7 @@ We can recreate this analysis with AHPy using the following code:
 ```
 
 1. First, we create a dictionary of pairwise comparisons using the values from the matrix above.<br>
-2. We then create a Compare object, initializing it with a unique name and the dictionary we just made. We also change the precision and random index so that the results match those provided by Saaty.<br>
+2. We then create a **Compare** object, initializing it with a unique name and the dictionary we just made. We also change the precision and random index so that the results match those provided by Saaty.<br>
 3. Finally, we print the Compare object's target weights and consistency ratio to see the results of our analysis.
 
 Brilliant!
@@ -120,8 +127,8 @@ In this example, we'll be judging job candidates by their experience, education,
 
 ```python
 >>> criteria_comparisons = {('Experience', 'Education'): 4, ('Experience', 'Charisma'): 3, ('Experience', 'Age'): 7,
-('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
-('Charisma', 'Age'): 5}
+							('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
+							('Charisma', 'Age'): 5}
 ```
 
 Before moving on, it's important to note that the *order* of the elements that form the dictionaries' keys is meaningful. For example, using Saaty's scale, the comparison `('Experience', 'Education'): 4` means that "Experience is *moderately+ more important than* Education." 
@@ -151,25 +158,31 @@ Now that the hierarchy represents the decision problem, we can print the target 
 {'Nell': 0.493, 'Moll': 0.358, 'Sue': 0.15}
 ```
 
-We can also print the local and global weights of the elements within any of the other Compare objects, as well as the consistency ratio of their comparisons. The global and local weight of the Compare object itself is likewise available:
+We can also print the local and global weights of the elements within any of the other Compare objects, as well as the consistency ratio of their comparisons:
 
 ```python
 >>> print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
 >>> print(experience.consistency_ratio)
 0.035
->>> print(experience.global_weight)
-0.548
 
 >>> print(education.global_weights)
 {'Sue': 0.093, 'Moll': 0.024, 'Nell': 0.01}
 >>> print(education.consistency_ratio)
 0.062
+```
+
+The global and local weights of the Compare objects themselves are likewise available:
+
+```python
+>>> print(experience.global_weight)
+0.548
+
 >>> print(education.local_weight)
 0.127
 ```
 
-Calling `report()` on a Compare object provides a standard way to learn detailed information about the object. In the code below, the variable `report` contains a [Python dictionary](#comparereport), while the `show=True` argument prints the same information to the console in JSON format:
+Calling `report()` on a Compare object provides a standard way to learn information about the object. In the code below, the variable `report` contains a [Python dictionary](#comparereport) of important information, while the `show=True` argument prints the same information to the console in JSON format:
 
 ```python
 >>> report = criteria.report(show=True)
@@ -211,8 +224,8 @@ First, we compare the high-level criteria to one another:
 
 ```python
 >>> criteria_comparisons = {('Cost', 'Safety'): 3, ('Cost', 'Style'): 7, ('Cost', 'Capacity'): 3,
-('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
-('Style', 'Capacity'): 1/7}
+							('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
+							('Style', 'Capacity'): 1/7}
 ```
 
 If we create a Compare object for the criteria, we can view its report:
@@ -253,8 +266,8 @@ Next, we compare the *sub*criteria of Cost to one another...
 
 ```python
 >>> cost_comparisons = {('Price', 'Fuel'): 2, ('Price', 'Maintenance'): 5, ('Price', 'Resale'): 3,
-('Fuel', 'Maintenance'): 2, ('Fuel', 'Resale'): 2,
-('Maintenance', 'Resale'): 1/2}
+						('Fuel', 'Maintenance'): 2, ('Fuel', 'Resale'): 2,
+						('Maintenance', 'Resale'): 1/2}
 ```
 
 ...as well as the subcriteria of Capacity:
@@ -525,6 +538,8 @@ Finally, calling `report(complete=True)` on any Compare object in the hierarchy 
 
 ```python
 >>> complete_report = cargo.report(complete=True)
+>>> print([key for key in complete_report])
+['Criteria', 'Cost', 'Price', 'Fuel', 'Maintenance', 'Resale', 'Safety', 'Style', 'Capacity', 'Cargo', 'Passenger']
 >>> print(complete_report['Cargo'])
 {'name': 'Cargo', 'global_weight': 0.0358, 'local_weight': 0.1667, 'target_weights': None, 'elements': {'global_weights': {'Odyssey': 0.011, 'Pilot': 0.006, 'CR-V': 0.006, 'Element': 0.006, 'Accord Sedan': 0.003, 'Accord Hybrid': 0.003}, 'local_weights': {'Odyssey': 0.311, 'Pilot': 0.17, 'CR-V': 0.17, 'Element': 0.17, 'Accord Sedan': 0.089, 'Accord Hybrid': 0.089}, 'consistency_ratio': 0.002}}
 
@@ -540,95 +555,136 @@ Calling `report(complete=True, verbose=True)` will return a similar dictionary, 
 15
 ```
 
-### Purchasing a vehicle, Normalized Weights
+We could also print this report to the console with the `show=True` argument.
 
-After reading through the explanation of the [vehicle decision problem on Wikipedia](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example), you may have wondered whether the data used to represent purely numeric criteria (such as passenger capacity) could be used *directly* when comparing the vehicles to one another, rather than requiring tranformation into judgments of "intensity." In this example, we'll solve the same decision problem as before, except this time we'll normalize the measured values for passenger capacity, fuel costs, resale value and cargo capacity in order to arrive at a different set of weights for these criteria.
+### Purchasing a vehicle reprised: normalized weights and the Compose class
 
-Using the list of vehicles from the previous example, we can simply zip together the vehicles and their measured values for each criterion:
+After reading through the explanation of the [vehicle decision problem on Wikipedia](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_–_car_example), you may have wondered whether the data used to represent purely numeric criteria (such as passenger capacity) could be used *directly* when comparing the vehicles to one another, rather than requiring tranformation into judgments of "intensity." In this example, we'll solve the same decision problem as before, except now we'll normalize the measured values for passenger capacity, fuel costs, resale value and cargo capacity in order to arrive at a different set of weights for these criteria.
+
+We'll also use a **Compose** object to structure the decision problem. The Compose object allows us to work with an abstract representation of the problem hierarchy, rather than build it dynamically with code, which is valuable when we're not using AHPy in an interactive setting. To use the Compose object, we'll need to first add the comparison information, then the hierarchy, *in that order*. But more on that later.
+
+Using the list of vehicles from the previous example, we'll first zip together the vehicles and their measured values, then create a Compare object for each of our normalized criteria:
 
 ```python
 >>> passenger_measured_values = (5, 5, 8, 5, 4, 8)
 >>> passenger_data = dict(zip(vehicles, passenger_measured_values))
 >>> print(passenger_data)
 {'Accord Sedan': 5, 'Accord Hybrid': 5, 'Pilot': 8, 'CR-V': 5, 'Element': 4, 'Odyssey': 8}
->>> passenger = ahp.Compare('Passenger', passenger_data, precision=3)
+>>> passenger_normalized = ahp.Compare('Passenger', passenger_data, precision=3)
 
 >>> fuel_measured_values = (31, 35, 22, 27, 25, 26)
 >>> fuel_data = dict(zip(vehicles, fuel_measured_values))
->>> fuel = ahp.Compare('Fuel', fuel_data, precision=3)
+>>> fuel_normalized = ahp.Compare('Fuel', fuel_data, precision=3)
 
 >>> resale_measured_values = (0.52, 0.46, 0.44, 0.55, 0.48, 0.48)
 >>> resale_data = dict(zip(vehicles, resale_measured_values))
->>> resale = ahp.Compare('Resale', resale_data, precision=3)
+>>> resale_normalized = ahp.Compare('Resale', resale_data, precision=3)
 
 >>> cargo_measured_values = (14, 14, 87.6, 72.9, 74.6, 147.4)
 >>> cargo_data = dict(zip(vehicles, cargo_measured_values))
->>> cargo = ahp.Compare('Cargo', cargo_data, precision=3)
+>>> cargo_normalized = ahp.Compare('Cargo', cargo_data, precision=3)
 ```
 
-Let's print the local weights of the Passenger object to see its normalized values:
+Let's print the normalized local weights of the new Passenger object to compare them to the local weights in the previous example:
 
 ```python
->>> print(passenger.local_weights)
+>>> print(passenger_normalized.local_weights)
 {'Pilot': 0.229, 'Odyssey': 0.229, 'Accord Sedan': 0.143, 'Accord Hybrid': 0.143, 'CR-V': 0.143, 'Element': 0.114}
+
+>>> print(passenger.local_weights)
+{'Accord Sedan': 0.493, 'Accord Hybrid': 0.197, 'Odyssey': 0.113, 'Element': 0.091, 'CR-V': 0.057, 'Pilot': 0.049}
 ```
 
-All that's left is to link the objects together into a hierarchy. Though we won't show the code, the other Compare objects we'll use were created in exactly the same way as in the previous example. First, we'll make the Cost, Safety, Style and Capacity objects the children of the Criteria object...
+When we use the measured values directly, we see that the rankings for the vehicles are different than they were before. Whether this will affect the *synthesized* rankings of the target variables remains to be seen, however.
+
+We next create a Compose object and begin to add the comparison information:
 
 ```python
->>> criteria.add_children([cost, safety, style, capacity])
+>>> compose = ahpy.Compose()
+
+>>> compose.add_comparisons([passenger_normalized, fuel_normalized, resale_normalized, cargo_normalized])
 ```
 
-...then we'll make the Price, Fuel, Maintenance and Resale objects the children of the Cost object...
+We can add comparison information to the Compose object in a few different ways. As shown above, we can provide a list of Compare objects; we can also provide them one at a time or stored in a tuple. Using Compare objects from our previous example:
 
 ```python
->>> cost.add_children([price, fuel, maintenance, resale])
+>>> compose.add_comparisons(cost)
+>>> compose.add_comparisons((safety, style, capacity))
 ```
 
-...and do the same to link the Cargo and Passenger objects to the Capacity object:
+We can even treat the Compose object like a Compare object and add the data directly. Again using code from the previous example:
 
 ```python
->>> capacity.add_children([cargo, passenger])
+>>> compose.add_comparisons('Price', price_comparisons, precision=3)
 ```
 
-Viewing the results of the analysis, we can see that normalizing the numeric criteria leads to a slightly different set of target weights, though the Odyssey and the Accord Sedan remain the top two vehicles to consider for purchase:
+Finally, we can provide an ordered list or tuple containing the data needed to construct a Compare object:
 
 ```python
->>> report = criteria.report(show=True)
+>>> comparisons = [('Maintenance', maintenance_comparisons, 3), ('Criteria', criteria_comparisons)]
+>>> compose.add_comparisons(comparisons)
+```
+
+Now that all of the comparison information has been added, we next need to create the hierarchy and add it to the Compose object. A hierarchy is simply a dictionary in which the keys are the names of *parent* Compare objects and the values are lists of the names of their *children*:
+
+```python
+>>> hierarchy = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
+				 'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
+				 'Capacity': ['Passenger', 'Cargo']}
+>>> compose.add_hierarchy(hierarchy)
+```
+
+With these two steps complete, we can now view the synthesized results of the analysis.
+
+We view a report for a Compose object in the same way we do for a Compare object. The only difference is that the Compose object displays a complete report by default; in order to view the report of a single Compare object in the hierarchy, we need to specify its name:
+
+```python
+>>> criteria_report = compose.report('Criteria', show=True)
 {
-    "Criteria": {
-        "global_weight": 1.0,
-        "local_weight": 1.0,
-        "target_weights": {
-            "Odyssey": 0.218,
-            "Accord Sedan": 0.21,
-            "Element": 0.161,
-            "Accord Hybrid": 0.154,
-            "CR-V": 0.149,
-            "Pilot": 0.108
+    "name": "Criteria",
+    "global_weight": 1.0,
+    "local_weight": 1.0,
+    "target_weights": {
+        "Odyssey": 0.218,
+        "Accord Sedan": 0.21,
+        "Element": 0.161,
+        "Accord Hybrid": 0.154,
+        "CR-V": 0.149,
+        "Pilot": 0.108
+    },
+    "elements": {
+        "global_weights": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
         },
-        "elements": {
-            "global_weights": {
-                "Cost": 0.51,
-                "Safety": 0.234,
-                "Capacity": 0.215,
-                "Style": 0.041
-            },
-            "local_weights": {
-                "Cost": 0.51,
-                "Safety": 0.234,
-                "Capacity": 0.215,
-                "Style": 0.041
-            },
-            "consistency_ratio": 0.08
-        }
+        "local_weights": {
+            "Cost": 0.51,
+            "Safety": 0.234,
+            "Capacity": 0.215,
+            "Style": 0.041
+        },
+        "consistency_ratio": 0.08
     }
 }
 ```
 
+We can access the public properties of any of the comparison information that we've added to the Compose object using either dot or bracket notation:
+
+```python
+>>> print(compose.Criteria.target_weights)
+{'Odyssey': 0.218, 'Accord Sedan': 0.21, 'Element': 0.161, 'Accord Hybrid': 0.154, 'CR-V': 0.149, 'Pilot': 0.108}
+
+>>> print(compose['Resale']['local_weights']
+{'CR-V': 0.188, 'Accord Sedan': 0.177, 'Element': 0.164, 'Odyssey': 0.164, 'Accord Hybrid': 0.157, 'Pilot': 0.15}
+```
+
+We can see that normalizing the numeric criteria leads to a slightly different set of target weights, though the Odyssey and the Accord Sedan remain the top two vehicles to consider for purchase.
+
 ## Details
 
-Keep reading to learn the details of the AHPy library's API.
+Keep reading to learn the details of the AHPy library's API...
 
 ### The Compare Class
 
@@ -640,12 +696,14 @@ The Compare class computes the weights and consistency ratio of a positive recip
 - This property is used to link a child object to its parent and must be unique
 
 `comparisons`: *dict (required)*, the elements and values to be compared, provided in one of two forms:
+
 1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
-    - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
-    - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
+  - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
+  - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
+
 2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
-    - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-    - Given this form, AHPy will automatically create consistent, normalized target weights
+  - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+  - Given this form, AHPy will automatically create consistent, normalized target weights
 
 `precision`: *int*, the number of decimal places to take into account when computing both the target weights and the consistency ratio of the Compare object
 - The default precision value is 4
@@ -694,7 +752,7 @@ Compare objects can be linked together to form a hierarchy representing the deci
 
 `Compare.add_children(children)`
 
-- `children`: *list* or *tuple (required)*, the Compare objects that will form the lower level of the current Compare object
+`children`: *list* or *tuple (required)*, the Compare objects that will form the lower level of the current Compare object
 
 ```python
 >>> child1 = ahpy.Compare(name='child1', ...)
@@ -712,14 +770,14 @@ A standard report on the details of a Compare object is available. To return the
 
 `Compare.report(complete=False, show=False, verbose=False)`
 
-- `complete`: *bool*, whether to return a report for every Compare object in the hierarchy
-  - This returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects
-    - `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
-  - The default value is False
-- `show`: *bool*, whether to print the report to the console in JSON format
-  - The default value is False
-- `verbose`: *bool*, whether to include full details of the Compare object within the report
-  - The default value is False
+`complete`: *bool*, whether to return a report for every Compare object in the hierarchy
+- This returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects
+  - `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
+- The default value is False
+`show`: *bool*, whether to print the report to the console in JSON format
+- The default value is False
+`verbose`: *bool*, whether to include full details of the Compare object within the report
+- The default value is False
 
 The keys of the report take the following form:
 
@@ -730,8 +788,8 @@ The keys of the report take the following form:
 `local_weight`: *float*, the local weight of the Compare object within the hierarchy
 
 `target_weights`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight
-  - *If the global weight of the Compare object is less than 1.0, the value will be `None`*
-  - `{'a': 0.5, 'b': 0.5}`
+- *If the global weight of the Compare object is less than 1.0, the value will be `None`*
+- `{'a': 0.5, 'b': 0.5}`
 
 `elements`: *dict*, information regarding the elements compared by the Compare object
 - `global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
@@ -760,7 +818,57 @@ The remaining dictionary keys are only displayed when `verbose=True`:
 
 ### The Compose Class
 
+The Compose class can store and structure all of the information making up a decision problem. After first [adding the comparison information](#composeadd_comparisons) to the object, then [adding the problem hierarchy](#composeadd_hierarchy), the analysis results of multiple different Compare objects can be accessed using a single Compose object.
+ 
+After adding all necessary information, the public properties of any stored Compare object can be accessed directly using either dot or bracket notation. For instance, the global weights of Compare object 'a' within Compose object 'c' can be accessed with either `c.a.global_weights` or `c['a']['global_weights']`.
 
+`Compose()`
+
+### Compose.add_comparisons()
+
+The comparison information of a decision problem can be added to a Compose object in one of the several ways listed below. Always add comparisons *before* adding the problem hierarchy.
+
+`Compose.add_comparisons(item, comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
+
+`item`: *Compare object, list or tuple, or string (required)*, this argument allows for multiple input types:
+
+1. A single Compare object
+  - `Compare('a', comparisons=a, ...)`
+
+2. A list or tuple of Compare objects
+  - `[Compare('a', ...), Compare('b', ...)]`
+  
+3. The data necessary to create a Compare object
+  - `Compose.add_comparisons('a', comparisons=a, ...)`
+  - The method signature mimics that of the Compare class to support this use case.
+
+4. A nested list or tuple of the data in (3)
+  - `(('a', a, ...), ('b', b, ...))`
+
+All other arguments are identical to those of the [Compare class](#the-compare-class).
+
+### Compose.add_hierarchy()
+
+The Compose class uses an abstract representation of the problem hierarchy to automatically link its Compare objects together. When a hierarchy is added, the elements of the decision problem are synthesized and the analysis results are immediately available.
+
+**`Compose.add_hierarchy()` should only be called AFTER all pairwise comparisons have been added to the Compose object.**
+
+`Compose.add_hierarchy(hierarchy)`
+
+`hierarchy`: *dict*, a representation of the hierarchy as a dictionary, in which the keys are the names of parent Compare objects and the values are lists of the names of their children
+- `{'a': ['b', 'c'], 'b': ['d', 'e']}`
+
+### Compose.report()
+
+The standard report available for a Compare object can be accessed through the Compose object. Calling `report()` on a Compose object is equivalent to calling `report(complete=True)` on a Compare object and will return a dictionary of all the reports within the hierarchy; calling `report(name='a')` on a Compose object is equivalent to calling `a.report()` on the named Compare object.
+
+`Compose.report(name=None, show=False, verbose=False)`
+
+`name`: *str*, the name of a Compare object report to return; if None, returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects in the hierarchy
+- `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
+- The default value is None
+
+All other arguments are identical to the [Compare class's `report()` method](#comparereport).
 
 ### A Note on Weights
 
@@ -775,6 +883,8 @@ Compare objects also compute their own global and local weight, given their pare
 
 - **Target** weights display the synthesized weights of the problem elements described in the *lowest level* of the current hierarchy
   - Target weights are only computed by the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
+
+#### N.B.
 
 A Compare object that does not have a parent will have identical global and local weights; a Compare object that has neither a parent nor children will have identical global, local and target weights.
 
@@ -797,7 +907,7 @@ The example below demonstrates this functionality of AHPy using the following ma
 |c|1/5|1/3|1|**3/4**|
 |d|1/2|1/4|**4/3**|1|
 
-We'll first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the **(c, d)** comparison marked in bold:
+We'll first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the **(c, d)** comparison marked in bold. We can view the computed value in the Compare object's detailed report:
 
 ```python
 >>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
@@ -815,11 +925,14 @@ We'll first compute the target weights and consistency ratio for the complete ma
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
 >>> print(missing_cd.consistency_ratio)
 0.0372
+>>> report = missing_cd.report(verbose=True)
+>>> print(report['comparisons']['computed'])
+{('c', 'd'): 0.7302971068355002}
 ```
 
 ## Development and Testing
 
-To set up a development environment and run the included tests, use the following commands:
+To set up a development environment and run the included tests, you can use the following commands:
 
 ```
 virtualenv .venv

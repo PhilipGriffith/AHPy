@@ -1,4 +1,5 @@
 import itertools
+import pytest
 
 from ahpy import ahpy
 
@@ -30,6 +31,18 @@ from ahpy import ahpy
 #           ('milk', 'wine'): 9, ('milk', 'tea'): 3, ('water', 'coffee'): 2, ('water', 'wine'): 9, ('water', 'tea'): 9,
 #           ('water', 'beer'): 3, ('water', 'soda'): 2, ('water', 'milk'): 3}
 # drinks = ahpy.Compare('Drinks', drinks_m, precision=3, random_index='saaty')
+
+# drinks_missing = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2,
+#             ('coffee', 'milk'): 1,
+#             ('wine', 'tea'): 1 / 3, ('wine', 'beer'): 1 / 9,
+#             ('wine', 'milk'): 1 / 9,
+#             ('tea', 'beer'): 1 / 3, ('tea', 'soda'): 1 / 4,
+#             ('tea', 'water'): 1 / 9,
+#             ('beer', 'soda'): 1 / 2, ('beer', 'milk'): 1,
+#             ('soda', 'milk'): 2,
+#             ('milk', 'water'): 1 / 3
+#           }
+# drinks_missing = ahpy.Compare('Drinks', drinks_missing, precision=3, random_index='saaty')
 
 # ----------------------------------------------------------------------------------
 # Example from https://mi.boku.ac.at/ahp/ahptutorial.pdf
@@ -99,125 +112,71 @@ from ahpy import ahpy
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_car_example
 
 
-def m(elements, judgments):
-    return dict(zip(elements, judgments))
-
-
-cri = ('Cost', 'Safety', 'Style', 'Capacity')
-c_cri = list(itertools.combinations(cri, 2))
-criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
-
-alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
-pairs = list(itertools.combinations(alt, 2))
-
-costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
-c_pairs = list(itertools.combinations(costs, 2))
-cost = ahpy.Compare('Cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
-
-cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
-cost_price = ahpy.Compare('Price', m(pairs, cost_price_m), 3)
-
-cost_fuel_m = (1/1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1/1.23, 1/1.14, 1/1.18, 1.08, 1.04, 1/1.04)
+# def m(elements, judgments):
+#     return dict(zip(elements, judgments))
+#
+#
+# cri = ('Cost', 'Safety', 'Style', 'Capacity')
+# c_cri = list(itertools.combinations(cri, 2))
+# criteria = ahpy.Compare('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
+#
+# alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
+# pairs = list(itertools.combinations(alt, 2))
+#
+# costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
+# c_pairs = list(itertools.combinations(costs, 2))
+# cost = ahpy.Compare('Cost', m(c_pairs, (2, 5, 3, 2, 2, .5)), precision=3)
+#
+# cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
+# cost_price = ahpy.Compare('Price', m(pairs, cost_price_m), 3)
+#
+# # cost_fuel_m = (1/1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1/1.23, 1/1.14, 1/1.18, 1.08, 1.04, 1/1.04)
 # cost_fuel_m = (31, 35, 22, 27, 25, 26)
-cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
+# # cost_fuel = ahpy.Compare('Fuel', m(pairs, cost_fuel_m), 3)
 # cost_fuel = ahpy.Compare('Fuel', m(alt, cost_fuel_m), 3)
-
-cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
+#
+# # cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
 # cost_resale_m = (0.52, 0.46, 0.44, 0.55, 0.48, 0.48)
-cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
+# # cost_resale = ahpy.Compare('Resale', m(pairs, cost_resale_m), 3)
 # cost_resale = ahpy.Compare('Resale', m(alt, cost_resale_m), 3)
-
-cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
-cost_maint = ahpy.Compare('Maintenance', m(pairs, cost_maint_m), 3)
-
-safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
-safety = ahpy.Compare('Safety', m(pairs, safety_m), 3)
-
-style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
-style = ahpy.Compare('Style', m(pairs, style_m), 3)
-
-capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
-
-capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
+#
+# cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
+# cost_maint = ahpy.Compare('Maintenance', m(pairs, cost_maint_m), 3)
+#
+# safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
+# safety = ahpy.Compare('Safety', m(pairs, safety_m), 3)
+#
+# style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
+# style = ahpy.Compare('Style', m(pairs, style_m), 3)
+#
+# capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
+#
+# # capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
 # capacity_pass_m = (5, 5, 8, 5, 4, 8)
-capacity_pass = ahpy.Compare('Passenger', m(pairs, capacity_pass_m), 3)
+# # capacity_pass = ahpy.Compare('Passenger', m(pairs, capacity_pass_m), 3)
 # capacity_pass = ahpy.Compare('Passenger', m(alt, capacity_pass_m), 3)
-
-capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
+#
+# # capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
 # capacity_cargo_m = (14, 14, 87.6, 72.9, 74.6, 147.4)
-capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
+# # capacity_cargo = ahpy.Compare('Cargo', m(pairs, capacity_cargo_m), precision=3)
 # capacity_cargo = ahpy.Compare('Cargo', m(alt, capacity_cargo_m), precision=3)
 #
+# cost.add_children([cost_price, cost_fuel, cost_maint, cost_resale])
+# capacity.add_children([capacity_cargo, capacity_pass])
 # criteria.add_children([cost, safety, style, capacity])
-# cost.add_children([cost_price, cost_fuel, cost_resale, cost_maint])
-# capacity.add_children([capacity_pass, capacity_cargo])
 #
-# criteria.report(show=True, verbose=True)
-# cost_price.report(show=True, verbose=True)
-# safety.report(show=True)
-# h = cost.report(complete=True, show=True, verbose=True)
-# c = capacity_cargo.report(complete=True)
-# print(c['Criteria']['target_weights'])
-# print(h['Price']['comparisons']['count'])
-
-# a = ahpy.Compose()
-# a.add_comparisons('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
-# a.add_comparisons([cost, capacity])
-# a.add_comparisons('Passenger', m(pairs, capacity_pass_m), 3)
-# a.add_comparisons(capacity_cargo)
-# a.add_comparisons([('Price', m(pairs, cost_price_m), 3), ('Fuel', m(pairs, cost_fuel_m), 3)])
-# a.add_comparisons([['Resale', m(pairs, cost_resale_m), 3], ['Maintenance', m(pairs, cost_maint_m), 3, 'saaty']])
-# a.add_comparisons((safety, style))
+# compose = ahpy.Compose()
+# compose.add_comparisons('Criteria', m(c_cri, (3, 7, 3, 9, 1, 1 / 7)), 3)
+# compose.add_comparisons([cost, capacity])
+# compose.add_comparisons('Passenger', m(pairs, capacity_pass_m), 3)
+# compose.add_comparisons([capacity_cargo, cost_price, cost_fuel, cost_resale, cost_maint])
+# # a.add_comparisons([('Price', m(pairs, cost_price_m), 3), ('Fuel', m(pairs, cost_fuel_m), 3)])
+# # a.add_comparisons([['Resale', m(pairs, cost_resale_m), 3], ['Maintenance', m(pairs, cost_maint_m), 3, 'saaty']])
+# compose.add_comparisons((safety, style))
 # h = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
 #      'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
 #      'Capacity': ['Passenger', 'Cargo']}
-# a.add_hierarchy(h)
-# x = a.report('Criteria', show=True, verbose=True)
-
-cri = ('Cost', 'Safety', 'Style', 'Capacity')
-c_cri = list(itertools.combinations(cri, 2))
-
-costs = ('Price', 'Fuel', 'Maintenance', 'Resale')
-c_pairs = list(itertools.combinations(costs, 2))
-
-alt = ('Accord Sedan', 'Accord Hybrid', 'Pilot', 'CR-V', 'Element', 'Odyssey')
-pairs = list(itertools.combinations(alt, 2))
-
-capacity_pass_m = (1, 1 / 2, 1, 3, 1 / 2, 1 / 2, 1, 3, 1 / 2, 2, 6, 1, 3, 1 / 2, 1 / 6)
-capacity_cargo_m = (1, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1 / 2, 1 / 2, 1 / 2, 1 / 3, 1, 1, 1 / 2, 1, 1 / 2, 1 / 2)
-cost_price_m = (9, 9, 1, 0.5, 5, 1, 1 / 9, 1 / 9, 1 / 7, 1 / 9, 1 / 9, 1 / 7, 1 / 2, 5, 6)
-cost_fuel_m = (1 / 1.13, 1.41, 1.15, 1.24, 1.19, 1.59, 1.3, 1.4, 1.35, 1 / 1.23, 1 / 1.14, 1 / 1.18, 1.08, 1.04, 1 / 1.04)
-cost_resale_m = (3, 4, 1 / 2, 2, 2, 2, 1 / 5, 1, 1, 1 / 6, 1 / 2, 1 / 2, 4, 4, 1)
-cost_maint_m = (1.5, 4, 4, 4, 5, 4, 4, 4, 5, 1, 1.2, 1, 1, 3, 2)
-safety_m = (1, 5, 7, 9, 1 / 3, 5, 7, 9, 1 / 3, 2, 9, 1 / 8, 2, 1 / 8, 1 / 9)
-style_m = (1, 7, 5, 9, 6, 7, 5, 9, 6, 1 / 6, 3, 1 / 3, 7, 5, 1 / 5)
-
-cost = ahpy.Compare('Cost', dict(zip(c_pairs, (2, 5, 3, 2, 2, .5))))
-capacity = ahpy.Compare('Capacity', {('Cargo', 'Passenger'): 0.2})
-capacity_cargo = ahpy.Compare('Cargo', dict(zip(pairs, capacity_cargo_m)))
-safety = ahpy.Compare('Safety', dict(zip(pairs, safety_m)), 3)
-style = ahpy.Compare('Style', dict(zip(pairs, style_m)), 3)
-
-h = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
-     'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
-     'Capacity': ['Passenger', 'Cargo']}
-
-compose = ahpy.Compose()
-
-compose.add_comparisons(capacity_cargo)
-compose.add_comparisons([cost, capacity])
-compose.add_comparisons((safety, style))
-
-compose.add_comparisons('Criteria', dict(zip(c_cri, (3, 7, 3, 9, 1, 1 / 7))), 3)
-compose.add_comparisons(('Passenger', dict(zip(pairs, capacity_pass_m))))
-# compose.add_comparisons('Passenger', ({'d': 3}))
-
-compose.add_comparisons([('Price', dict(zip(pairs, cost_price_m)), 3), ('Fuel', dict(zip(pairs, cost_fuel_m)), 3)])
-compose.add_comparisons((['Resale', dict(zip(pairs, cost_resale_m)), 3], ['Maintenance', dict(zip(pairs, cost_maint_m)), 3, 'saaty']))
-
-compose.add_hierarchy(h)
-
-# compose.report(show=True, verbose=True)
+# compose.add_hierarchy(h)
 
 # ----------------------------------------------------------------------------------
 # Examples from Bozóki, S., Fülöp, J. and Rónyai, L., 'On optimal completion of incomplete pairwise comparison matrices,'
@@ -225,8 +184,8 @@ compose.add_hierarchy(h)
 
 # u = {('alpha', 'beta'): 1, ('alpha', 'chi'): 5, ('alpha', 'delta'): 2,
 #      ('beta', 'chi'): 3, ('beta', 'delta'): 4}  # , ('chi', 'delta'): 3/4}
-# cu = ahpy.Compare('Incomplete Test', u, cr=False)
-
+# cu = ahpy.Compare('Incomplete Test', u)
+#
 # m = {('a', 'b'): 5, ('a', 'c'): 3, ('a', 'd'): 7, ('a', 'e'): 6, ('a', 'f'): 6,
 #      ('b', 'd'): 5, ('b', 'f'): 3,
 #      ('c', 'e'): 3, ('c', 'g'): 6,
@@ -293,7 +252,7 @@ compose.add_hierarchy(h)
 #
 # assert a.report(verbose=True) == {'name': 'a', 'global_weight': 1.0, 'local_weight': 1.0, 'target_weights': {'z': 0.4652, 'y': 0.3626, 'x': 0.1723}, 'elements': {'global_weights': {'b': 0.5, 'c': 0.5}, 'local_weights': {'b': 0.5, 'c': 0.5}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['b', 'c']}, 'children': {'count': 2, 'names': ['b', 'c']}, 'comparisons': {'count': 1, 'input': {('b', 'c'): 1}, 'computed': None}}
 # assert b.report(verbose=True) == {'name': 'b', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'d': 0.4, 'e': 0.1}, 'local_weights': {'d': 0.8, 'e': 0.2}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['d', 'e']}, 'children': {'count': 2, 'names': ['d', 'e']}, 'comparisons': {'count': 1, 'input': {('d', 'e'): 4}, 'computed': None}}
-# assert c.report(verbose=True) == {'name': 'c', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'h': 0.25, 'f': 0.125, 'g': 0.125}, 'local_weights': {'h': 0.5, 'f': 0.25, 'g': 0.25}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['f', 'g', 'h']}, 'children': {'count': 3, 'names': ['f', 'g', 'h']}, 'comparisons': {'count': 3, 'input': {('f', 'g'): 1, ('g', 'h'): 0.5}, 'computed': {('f', 'h'): 0.5000007807004769}}}
+# assert c.report(verbose=True) == {'name': 'c', 'global_weight': 0.5, 'local_weight': 0.5, 'target_weights': None, 'elements': {'global_weights': {'h': 0.25, 'f': 0.125, 'g': 0.125}, 'local_weights': {'h': 0.5, 'f': 0.25, 'g': 0.25}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['f', 'g', 'h']}, 'children': {'count': 3, 'names': ['f', 'g', 'h']}, 'comparisons': {'count': 3, 'input': {('f', 'g'): 1, ('g', 'h'): 0.5}, 'computed': pytest.approx({('f', 'h'): 0.5000007807004769})}}
 # assert d.report(verbose=True) == {'name': 'd', 'global_weight': 0.4, 'local_weight': 0.8, 'target_weights': None, 'elements': {'global_weights': {'i': 0.2667, 'j': 0.1333}, 'local_weights': {'i': 0.6667, 'j': 0.3333}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['i', 'j']}, 'children': {'count': 2, 'names': ['i', 'j']}, 'comparisons': {'count': 1, 'input': {('i', 'j'): 2}, 'computed': None}}
 # assert e.report(verbose=True) == {'name': 'e', 'global_weight': 0.1, 'local_weight': 0.2, 'target_weights': None, 'elements': {'global_weights': {'z': 0.05, 'y': 0.0333, 'x': 0.0167}, 'local_weights': {'z': 0.5, 'y': 0.3333, 'x': 0.1667}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 3, 'names': ['x', 'y', 'z']}, 'children': None, 'comparisons': {'count': 3, 'input': {'x': 1, 'y': 2, 'z': 3}, 'computed': None}}
 # assert f.report(verbose=True) == {'name': 'f', 'global_weight': 0.125, 'local_weight': 0.25, 'target_weights': None, 'elements': {'global_weights': {'l': 0.1125, 'k': 0.0125}, 'local_weights': {'l': 0.9, 'k': 0.1}, 'consistency_ratio': 0.0, 'random_index': 'Donegan & Dodd', 'count': 2, 'names': ['k', 'l']}, 'children': {'count': 2, 'names': ['k', 'l']}, 'comparisons': {'count': 1, 'input': {('k', 'l'): 0.1111111111111111}, 'computed': None}}
