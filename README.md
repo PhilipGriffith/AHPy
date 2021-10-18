@@ -710,8 +710,10 @@ The Compare class computes the weights and consistency ratio of a positive recip
 
 `random_index`: *'dd'* or *'saaty'*, the set of random index estimates used to compute the Compare object's consistency ratio
 - 'dd' supports the computation of consistency ratios for matrices less than or equal to 100 &times; 100 in size and uses estimates from:
+
   >Donegan, H.A. and Dodd, F.J., 'A Note on Saaty's Random Indexes,' *Mathematical and Computer Modelling*, 15:10, 1991, pp. 135-137 (DOI: [10.1016/0895-7177(91)90098-R](https://doi.org/10.1016/0895-7177(91)90098-R))
 - 'saaty' supports the computation of consistency ratios for matrices less than or equal to 15 &times; 15 in size and uses estimates from:
+
   >Saaty, T., *Theory And Applications Of The Analytic Network Process*, Pittsburgh: RWS Publications, 2005, p. 31
 - The default random index is 'dd'
 
