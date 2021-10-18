@@ -848,17 +848,17 @@ The comparison information of a decision problem can be added to a Compose objec
 `item`: *Compare object, list or tuple, or string (required)*, this argument allows for multiple input types:
 
 1. A single Compare object
-  - `Compare('a', comparisons=a, ...)`
+    - `Compare('a', comparisons=a, ...)`
 
 2. A list or tuple of Compare objects
-  - `[Compare('a', ...), Compare('b', ...)]`
+    - `[Compare('a', ...), Compare('b', ...)]`
   
 3. The data necessary to create a Compare object
-  - `'a', comparisons=a, precision=3, ...`
-  - The method signature mimics that of the Compare class for this reason
+    - `'a', comparisons=a, precision=3, ...`
+    - The method signature mimics that of the Compare class for this reason
 
 4. A nested list or tuple of the data necessary to create a Compare object
-  - `(('a', a, ...), ('b', b, ...))`
+    - `(('a', a, ...), ('b', b, ...))`
 
 All other arguments are identical to those of the [Compare class](#the-compare-class).
 
