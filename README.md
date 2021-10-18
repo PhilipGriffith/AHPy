@@ -555,7 +555,7 @@ Calling `report(complete=True, verbose=True)` will return a similar dictionary, 
 15
 ```
 
-We could also print this report to the console with the `show=True` argument.
+We could also print all of the reports to the console with the `show=True` argument.
 
 ### Purchasing a vehicle reprised: normalized weights and the Compose class
 
