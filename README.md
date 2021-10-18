@@ -854,7 +854,7 @@ The comparison information of a decision problem can be added to a Compose objec
     - `[Compare('a', ...), Compare('b', ...)]`
   
 3. The data necessary to create a Compare object
-    - `'a', comparisons=a, precision=3, ...)`
+    - `'a', comparisons=a, precision=3, ...`
     - The method signature mimics that of the Compare class for this reason
 
 4. A nested list or tuple of the data necessary to create a Compare object
