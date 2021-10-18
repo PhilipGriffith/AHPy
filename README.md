@@ -782,7 +782,7 @@ A standard report on the details of a Compare object is available. To return the
 `complete`: *bool*, whether to return a report for every Compare object in the hierarchy
 - This returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects
   - `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
-  - The default value is False
+- The default value is False
 
 `show`: *bool*, whether to print the report to the console in JSON format
   - The default value is False
