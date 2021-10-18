@@ -127,8 +127,8 @@ In this example, we'll be judging job candidates by their experience, education,
 
 ```python
 >>> criteria_comparisons = {('Experience', 'Education'): 4, ('Experience', 'Charisma'): 3, ('Experience', 'Age'): 7,
-				('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
-				('Charisma', 'Age'): 5}
+			  ('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
+			  ('Charisma', 'Age'): 5}
 ```
 
 Before moving on, it's important to note that the *order* of the elements that form the dictionaries' keys is meaningful. For example, using Saaty's scale, the comparison `('Experience', 'Education'): 4` means that "Experience is *moderately+ more important than* Education." 
@@ -226,8 +226,8 @@ First, we compare the high-level criteria to one another:
 
 ```python
 >>> criteria_comparisons = {('Cost', 'Safety'): 3, ('Cost', 'Style'): 7, ('Cost', 'Capacity'): 3,
-				('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
-				('Style', 'Capacity'): 1/7}
+			  ('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
+			  ('Style', 'Capacity'): 1/7}
 ```
 
 If we create a Compare object for the criteria, we can view its report:
