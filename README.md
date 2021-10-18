@@ -783,8 +783,10 @@ A standard report on the details of a Compare object is available. To return the
 - This returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects
   - `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
   - The default value is False
+
 `show`: *bool*, whether to print the report to the console in JSON format
   - The default value is False
+
 `verbose`: *bool*, whether to include full details of the Compare object in the report
   - The default value is False
 
