@@ -638,6 +638,7 @@ Now that all of the comparison information has been added, we next need to creat
 >>> hierarchy = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
 		 'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
 		 'Capacity': ['Passenger', 'Cargo']}
+
 >>> compose.add_hierarchy(hierarchy)
 ```
 
