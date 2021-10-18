@@ -866,7 +866,7 @@ All other arguments are identical to those of the [Compare class](#the-compare-c
 
 ### Compose.add_hierarchy()
 
-The Compose class uses an abstract representation of the problem hierarchy to automatically link its Compare objects together. When a hierarchy is added, the elements of the decision problem are synthesized and the analysis results are immediately available.
+The Compose class uses an abstract representation of the problem hierarchy to automatically link its Compare objects together. When a hierarchy is added, the elements of the decision problem are synthesized and the analysis results are immediately available for use or viewing.
 
 **`Compose.add_hierarchy()` should only be called AFTER all comparison information has been added to the Compose object.**
 
