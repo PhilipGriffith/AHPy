@@ -127,8 +127,8 @@ In this example, we'll be judging job candidates by their experience, education,
 
 ```python
 >>> criteria_comparisons = {('Experience', 'Education'): 4, ('Experience', 'Charisma'): 3, ('Experience', 'Age'): 7,
-			  ('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
-			  ('Charisma', 'Age'): 5}
+				('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
+				('Charisma', 'Age'): 5}
 ```
 
 Before moving on, it's important to note that the *order* of the elements that form the dictionaries' keys is meaningful. For example, using Saaty's scale, the comparison `('Experience', 'Education'): 4` means that "Experience is *moderately+ more important than* Education." 
@@ -163,11 +163,13 @@ We can also print the local and global weights of the elements within any of the
 ```python
 >>> print(experience.local_weights)
 {'Nell': 0.717, 'Moll': 0.217, 'Sue': 0.066}
+
 >>> print(experience.consistency_ratio)
 0.035
 
 >>> print(education.global_weights)
 {'Sue': 0.093, 'Moll': 0.024, 'Nell': 0.01}
+
 >>> print(education.consistency_ratio)
 0.062
 ```
@@ -224,8 +226,8 @@ First, we compare the high-level criteria to one another:
 
 ```python
 >>> criteria_comparisons = {('Cost', 'Safety'): 3, ('Cost', 'Style'): 7, ('Cost', 'Capacity'): 3,
-			  ('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
-			  ('Style', 'Capacity'): 1/7}
+				('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
+				('Style', 'Capacity'): 1/7}
 ```
 
 If we create a Compare object for the criteria, we can view its report:
@@ -538,8 +540,10 @@ Finally, calling `report(complete=True)` on any Compare object in the hierarchy 
 
 ```python
 >>> complete_report = cargo.report(complete=True)
+
 >>> print([key for key in complete_report])
 ['Criteria', 'Cost', 'Price', 'Fuel', 'Maintenance', 'Resale', 'Safety', 'Style', 'Capacity', 'Cargo', 'Passenger']
+
 >>> print(complete_report['Cargo'])
 {'name': 'Cargo', 'global_weight': 0.0358, 'local_weight': 0.1667, 'target_weights': None, 'elements': {'global_weights': {'Odyssey': 0.011, 'Pilot': 0.006, 'CR-V': 0.006, 'Element': 0.006, 'Accord Sedan': 0.003, 'Accord Hybrid': 0.003}, 'local_weights': {'Odyssey': 0.311, 'Pilot': 0.17, 'CR-V': 0.17, 'Element': 0.17, 'Accord Sedan': 0.089, 'Accord Hybrid': 0.089}, 'consistency_ratio': 0.002}}
 
@@ -551,6 +555,7 @@ Calling `report(complete=True, verbose=True)` will return a similar dictionary, 
 
 ```python
 >>> complete_report = style.report(complete=True, verbose=True)
+
 >>> print(complete_report['Price']['comparisons']['count'])
 15
 ```
@@ -570,6 +575,7 @@ Using the list of vehicles from the previous example, we'll first zip together t
 >>> passenger_data = dict(zip(vehicles, passenger_measured_values))
 >>> print(passenger_data)
 {'Accord Sedan': 5, 'Accord Hybrid': 5, 'Pilot': 8, 'CR-V': 5, 'Element': 4, 'Odyssey': 8}
+
 >>> passenger_normalized = ahp.Compare('Passenger', passenger_data, precision=3)
 
 >>> fuel_measured_values = (31, 35, 22, 27, 25, 26)
@@ -601,6 +607,7 @@ We next create a Compose object and begin to add the comparison information:
 
 ```python
 >>> compose = ahpy.Compose()
+
 >>> compose.add_comparisons([passenger_normalized, fuel_normalized, resale_normalized, cargo_normalized])
 ```
 
@@ -608,6 +615,7 @@ We can add comparison information to the Compose object in a few different ways.
 
 ```python
 >>> compose.add_comparisons(cost)
+
 >>> compose.add_comparisons((safety, style, capacity))
 ```
 
@@ -669,7 +677,7 @@ We view a report for a Compose object in the same way we do for a Compare object
 }
 ```
 
-We can access the public properties of any of the comparison information that we've added to the Compose object using either dot or bracket notation:
+We can access the public properties of the comparison information we've added to the Compose object using either dot or bracket notation:
 
 ```python
 >>> print(compose.Criteria.target_weights)
@@ -734,8 +742,6 @@ The properties used to initialize the Compare class are intended to be accessed 
 
 `Compare.local_weight`: *float*, the local weight of the Compare object within the hierarchy
 
-`Compare.consistency_ratio`: *float*, the consistency ratio of the Compare object's pairwise comparisons
-
 `Compare.global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
 - `{'a': 0.25, 'b': 0.25}`
 
@@ -744,6 +750,8 @@ The properties used to initialize the Compare class are intended to be accessed 
 
 `Compare.target_weights`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight; *if the global weight of the Compare object is less than 1.0, the value will be `None`*
 - `{'a': 0.5, 'b': 0.5}`
+
+`Compare.consistency_ratio`: *float*, the consistency ratio of the Compare object's pairwise comparisons
 
 ### Compare.add_children()
 
@@ -774,11 +782,11 @@ A standard report on the details of a Compare object is available. To return the
 `complete`: *bool*, whether to return a report for every Compare object in the hierarchy
 - This returns a dictionary of reports, with the keys of the dictionary being the names of the Compare objects
   - `{'a': {'name': 'a', ...}, 'b': {'name': 'b', ...}}`
-- The default value is False
+  - The default value is False
 `show`: *bool*, whether to print the report to the console in JSON format
-- The default value is False
-`verbose`: *bool*, whether to include full details of the Compare object within the report
-- The default value is False
+  - The default value is False
+`verbose`: *bool*, whether to include full details of the Compare object in the report
+  - The default value is False
 
 The keys of the report take the following form:
 
@@ -789,8 +797,8 @@ The keys of the report take the following form:
 `local_weight`: *float*, the local weight of the Compare object within the hierarchy
 
 `target_weights`: *dict*, the target weights of the elements in the lowest level of the hierarchy; each key is an element and each value is that element's computed target weight
-- *If the global weight of the Compare object is less than 1.0, the value will be `None`*
 - `{'a': 0.5, 'b': 0.5}`
+- *If the global weight of the Compare object is less than 1.0, the value will be `None`*
 
 `elements`: *dict*, information regarding the elements compared by the Compare object
 - `global_weights`: *dict*, the global weights of the Compare object's elements; each key is an element and each value is that element's computed global weight
@@ -806,16 +814,16 @@ The remaining dictionary keys are only displayed when `verbose=True`:
 - `names`: *list*, the names of the elements compared by the Compare object
 
 `children`: *dict*, the children of the Compare object
-  - If the Compare object has no children, the value will be `None`
 - `count`: *int*, the number of the Compare object's children
 - `names`: *list*, the names of the Compare object's children
+- If the Compare object has no children, the value will be `None`
 
 `comparisons`: *dict*, the comparisons of the Compare object
 - `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
 - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
 - `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value
   - `{('c', 'd'): 0.730297106886979}, ...}`
-  - If the Compare object has no computed comparisons, the value will be `None`
+- If the Compare object has no computed comparisons, the value will be `None`
 
 ### The Compose Class
 
@@ -823,7 +831,7 @@ The Compose class can store and structure all of the information making up a dec
 
 `Compose()`
  
-After adding all necessary information, the public properties of any stored Compare object can be accessed directly using either dot or bracket notation:
+After adding all necessary information, the public properties of any stored Compare object can be accessed directly through the Compose object using either dot or bracket notation:
 
 ```python
 >>> my_compose_object.a.global_weights
@@ -833,7 +841,7 @@ After adding all necessary information, the public properties of any stored Comp
 
 ### Compose.add_comparisons()
 
-The comparison information of a decision problem can be added to a Compose object in any of the several ways listed below. Always add comparisons *before* adding the problem hierarchy.
+The comparison information of a decision problem can be added to a Compose object in any of the several ways listed below. Always add comparison information *before* adding the problem hierarchy.
 
 `Compose.add_comparisons(item, comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
@@ -846,8 +854,8 @@ The comparison information of a decision problem can be added to a Compose objec
     - `[Compare('a', ...), Compare('b', ...)]`
   
 3. The data necessary to create a Compare object
-    - `Compose.add_comparisons('a', comparisons=a, ...)`
-    - The method signature mimics that of the Compare class to support this use case.
+    - `'a', comparisons=a, precision=3, ...)`
+    - The method signature mimics that of the Compare class for this reason
 
 4. A nested list or tuple of the data necessary to create a Compare object
     - `(('a', a, ...), ('b', b, ...))`
@@ -889,7 +897,7 @@ Compare objects also compute their own global and local weight, given their pare
   - The local weights of the elements within a Compare object will always (approximately) sum to 1.0
 
 - **Target** weights display the synthesized weights of the problem elements described in the *lowest level* of the current hierarchy
-  - Target weights are only computed by the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
+  - Target weights are only available from the Compare object at the highest level of the hierarchy (*i.e.* the only Compare object without a parent)
 
 #### N.B.
 
