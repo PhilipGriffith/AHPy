@@ -926,10 +926,10 @@ We'll first compute the target weights and consistency ratio for the complete ma
 
 ```python
 >>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
-
 >>> complete = ahpy.Compare('Complete', comparisons)
 >>> print(complete.target_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
+
 >>> print(complete.consistency_ratio)
 0.0372
 
@@ -938,8 +938,10 @@ We'll first compute the target weights and consistency ratio for the complete ma
 >>> missing_cd = ahpy.Compare('Missing_CD', comparisons)
 >>> print(missing_cd.target_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
+
 >>> print(missing_cd.consistency_ratio)
 0.0372
+
 >>> report = missing_cd.report(verbose=True)
 >>> print(report['comparisons']['computed'])
 {('c', 'd'): 0.7302971068355002}
