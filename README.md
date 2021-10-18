@@ -684,7 +684,7 @@ We can access the public properties of the comparison information we've added to
 >>> print(compose.Criteria.target_weights)
 {'Odyssey': 0.218, 'Accord Sedan': 0.21, 'Element': 0.161, 'Accord Hybrid': 0.154, 'CR-V': 0.149, 'Pilot': 0.108}
 
->>> print(compose['Resale']['local_weights']
+>>> print(compose['Resale']['local_weights'])
 {'CR-V': 0.188, 'Accord Sedan': 0.177, 'Element': 0.164, 'Odyssey': 0.164, 'Accord Hybrid': 0.157, 'Pilot': 0.15}
 ```
 
@@ -928,7 +928,9 @@ The example below demonstrates this functionality of AHPy using the following ma
 We'll first compute the target weights and consistency ratio for the complete matrix, then repeat the process after removing the **(c, d)** comparison marked in bold. We can view the computed value in the Compare object's detailed report:
 
 ```python
->>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2, ('b', 'c'): 3, ('b', 'd'): 4, ('c', 'd'): 3 / 4}
+>>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
+					('b', 'c'): 3, ('b', 'd'): 4,
+					('c', 'd'): 3 / 4}
 
 >>> complete = ahpy.Compare('Complete', comparisons)
 
