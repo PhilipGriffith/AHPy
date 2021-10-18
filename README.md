@@ -80,7 +80,7 @@ We can recreate this analysis with AHPy using the following code:
 
 ```python
 >>> drink_comparisons = {('coffee', 'wine'): 9, ('coffee', 'tea'): 5, ('coffee', 'beer'): 2, ('coffee', 'soda'): 1,
-						 ('coffee', 'milk'): 1, ('coffee', 'water'): 1 / 2,
+			('coffee', 'milk'): 1, ('coffee', 'water'): 1 / 2,
                          ('wine', 'tea'): 1 / 3, ('wine', 'beer'): 1 / 9, ('wine', 'soda'): 1 / 9,
                          ('wine', 'milk'): 1 / 9, ('wine', 'water'): 1 / 9,
                          ('tea', 'beer'): 1 / 3, ('tea', 'soda'): 1 / 4, ('tea', 'milk'): 1 / 3,
@@ -127,8 +127,8 @@ In this example, we'll be judging job candidates by their experience, education,
 
 ```python
 >>> criteria_comparisons = {('Experience', 'Education'): 4, ('Experience', 'Charisma'): 3, ('Experience', 'Age'): 7,
-							('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
-							('Charisma', 'Age'): 5}
+				('Education', 'Charisma'): 1/3, ('Education', 'Age'): 3,
+				('Charisma', 'Age'): 5}
 ```
 
 Before moving on, it's important to note that the *order* of the elements that form the dictionaries' keys is meaningful. For example, using Saaty's scale, the comparison `('Experience', 'Education'): 4` means that "Experience is *moderately+ more important than* Education." 
@@ -224,8 +224,8 @@ First, we compare the high-level criteria to one another:
 
 ```python
 >>> criteria_comparisons = {('Cost', 'Safety'): 3, ('Cost', 'Style'): 7, ('Cost', 'Capacity'): 3,
-							('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
-							('Style', 'Capacity'): 1/7}
+				('Safety', 'Style'): 9, ('Safety', 'Capacity'): 1,
+				('Style', 'Capacity'): 1/7}
 ```
 
 If we create a Compare object for the criteria, we can view its report:
@@ -266,8 +266,8 @@ Next, we compare the *sub*criteria of Cost to one another...
 
 ```python
 >>> cost_comparisons = {('Price', 'Fuel'): 2, ('Price', 'Maintenance'): 5, ('Price', 'Resale'): 3,
-						('Fuel', 'Maintenance'): 2, ('Fuel', 'Resale'): 2,
-						('Maintenance', 'Resale'): 1/2}
+			('Fuel', 'Maintenance'): 2, ('Fuel', 'Resale'): 2,
+			('Maintenance', 'Resale'): 1/2}
 ```
 
 ...as well as the subcriteria of Capacity:
@@ -601,7 +601,6 @@ We next create a Compose object and begin to add the comparison information:
 
 ```python
 >>> compose = ahpy.Compose()
-
 >>> compose.add_comparisons([passenger_normalized, fuel_normalized, resale_normalized, cargo_normalized])
 ```
 
@@ -629,8 +628,8 @@ Now that all of the comparison information has been added, we next need to creat
 
 ```python
 >>> hierarchy = {'Criteria': ['Cost', 'Safety', 'Style', 'Capacity'],
-				 'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
-				 'Capacity': ['Passenger', 'Cargo']}
+		'Cost': ['Price', 'Fuel', 'Resale', 'Maintenance'],
+		'Capacity': ['Passenger', 'Cargo']}
 >>> compose.add_hierarchy(hierarchy)
 ```
 
