@@ -698,12 +698,12 @@ The Compare class computes the weights and consistency ratio of a positive recip
 `comparisons`: *dict (required)*, the elements and values to be compared, provided in one of two forms:
 
 1. A dictionary of pairwise comparisons, in which each key is a tuple of two elements and each value is their pairwise comparison value
-  - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
-  - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
+    - `{('a', 'b'): 3, ('b', 'c'): 2, ('a', 'c'): 5}`
+    - **The order of the elements in the key matters: the comparison `('a', 'b'): 3` means "a is moderately more important than b"**
 
 2. A dictionary of measured values, in which each key is a single element and each value is that element's measured value
-  - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
-  - Given this form, AHPy will automatically create consistent, normalized target weights
+    - `{'a': 1.2, 'b': 2.3, 'c': 3.4}`
+    - Given this form, AHPy will automatically create consistent, normalized target weights
 
 `precision`: *int*, the number of decimal places to take into account when computing both the target weights and the consistency ratio of the Compare object
 - The default precision value is 4
@@ -813,37 +813,43 @@ The remaining dictionary keys are only displayed when `verbose=True`:
 - `count`: *int*, the number of comparisons made by the Compare object, *not counting reciprocal comparisons*
 - `input`: *dict*, the comparisons input to the Compare object; this is identical to the input `comparisons` dictionary
 - `computed`: *dict*, the comparisons computed by the Compare object; each key is a tuple of two elements and each value is their computed pairwise comparison value
-  - If the Compare object has no computed comparisons, the value will be `None`
   - `{('c', 'd'): 0.730297106886979}, ...}`
+  - If the Compare object has no computed comparisons, the value will be `None`
 
 ### The Compose Class
 
-The Compose class can store and structure all of the information making up a decision problem. After first [adding the comparison information](#composeadd_comparisons) to the object, then [adding the problem hierarchy](#composeadd_hierarchy), the analysis results of multiple different Compare objects can be accessed using a single Compose object.
- 
-After adding all necessary information, the public properties of any stored Compare object can be accessed directly using either dot or bracket notation. For instance, the global weights of Compare object 'a' within Compose object 'c' can be accessed with either `c.a.global_weights` or `c['a']['global_weights']`.
+The Compose class can store and structure all of the information making up a decision problem. After first [adding comparison information](#composeadd_comparisons) to the object, then [adding the problem hierarchy](#composeadd_hierarchy), the analysis results of the multiple different Compare objects can be accessed through the single Compose object.
 
 `Compose()`
+ 
+After adding all necessary information, the public properties of any stored Compare object can be accessed directly using either dot or bracket notation:
+
+```python
+>>> my_compose_object.a.global_weights
+
+>>> my_compose_object['a']['global_weights']
+```
 
 ### Compose.add_comparisons()
 
-The comparison information of a decision problem can be added to a Compose object in one of the several ways listed below. Always add comparisons *before* adding the problem hierarchy.
+The comparison information of a decision problem can be added to a Compose object in any of the several ways listed below. Always add comparisons *before* adding the problem hierarchy.
 
 `Compose.add_comparisons(item, comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True)`
 
 `item`: *Compare object, list or tuple, or string (required)*, this argument allows for multiple input types:
 
 1. A single Compare object
-  - `Compare('a', comparisons=a, ...)`
+    - `Compare('a', comparisons=a, ...)`
 
 2. A list or tuple of Compare objects
-  - `[Compare('a', ...), Compare('b', ...)]`
+    - `[Compare('a', ...), Compare('b', ...)]`
   
 3. The data necessary to create a Compare object
-  - `Compose.add_comparisons('a', comparisons=a, ...)`
-  - The method signature mimics that of the Compare class to support this use case.
+    - `Compose.add_comparisons('a', comparisons=a, ...)`
+    - The method signature mimics that of the Compare class to support this use case.
 
-4. A nested list or tuple of the data in (3)
-  - `(('a', a, ...), ('b', b, ...))`
+4. A nested list or tuple of the data necessary to create a Compare object
+    - `(('a', a, ...), ('b', b, ...))`
 
 All other arguments are identical to those of the [Compare class](#the-compare-class).
 
@@ -851,7 +857,7 @@ All other arguments are identical to those of the [Compare class](#the-compare-c
 
 The Compose class uses an abstract representation of the problem hierarchy to automatically link its Compare objects together. When a hierarchy is added, the elements of the decision problem are synthesized and the analysis results are immediately available.
 
-**`Compose.add_hierarchy()` should only be called AFTER all pairwise comparisons have been added to the Compose object.**
+**`Compose.add_hierarchy()` should only be called AFTER all comparison information has been added to the Compose object.**
 
 `Compose.add_hierarchy(hierarchy)`
 
