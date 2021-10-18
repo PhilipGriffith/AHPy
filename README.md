@@ -929,8 +929,8 @@ We'll first compute the target weights and consistency ratio for the complete ma
 
 ```python
 >>> comparisons = {('a', 'b'): 1, ('a', 'c'): 5, ('a', 'd'): 2,
-		('b', 'c'): 3, ('b', 'd'): 4,
-		('c', 'd'): 3 / 4}
+		   ('b', 'c'): 3, ('b', 'd'): 4,
+		   ('c', 'd'): 3 / 4}
 
 >>> complete = ahpy.Compare('Complete', comparisons)
 
