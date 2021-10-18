@@ -860,7 +860,7 @@ The comparison information of a decision problem can be added to a Compose objec
     - The method signature mimics that of the Compare class for this reason
 
 4. A nested list or tuple of the data necessary to create a Compare object
-    - `(('a', a, ...), ('b', b, ...))`
+    - `(('a', a, 3, ...), ('b', b, 3, ...))`
 
 All other arguments are identical to those of the [Compare class](#the-compare-class).
 
