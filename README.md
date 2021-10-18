@@ -936,6 +936,7 @@ We'll first compute the target weights and consistency ratio for the complete ma
 
 >>> print(complete.target_weights)
 {'b': 0.3917, 'a': 0.3742, 'd': 0.1349, 'c': 0.0991}
+
 >>> print(complete.consistency_ratio)
 0.0372
 
@@ -945,6 +946,7 @@ We'll first compute the target weights and consistency ratio for the complete ma
 
 >>> print(missing_cd.target_weights)
 {'b': 0.392, 'a': 0.3738, 'd': 0.1357, 'c': 0.0985}
+
 >>> print(missing_cd.consistency_ratio)
 0.0372
 
