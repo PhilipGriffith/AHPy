@@ -318,10 +318,22 @@ class Compare:
         """
         Sets the input Compare objects as children of the current Compare object, assigns itself as their parent,
         then updates the global and target weights of the new hierarchy.
-        NB: A child Compare object's name MUST be included as an element of the current Compare object.
-        :param children: list or tuple, Compare objects to form the children of the current Compare object
+    
+        :param children: Can be a dictionary mapping (e.g., {"GroupA": [child1, child2], "GroupB": [child3]}), 
+                         or a list/tuple (e.g., [child1, child2, child3]).
         """
-        self._node_children = children
+        if isinstance(children, dict):
+            # Flatten the children dictionary to a list of Compare objects
+            self._node_children = [child for group in children.values() for child in group]
+            # Assign the group name as a property to distinguish criteria groups
+            for group_name, group_children in children.items():
+                for child in group_children:
+                    child.group = group_name
+        elif isinstance(children, (list, tuple)):
+            self._node_children = children
+        else:
+            raise TypeError("Children must be either a dictionary or a list/tuple of Compare objects.")
+    
         self._check_children()
         for child in self._node_children:
             child._node_parent = self
