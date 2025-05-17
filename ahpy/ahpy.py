@@ -148,7 +148,7 @@ class Compare:
         self._matrix = np.ones((self._size, self._size))
         for pair, value in self._pairs.items():
             location = tuple(self._elements.index(elements) for elements in pair)
-            self._matrix.itemset(location, value)
+            self._matrix[location] = value
 
     def _build_normalized_matrix(self):
         """
