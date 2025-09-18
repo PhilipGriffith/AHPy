@@ -106,7 +106,7 @@ Brilliant!
 
 ### Choosing a leader
 
-This example can be found [in an appendix to the Wikipedia entry for AHP](https://en.wikipedia.org/wiki/Analytic_hierarchy_process_-_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same.
+This example can be found [in an appendix to an older version of the Wikipedia entry for AHP](https://web.archive.org/web/20240724002837/https://en.wikipedia.org/wiki/Analytic_hierarchy_process_-_leader_example). The names have been changed in a nod to [the original saying](https://www.grammarphobia.com/blog/2009/06/tom-dick-and-harry-part-2.html), but the input comparison values remain the same.
 
 #### N.B.
 

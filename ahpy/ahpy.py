@@ -138,23 +138,23 @@ class Compare:
         """
         for key, value in self.comparisons.items():
             inverse_key = key[::-1]
-            self._pairs[key] = value
-            self._pairs[inverse_key] = np.reciprocal(float(value))
+            self._pairs[key] = np.float64(value)
+            self._pairs[inverse_key] = np.reciprocal(np.float64(value))
 
     def _build_matrix(self):
         """
         Creates a correctly-sized numpy matrix of 1s, then fills the matrix with values from the 'pairs' dictionary.
         """
-        self._matrix = np.ones((self._size, self._size))
+        self._matrix = np.ones((self._size, self._size), dtype=np.float64)
         for pair, value in self._pairs.items():
             location = tuple(self._elements.index(elements) for elements in pair)
-            self._matrix.itemset(location, value)
+            self._matrix[location] = np.float64(value)
 
     def _build_normalized_matrix(self):
         """
         Creates a numpy matrix of values from the input 'comparisons' dictionary.
         """
-        self._matrix = np.array(tuple(value for value in self.comparisons.values()), float)
+        self._matrix = np.array(tuple(value for value in self.comparisons.values()), np.float64)
 
     def _get_missing_comparisons(self):
         """
@@ -193,8 +193,8 @@ class Compare:
             :param x_location: tuple, the matrix location of the variable to be minimized
             """
             inverse_x_location = x_location[::-1]
-            self._matrix.itemset(x_location, x)
-            self._matrix.itemset(inverse_x_location, np.reciprocal(float(x)))
+            self._matrix[x_location] = np.float64(x)
+            self._matrix[inverse_x_location] = np.reciprocal(np.float64(x), dtype=np.float64)
             return np.max(np.linalg.eigvals(self._matrix))
 
         # The upper bound of the solution space is set to be 10 times the largest value of the matrix.
@@ -203,7 +203,7 @@ class Compare:
         for comparison in self._missing_comparisons:
             comparison_location = tuple(self._elements.index(element) for element in comparison)
             with warnings.catch_warnings():
-                warnings.filterwarnings('ignore', category=np.ComplexWarning)
+                warnings.filterwarnings('ignore', category=np.exceptions.ComplexWarning)
                 self._set_matrix(comparison)
                 optimal_solution = spo.minimize_scalar(lambda_max, args=(comparison_location,),
                                                        method='bounded', bounds=(0, upper_bound))
@@ -219,8 +219,8 @@ class Compare:
             if key != comparison:
                 location = tuple(self._elements.index(element) for element in key)
                 inverse_location = location[::-1]
-                self._matrix.itemset(location, value)
-                self._matrix.itemset(inverse_location, np.reciprocal(float(value)))
+                self._matrix[location] = np.float64(value)
+                self._matrix[inverse_location] = np.reciprocal(np.float64(value))
 
     def _compute(self):
         """
@@ -254,7 +254,7 @@ class Compare:
 
         # Create a zero matrix as the comparison eigenvector if this is the first iteration
         if comp_eigenvector is None:
-            comp_eigenvector = np.zeros(self._size)
+            comp_eigenvector = np.zeros(self._size, dtype=np.float64)
 
         # Compute the difference between the principal and comparison eigenvectors
         remainder = np.subtract(principal_eigenvector, comp_eigenvector).round(self.precision)
@@ -481,8 +481,11 @@ class Compare:
             """
             try:
                 comparisons = {}
-                for key, value in input_dict.items():
-                    comparisons[', '.join(key)] = value
+                if not self._normalize:
+                    for key, value in input_dict.items():
+                        comparisons[', '.join(key)] = value
+                else:
+                    raise AttributeError
             except AttributeError:
                 comparisons = input_dict
             return comparisons
@@ -533,6 +536,7 @@ class Compose:
         for node in self.nodes:
             if node.name == name:
                 return node
+        return None
 
     def add_comparisons(self, item,
                         comparisons=None, precision=4, random_index='dd', iterations=100, tolerance=0.0001, cr=True):
