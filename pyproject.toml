@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AHPy"
+dependencies = [
+    "numpy",
+    "scipy",
+]
+dynamic = ["version"]
+requires-python = ">=3.7"
+authors = [
+    {name = "Philip Griffith", email = "philip.griffith@gmail.com"},
+]
+description = "A Python implementation of the Analytic Hierarchy Process"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["AHP", "MCDM", "MCDA"]
+classifiers = [
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Repository = "https://github.com/PhilipGriffith/AHPy"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ahpy._version.__version__"}

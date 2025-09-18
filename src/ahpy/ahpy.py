@@ -7,8 +7,6 @@ import warnings
 import numpy as np
 import scipy.optimize as spo
 
-import ahpy
-
 
 class Compare:
     """
@@ -138,23 +136,23 @@ class Compare:
         """
         for key, value in self.comparisons.items():
             inverse_key = key[::-1]
-            self._pairs[key] = np.float64(value)
-            self._pairs[inverse_key] = np.reciprocal(np.float64(value))
+            self._pairs[key] = float(value)
+            self._pairs[inverse_key] = np.reciprocal(float(value))
 
     def _build_matrix(self):
         """
         Creates a correctly-sized numpy matrix of 1s, then fills the matrix with values from the 'pairs' dictionary.
         """
-        self._matrix = np.ones((self._size, self._size), dtype=np.float64)
+        self._matrix = np.ones((self._size, self._size))
         for pair, value in self._pairs.items():
             location = tuple(self._elements.index(elements) for elements in pair)
-            self._matrix[location] = np.float64(value)
+            self._matrix[location] = value
 
     def _build_normalized_matrix(self):
         """
         Creates a numpy matrix of values from the input 'comparisons' dictionary.
         """
-        self._matrix = np.array(tuple(value for value in self.comparisons.values()), np.float64)
+        self._matrix = np.array(tuple(value for value in self.comparisons.values()), float)
 
     def _get_missing_comparisons(self):
         """
@@ -193,8 +191,8 @@ class Compare:
             :param x_location: tuple, the matrix location of the variable to be minimized
             """
             inverse_x_location = x_location[::-1]
-            self._matrix[x_location] = np.float64(x)
-            self._matrix[inverse_x_location] = np.reciprocal(np.float64(x), dtype=np.float64)
+            self._matrix[x_location] = x
+            self._matrix[inverse_x_location] = np.reciprocal(x)
             return np.max(np.linalg.eigvals(self._matrix))
 
         # The upper bound of the solution space is set to be 10 times the largest value of the matrix.
@@ -219,8 +217,8 @@ class Compare:
             if key != comparison:
                 location = tuple(self._elements.index(element) for element in key)
                 inverse_location = location[::-1]
-                self._matrix[location] = np.float64(value)
-                self._matrix[inverse_location] = np.reciprocal(np.float64(value))
+                self._matrix[location] = value
+                self._matrix[inverse_location] = np.reciprocal(value)
 
     def _compute(self):
         """
@@ -254,7 +252,7 @@ class Compare:
 
         # Create a zero matrix as the comparison eigenvector if this is the first iteration
         if comp_eigenvector is None:
-            comp_eigenvector = np.zeros(self._size, dtype=np.float64)
+            comp_eigenvector = np.zeros(self._size)
 
         # Compute the difference between the principal and comparison eigenvectors
         remainder = np.subtract(principal_eigenvector, comp_eigenvector).round(self.precision)
@@ -564,19 +562,19 @@ class Compose:
              of coordinates is less than this value; default is 0.0001
         :param cr: boolean, whether to compute the priority vector's consistency ratio; default is True
         """
-        if isinstance(item, ahpy.Compare):
+        if isinstance(item, Compare):
             self.nodes.append(item)
         elif isinstance(item, (list, tuple)):
             for i in item:
-                if isinstance(i, ahpy.Compare):
+                if isinstance(i, Compare):
                     self.nodes.append(i)
                 elif isinstance(i, str):
-                    self.nodes.append(ahpy.Compare(*item))
+                    self.nodes.append(Compare(*item))
                     break
                 else:
-                    self.nodes.append(ahpy.Compare(*i))
+                    self.nodes.append(Compare(*i))
         else:  # item is a Compare object name
-            self.nodes.append(ahpy.Compare(item, comparisons, precision, random_index, iterations, tolerance, cr))
+            self.nodes.append(Compare(item, comparisons, precision, random_index, iterations, tolerance, cr))
 
     def add_hierarchy(self, hierarchy):
         """

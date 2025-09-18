@@ -1,7 +1,9 @@
 import itertools
+
 import pytest
 
-from ahpy import ahpy
+from src import ahpy
+
 
 # Example from https://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%93_leader_example
 
@@ -205,6 +207,7 @@ print(m(pairs, capacity_pass_m))
 
 # f = {'civic': 34, 'saturn': 27, 'escort': 24, 'clio': 28}
 # cf = ahpy.Compare('Fuel Economy', f)
+# cf.report(show=True)
 
 # ----------------------------------------------------------------------------------
 # Master Test
@@ -245,7 +248,7 @@ print(m(pairs, capacity_pass_m))
 # # b.add_children([d, e])
 # # c.add_children([f, g, h])
 # # a.add_children([b, c])
-
+#
 # nodes = [(a, [b, c]), (b, [d, e]), (c, [f, g, h]), (d, [i, j]), (f, [k, l]), (l, [m, n])]
 # permutations = itertools.permutations(nodes)
 # for permutation in permutations:

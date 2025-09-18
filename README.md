@@ -962,7 +962,7 @@ To set up a development environment and run the included tests, you can use the 
 ```
 virtualenv .venv
 source .venv/bin/activate
-python setup.py develop
-pip install pytest
+python -m pip install --editable .
+python -m pip install pytest
 pytest
 ```
